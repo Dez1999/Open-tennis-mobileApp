@@ -13,13 +13,15 @@ import {
   View,
 } from 'react-native';
 
+import ManagerApp from './src/managerUser/managerApp';
+
 const App = () => {
 
   return (
     <SafeAreaView>
       <StatusBar barStyle={'light-content'} />
-        <View>
-          <Text>Stupid Bitch</Text>
+        <View style={styles.sectionContainer}>
+          <ManagerApp/>
         </View>
     </SafeAreaView>
   );
@@ -27,21 +29,10 @@ const App = () => {
 
 const styles = StyleSheet.create({
   sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
+    marginTop: 5,
+    paddingHorizontal: 5,
   },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
+
 });
 
 export default App;

@@ -11,15 +11,16 @@ import {
 
 
 //Imports
-import Logo from '../../../generalUser/components/Logo';
+import Logo2 from '../../assets/images/Logo2';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 
 const HomeMan = ({navigation}) => {
     return(
         <View style ={styles.container}>
-                <SafeAreaView style={{justifyContent: 'space-between', alignItems: 'center' }}>
+            <SafeAreaView style={{justifyContent: 'space-between', alignItems: 'center' }}>
                     <View style={{flex: 2}}>
-                        <Logo title='Open Tennis' marginTop={20} imageHeight={110} imageWidth={100}/> 
+                        <Logo2 title='Open Tennis' marginTop={20} imageHeight={110} imageWidth={100}/> 
                         <Text style = {styles.mainText}>{'MANAGER'}</Text>
                     </View>
                     <View style={{flex: 3}}>
@@ -27,8 +28,9 @@ const HomeMan = ({navigation}) => {
                             source = {require('../../../generalUser/images/tennisCourtBackground.jpg')}
                             style = {styles.backgroundStyle} >
                         </ImageBackground>  
-                    </View>   
-                </SafeAreaView>  
+                    </View> 
+            </SafeAreaView>
+  
             </View>
         
 
@@ -53,11 +55,9 @@ const styles = StyleSheet.create({
     }, 
 
     backgroundStyle: {
-        width: undefined, 
-        height: '60%', 
         justifyContent: 'center',
         alignItems: 'center',
-        height: (Dimensions.get('window').height *1.2)/2,
+        height: (Dimensions.get('window').height *0.7),
         width: Dimensions.get('window').width,
     }, 
 
