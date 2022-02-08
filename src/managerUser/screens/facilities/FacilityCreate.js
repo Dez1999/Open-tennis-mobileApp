@@ -20,9 +20,10 @@ const postFacilityURL = 'https://mywebsite.com/endpoint/';
 
 const FacilityCreate = ({navigation}) => {
     //Form Variables
-    const [facilityID, setFacilityID] = useState("");
     const [facilityName, setFacilityName] = useState("");
     const [facilityCity, setFacilityCity] = useState("");
+    const [facilityLatitude, setFacilityLatitude] = useState("");
+    const [facilityLongitude, setFacilityLongitude] = useState("");
 
 
 
@@ -38,7 +39,9 @@ const FacilityCreate = ({navigation}) => {
             body: JSON.stringify({
                 facilityID: facilityID,
                 facilityName: facilityName, 
-                facilityCity: facilityCity
+                facilityCity: facilityCity, 
+                facilityLatitud: facilityLatitude,
+                facilityLongitude: facilityLongitude,
             }),
             credentials: 'include'
         })
@@ -97,15 +100,6 @@ const FacilityCreate = ({navigation}) => {
                 </View>
 
                 <View>
-                    <Text style ={styles.fieldText}>Facility Id:</Text>
-                    <TextInput
-                        style={styles.textInputStyle}
-                        value ={facilityID}
-                        placeholder="Facility ID Here"
-                        underlineColorAndoird="transparent"
-                        onChangeText={(text) => setFacilityID(text)}
-                    
-                    ></TextInput>
                     <Text style ={styles.fieldText}>Facility Name:</Text>
                     <TextInput
                         style={styles.textInputStyle}
@@ -122,6 +116,24 @@ const FacilityCreate = ({navigation}) => {
                         placeholder="Facility City Here"
                         underlineColorAndoird="transparent"
                         onChangeText={(text) => setFacilityCity(text)}
+                    
+                    ></TextInput>
+                    <Text style ={styles.fieldText}>Latitude:</Text>
+                    <TextInput
+                        style={styles.textInputStyle}
+                        value ={facilityLatitude}
+                        placeholder="Facility Latitude Here"
+                        underlineColorAndoird="transparent"
+                        onChangeText={(text) => setFacilityLatitude(text)}
+                    
+                    ></TextInput>
+                    <Text style ={styles.fieldText}>Longitude:</Text>
+                    <TextInput
+                        style={styles.textInputStyle}
+                        value ={facilityLongitude}
+                        placeholder="Facility Longitude Here"
+                        underlineColorAndoird="transparent"
+                        onChangeText={(text) => setFacilityLongitude(text)}
                     
                     ></TextInput>
 
@@ -164,13 +176,13 @@ const styles = StyleSheet.create ({
         height: 40, 
         borderWidth: 1, 
         paddingLeft: 20, 
-        margin: 5, 
+        margin: 3, 
         borderColor: 'black', 
         backgroundColor: '#E2F1DB'
 
     }, 
     fieldText: {
-        fontSize: 20, 
+        fontSize: 17, 
         color: 'black'
     }
 });

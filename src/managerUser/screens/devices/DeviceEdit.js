@@ -163,26 +163,19 @@ const DeviceEdit = ({navigation}) => {
                 </View>
 
                 <View>
-                    <Text style ={styles.fieldText}>Device Id:</Text>
-                    <TextInput
-                        style={styles.textInputStyle}
-                        value ={deviceID}
-                        placeholder={deviceID}
-                        underlineColorAndoird="transparent"
-                        onChangeText={(text) => setDeviceID(text)}
-                    
-                    ></TextInput>
                     <Text style ={styles.fieldText}>Device Name:</Text>
                     <TextInput
                         style={styles.textInputStyle}
                         value ={deviceName}
-                        placeholder={deviceName}
+                        placeholder="Enter Device Name here"
                         underlineColorAndoird="transparent"
                         onChangeText={(text) => setDeviceName(text)}
                     
                     ></TextInput>
                     <Text style ={styles.fieldText}>Device Type:</Text>
-                    <ModalDropdown options={['Tennis', 'Basketball', 'Hockey']} style={{animated: true}} defaultValue = 'Tennis' isFullWidth={true}/>
+                    <ModalDropdown options={['Tennis', 'Basketball', 'Hockey']} style={{animated: true, fontSize: 20}} textStyle={styles.dropdown_text} defaultValue = 'Tennis' isFullWidth={true} dropdownStyle={styles.dropdown_2_dropdown}/>
+                    <Text style ={styles.fieldText}>Areas Monitored:</Text>
+                    <ModalDropdown options={['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10']} style={{animated: true}} textStyle={styles.dropdown_text} defaultValue = '1' isFullWidth={true} dropdownStyle={styles.dropdown_2_dropdown}/>
 
                 </View>
                 
@@ -261,5 +254,22 @@ const styles = StyleSheet.create ({
         position: 'absolute', 
         bottom: 0, 
         right: 0
-    }
+    }, 
+    dropdown_text: {
+        marginVertical: 10,
+        marginHorizontal: 6,
+        width: '95%',
+        height: '90%',
+        backgroundColor: '#E2F1DB',
+        fontSize: 16,
+        color: 'black',
+        textAlign: 'center',
+        textAlignVertical: 'center',
+      },
+      dropdown_2_dropdown: {
+        width: '90%',
+        borderColor: 'black',
+        borderWidth: 2,
+        borderRadius: 3,
+      },
 });
