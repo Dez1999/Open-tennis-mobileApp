@@ -22,15 +22,21 @@ const windowHeight = Dimensions.get('window').height;
 
 const DeviceIndividual = ({navigation}) => {
     //Form Variables
+    const [facilityID, setFacilityID] = useState("");
+    const [deviceID, setDeviceID] = useState("");
     const [facilityName, setFacilityName] = useState("");
     const [facilityOwner, setFacilityOwner] = useState("");
     const [deviceName, setDeviceName] = useState("");
     const [deviceLatitude, setDeviceLatitude] = useState("");
     const [deviceLongitude, setDeviceLongitude] = useState("");
     const [areasMonitored, setAreasMonitored] = useState("");
+    const [deviceType, setDeviceType] = useState("");
 
 
     useEffect(() => {
+
+        setFacilityID("12351513");
+        setDeviceID("235esagd");
 
         setFacilityName("Carleton Heights Community Center");
         setFacilityOwner("John Manager");
@@ -57,7 +63,7 @@ const DeviceIndividual = ({navigation}) => {
                         color='black'
                         size={30}
                         backgroundColor="white"
-                        onPress={() => alert("Go Back to Individual Facility Screen")}
+                        onPress={() => navigation.goBack()}
                         >
                                     
                     </Icon.Button>
@@ -66,7 +72,14 @@ const DeviceIndividual = ({navigation}) => {
                         color='black'
                         size={30}
                         backgroundColor="white"
-                        onPress={() => alert("Go to Edit Device Page")}
+                        onPress={() => navigation.navigate("DeviceEdit_Page", {
+                            facility_Name: facilityName, 
+                            device_Name: deviceName, 
+                            device_Type: deviceType, 
+                            numAreas: areasMonitored, 
+                            facility_Id: facilityID, 
+                            device_ID: deviceID
+                          })}
                         >
                         <Text style={{fontSize: 20, fontWeight: 'bold', color: '#0B5B13'}}>EDIT</Text>
                                     

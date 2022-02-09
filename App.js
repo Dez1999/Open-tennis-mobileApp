@@ -14,16 +14,25 @@ import {
 } from 'react-native';
 
 import ManagerApp from './src/managerUser/managerApp';
+import { SafeAreaProvider} from 'react-native-safe-area-context';
+import { NavigationContainer } from '@react-navigation/native';
+//import 'react-native-gesture-handler';
+import { ActivityIndicator } from 'react-native-paper';
+
+import ManagerTabScreen from './src/managerUser/navigation/managerNav';
+
+
 
 const App = () => {
 
   return (
-    <SafeAreaView>
-      <StatusBar barStyle={'light-content'} />
-        <View style={styles.sectionContainer}>
-          <ManagerApp/>
-        </View>
-    </SafeAreaView>
+    <SafeAreaProvider>
+      <NavigationContainer>
+          <StatusBar barStyle={'light-content'} />
+            <ManagerApp/>
+      </NavigationContainer>
+    </SafeAreaProvider>
+
   );
 };
 

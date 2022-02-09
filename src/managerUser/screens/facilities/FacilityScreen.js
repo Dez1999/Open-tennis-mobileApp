@@ -99,7 +99,10 @@ const DeviceScreen = ({navigation}) => {
 
     const renderItem = ({ item }) => (
         <TouchableOpacity onPress={() => {
-            alert("ItemID: " + item.id + ", Facility Name: " + item.title)
+            navigation.navigate("FacilityIndividual_Page", {
+              itemID: item.id, 
+              itemTitle: item.title
+            })
         }}> 
         <Item title={item.title} city={item.id}/>
         </TouchableOpacity>
@@ -181,7 +184,7 @@ const DeviceScreen = ({navigation}) => {
                                     color='black'
                                     size={30}
                                     backgroundColor="white"
-                                    onPress={() => alert("Create new facility")}
+                                    onPress={() => navigation.navigate("FacilityCreate_Page")}
                                 >
                                     <Text style={{fontSize: 15, color: 'black'}}>Add facility</Text>
                                     

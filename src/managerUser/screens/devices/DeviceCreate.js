@@ -94,7 +94,7 @@ const DeviceCreate = ({navigation}) => {
                         color='black'
                         size={30}
                         backgroundColor="white"
-                        onPress={() => alert("Go Back to Individual Facility Screen")}
+                        onPress={() => navigation.goBack()}
                         >
                                     
                     </Icon.Button>

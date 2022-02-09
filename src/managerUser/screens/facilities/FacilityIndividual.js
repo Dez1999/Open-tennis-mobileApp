@@ -27,7 +27,11 @@ const data = [
   
   ]
 
-const FacilityIndividual = ({navigation}) => {
+const FacilityIndividual = ({navigation, route}) => {
+
+    //Route Params
+    const { itemId, itemTitle } = route.params;
+
     //Form Variables
     const [facilityID, setFacilityID] = useState("");
     const [facilityName, setFacilityName] = useState("");
@@ -47,7 +51,11 @@ const FacilityIndividual = ({navigation}) => {
     
       const renderItem = ({ item }) => (
         <TouchableOpacity onPress={() => {
-            alert("Device Name: " + item.title + ", Areas Monitored: " + item.areasMonitored)
+            navigation.navigate("DeviceIndividual_Page", {
+                itemID: item.id, 
+                itemTitle: item.title,
+                itemAreas: item.areasMonitored
+              })
         }}> 
         <Item title={item.title} numAreas={item.areasMonitored}/>
         </TouchableOpacity>
@@ -100,7 +108,7 @@ const FacilityIndividual = ({navigation}) => {
                         color='black'
                         size={30}
                         backgroundColor="white"
-                        onPress={() => alert("Go Back to Facilities Screen")}
+                        onPress={() => navigation.goBack()}
                         >
                                     
                     </Icon.Button>
@@ -109,7 +117,7 @@ const FacilityIndividual = ({navigation}) => {
                         color='black'
                         size={30}
                         backgroundColor="white"
-                        onPress={() => alert("Go to Edit Facility Page")}
+                        onPress={() => navigation.navigate("FacilityEdit_Page")}
                         >
                         <Text style={{fontSize: 20, fontWeight: 'bold', color: '#0B5B13'}}>EDIT</Text>
                                     
@@ -149,7 +157,11 @@ const FacilityIndividual = ({navigation}) => {
                             color='#2D0C57'
                             size={60}
                             backgroundColor="white"
-                            onPress={() => alert("Add New Device")}
+                            onPress={() => navigation.navigate("DeviceCreate_Page", {
+                                itemID: facilityID, 
+                                itemTitle: facilityName
+                              })
+                            }
                             >
                            
                                         

@@ -132,7 +132,7 @@ const DeviceEdit = ({navigation}) => {
                         color='black'
                         size={30}
                         backgroundColor="white"
-                        onPress={() => alert("Go Back to Indivual Facility Screen")}
+                        onPress={() => navigation.goBack()}
                         >
                                     
                     </Icon.Button>

@@ -80,7 +80,7 @@ const FacilityCreate = ({navigation}) => {
                         color='black'
                         size={30}
                         backgroundColor="white"
-                        onPress={() => alert("Go Back to Facility Screen")}
+                        onPress={() => navigation.goBack()}
                         >
                                     
                     </Icon.Button>
