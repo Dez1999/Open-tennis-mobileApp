@@ -207,6 +207,7 @@ const DeviceScreen = ({navigation}) => {
 const styles = StyleSheet.create({
     container : {
       backgroundColor: "white",
+      padding: 10
       
     },  
     itemStyle: {

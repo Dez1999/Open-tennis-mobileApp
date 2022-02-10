@@ -1,9 +1,9 @@
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+
 import React from "react";
 import {View, Text, TextInput, StyleSheet} from "react-native";
 import {useState} from "react";
 //Icons imports
-
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 const SearchComponent = (props) => {
     const[term, setTerm] = useState("");
@@ -15,14 +15,13 @@ const SearchComponent = (props) => {
             backgroundColor: "#E2F1DB", 
             flexDirection: "row", 
             justifyContent: "space-between",
-            paddingBottom: 13, 
+            paddingBottom: 7, 
             borderRadius: 15,
             paddingTop: 3, 
             marginLeft: props.marginLeft, 
-            marginRight: props.marginRight,
-            width: '100%'
+            marginRight: props.marginRight
         }}>
-            
+            <Icon name="search" size={20} style={styles.iconStyle}/>
             <TextInput
                 placeholder="Search Facilities..."
                 placeholderTextColor="#463F3F"
@@ -36,7 +35,6 @@ const SearchComponent = (props) => {
                     console.log(term);
                 }}
                 />
-
         </View>
     );
 }
@@ -46,12 +44,12 @@ const styles = StyleSheet.create({
         marginTop:8, 
         marginHorizontal: 8, 
         color: "black", 
-        size: 23
+        
     }, 
 
     searchInputStyle: {
         flex: 1, 
-        fontSize: 18, 
+        fontSize: 16, 
         paddingVertical: 0, 
         margin: 0, 
         color: "black"

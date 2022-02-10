@@ -208,7 +208,8 @@ export default DeviceEdit;
 
 const styles = StyleSheet.create ({
     container: {
-      backgroundColor: 'white'
+      backgroundColor: 'white', 
+      padding: 5
 
     }, 
     header: {

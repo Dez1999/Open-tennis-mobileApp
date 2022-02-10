@@ -73,7 +73,7 @@ const FacilityCreate = ({navigation}) => {
 
     return(
         <View style ={styles.container}>
-            <SafeAreaView>
+            <SafeAreaView style={{backgroundColor:'white', height: '100%'}}>
                 <View style = {styles.header}>
                      <Icon.Button
                         name="arrow-left"
@@ -154,7 +154,8 @@ export default FacilityCreate;
 
 const styles = StyleSheet.create ({
     container: {
-      backgroundColor: 'white'
+      backgroundColor: 'white',
+      padding: 5
 
     }, 
     header: {

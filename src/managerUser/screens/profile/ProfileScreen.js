@@ -17,6 +17,7 @@ import {
 import Icon from 'react-native-vector-icons/FontAwesome';
 import IconMat from 'react-native-vector-icons/MaterialCommunityIcons';
 import Logo2 from '../../assets/images/Logo2';
+import { AuthContext } from '../../../sharedComponents/Context/Context';
 
 
 
@@ -32,6 +33,9 @@ const ProfileScreen = ({navigation}) => {
 
 
 
+    //Global App functions for the user to choose the section of the app 
+    const { generalRole } = React.useContext(AuthContext);
+    const { signOut } = React.useContext(AuthContext);
 
 
 
@@ -50,7 +54,7 @@ const ProfileScreen = ({navigation}) => {
         <View style ={styles.container}>
             <SafeAreaView style={{backgroundColor:'white', height: '100%'}}>
                 <View style = {styles.header}>
-                    <Logo2 marginTop={10} imageHeight={100} imageWidth={100}/> 
+                    <Logo2 marginTop={10} imageHeight={100} imageWidth={90}/> 
                     <TouchableOpacity
                         style ={{padding: 10}}
                         onPress={() => navigation.navigate("ProfileEdit_Page")}
@@ -65,24 +69,50 @@ const ProfileScreen = ({navigation}) => {
                 </View>
 
                 <View style={styles.profileInfo}>
-                    <Text>Role: {userRole}</Text>
-                    <Text>OwnerID: {ownerID}</Text>
-                    <Text>Company ID: {companyID}</Text>
-                    <Text>Number of Facilities Owned: {numFacilitiesOwned}</Text>
-                    <Text>Number of Devices: {numDeviceOwned}</Text>
-
+                    <View style = {styles.itemContent}>
+                            <Text style = {styles.itemText}>Role: </Text>
+                            <Text style = {styles.itemTextSub}>{userRole}</Text>
+                    </View>
+                    <View style = {styles.itemContent}>
+                            <Text style = {styles.itemText}>OwnerID: </Text>
+                            <Text style = {styles.itemTextSub}>{ownerID}</Text>
+                    </View>
+                    <View style = {styles.itemContent}>
+                            <Text style = {styles.itemText}>CompanyID: </Text>
+                            <Text style = {styles.itemTextSub}>{companyID}</Text>
+                    </View>
+                    <View style = {styles.itemContent}>
+                            <Text style = {styles.itemText}>Number of Facilities Owned: </Text>
+                            <Text style = {styles.itemTextSub}>{numFacilitiesOwned}</Text>
+                    </View>
+                    <View style = {styles.itemContent}>
+                            <Text style = {styles.itemText}>Number of Devices: </Text>
+                            <Text style = {styles.itemTextSub}>{numDeviceOwned}</Text>
+                    </View>
                 </View>
+
+                <View style = {styles.bottomContent}>
+                    <IconMat.Button
+                            name="account-switch"
+                            color='#5458B4'
+                            size={30}
+                            backgroundColor="white"
+                            onPress={() => {generalRole()}} 
+                                                       > 
+                         <Text style={{color: '#5458B4', fontSize: 20}}>Switch to General User App </Text>               
+                    </IconMat.Button>
 
                     <IconMat.Button
                             name="logout"
                             color='#CD2323'
-                            size={25}
+                            size={30}
                             style = {styles.logoutButton}
                             backgroundColor="white"
-                            onPress={() => alert("Logout User")} 
+                            onPress={() => {signOut()}} 
                                                        > 
-                         <Text style={{color: '#CD2323', fontSize: 25}}>Logout</Text>               
+                         <Text style={{color: '#CD2323', fontSize: 20}}>Logout</Text>               
                     </IconMat.Button>
+                </View>
                    
 
                     
@@ -98,7 +128,8 @@ const ProfileScreen = ({navigation}) => {
 
 const styles = StyleSheet.create ({
     container: {
-        backgroundColor: 'white'
+        backgroundColor: 'white', 
+        padding: 5
   
       },
       header: {
@@ -108,25 +139,47 @@ const styles = StyleSheet.create ({
 
     },
     profileInfo:{
-        padding: 10, 
-        justifyContent: 'space-between'
-
+        alignContent: 'center',
+        justifyContent: 'space-between', 
+        padding: 10
 
     },
 
     logoutButton: {
-        marginTop: 30,
         bottom: 0, 
         right: 0, 
-        flexDirection: 'row'
+        flexDirection: 'row', 
+        
 
     }, 
     titleText: {
         color: '#0B5B13', 
         fontSize: 35, 
-        fontWeight: 'bold'
+        fontWeight: 'bold', 
+        padding: 5
 
     },
+    itemText: {
+        color: 'black',
+        fontWeight: 'bold',
+        fontSize: 23,
+        paddingLeft: 13, 
+        paddingBottom: 5
+    }, 
+    itemTextSub: {
+        color: 'black',
+        fontSize: 23,
+
+    },
+    bottomContent: {
+        width: '100%',
+        justifyContent: 'center',
+        position: 'absolute', //Here is the trick
+        bottom: 0, //Align at bottom of screen
+        }, 
+    itemContent: {
+        flexDirection: 'row'
+    }
 
 
 });

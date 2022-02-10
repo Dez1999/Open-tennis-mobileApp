@@ -156,7 +156,8 @@ export default DeviceIndividual;
 
 const styles = StyleSheet.create ({
     container: {
-      backgroundColor: 'white'
+      backgroundColor: 'white', 
+      padding: 10
 
     }, 
     header: {
