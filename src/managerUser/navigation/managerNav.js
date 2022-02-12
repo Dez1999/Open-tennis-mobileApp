@@ -163,7 +163,7 @@ const FacilityStackScreen = ({navigator}) => (
         </ProfileStack.Navigator>
         );
 
-    
+
     const HomeManagerStackScreen = ({navigator}) => (
         <HomeManagerStack.Navigator screenOptions={{
               headerShown: true,

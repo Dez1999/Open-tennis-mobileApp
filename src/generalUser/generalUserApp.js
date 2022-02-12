@@ -37,8 +37,6 @@ import MainTabScreen from './Navigation/MainTabs/MainTabScreen';
 const GeneralUserApp = () => {
     return(
         <MainTabScreen/>
-        
-
     )
 }
 

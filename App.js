@@ -403,7 +403,7 @@ const App = () => {
                   return <GeneralUserApp/>
 
                 }
-                
+                //Login and registration
                 return <CoreStackScreen/>;
               })()}
                
