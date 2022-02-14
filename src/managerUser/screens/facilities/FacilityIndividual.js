@@ -52,6 +52,8 @@ const FacilityIndividual = ({navigation, route}) => {
 
     useEffect(() => {
 
+
+        setFacilityID(itemID);
         setFacilityName(itemTitle);
         setFacilityCity(itemCity);
         setFacilityLatitude(itemLatitude);
