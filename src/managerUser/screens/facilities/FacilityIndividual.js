@@ -31,6 +31,12 @@ const FacilityIndividual = ({navigation, route}) => {
 
     //Route Params
     const { itemId, itemTitle } = route.params;
+    // itemID: item.id, 
+    // itemOwnerId: item.ownerId,
+    // itemTitle: item.name, 
+    // itemCity: item.city,
+    // itemLatitude: item.latitude, 
+    // itemLongitude: item.longitude
 
     //Form Variables
     const [facilityID, setFacilityID] = useState("");

@@ -32,7 +32,7 @@ const AccountScreen = ({navigation}) => {
   const [userToken, setUserToken] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const [testAppUserRole, setTestAppUserRole] = useState("");
+  const [appUserRole, setAppUserRole] = useState("");
   const [userDecision, setUserDecision] = useState("");
   const [userEmail, setUserEmail] = useState("");
 
@@ -88,14 +88,29 @@ const AccountScreen = ({navigation}) => {
           return response.json();
         })
           .then((resData) => {
-            setFirstName(resData.firstName);
-            setLastName(resData.lastName);
-            //setAppUserRole(resData.appUserRole);
-            setUserEmail(resData.email);
-            console.log("User FirstName: " + resData.firstName);
-            console.log("User LastName: " + resData.lastName);
-            console.log("User Role: " + resData.appUserRole);
-            console.log("User Email: " + resData.email);
+
+            if (resData.appUserRole == "ADMIN"){
+              setFirstName("Admin");
+              setLastName("Joe");
+              setAppUserRole(resData.appUserRole);
+              setUserEmail(resData.email);
+              console.log("User FirstName: " + resData.firstName);
+              console.log("User LastName: " + resData.lastName);
+              console.log("User Role: " + resData.appUserRole);
+              console.log("User Email: " + resData.email);
+
+            }
+            else {
+              setFirstName(resData.firstName);
+              setLastName(resData.lastName);
+              setAppUserRole(resData.appUserRole);
+              setUserEmail(resData.email);
+              console.log("User FirstName: " + resData.firstName);
+              console.log("User LastName: " + resData.lastName);
+              console.log("User Role: " + resData.appUserRole);
+              console.log("User Email: " + resData.email);
+
+            }
 
           })
             .catch(error => {
@@ -109,14 +124,12 @@ const AccountScreen = ({navigation}) => {
 
   }
 
-   
-
   
-//   useEffect(() => {
-//     readUserName();
-//     readUserToken();
- //    getUserInfo();
- //  }, [getUserInfo])
+  useEffect(() => {
+    // readUserName();
+    // readUserToken();
+    getUserInfo();
+  }, [getUserInfo])
 
   return (              
             <View style ={styles.container}>
@@ -137,9 +150,9 @@ const AccountScreen = ({navigation}) => {
 
                     <View style={styles.containerSecondary}> 
                       <Text style = {styles.userText}>{firstName} {lastName}</Text>  
-                      <Text style = {styles.emailText}>{userEmail}</Text> 
-                      <Text style = {styles.emailText}>Role: {testAppUserRole}</Text> 
-                      <Text style = {styles.emailText}>Decision: {userDecision}</Text> 
+                      <Text style = {styles.emailText}>Email: {userEmail}</Text> 
+                      <Text style = {styles.emailText}>Role: {appUserRole}</Text> 
+                      {/* <Text style = {styles.emailText}>Decision: {userDecision} User</Text>  */}
                     </View>
 
                     <View style={styles.contentContainer} >
@@ -273,7 +286,7 @@ const styles = StyleSheet.create({
     userText: {
       textAlign: 'left',
       paddingLeft: 15,
-      fontSize: 24,
+      fontSize: 30,
       fontWeight : 'bold',
       color: '#0B5B13'
 

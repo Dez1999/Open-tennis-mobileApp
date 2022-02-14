@@ -21,7 +21,12 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
-const API_URL = `https://raw.githubusercontent.com/adhithiravi/React-Hooks-Examples/master/testAPI.json`;
+//Main API
+const FacilityOwned_URL = 'http://52.229.94.153:8080/facility/owned';
+
+//Test APIs
+//const API_URL = `https://raw.githubusercontent.com/adhithiravi/React-Hooks-Examples/master/testAPI.json`;
+//const apiURL = 'https://jsonplaceholder.typicode.com/posts';
 
 
   const Item = ({ title, city }) => (
@@ -45,6 +50,7 @@ const DeviceScreen = ({navigation}) => {
 
 
     useEffect(() => {
+        setIsLoading(true);
         fetchPosts();
         return () => {
 
@@ -53,8 +59,7 @@ const DeviceScreen = ({navigation}) => {
       }, []);
 
       const fetchPosts = () => {
-        const apiURL = 'https://jsonplaceholder.typicode.com/posts';
-        fetch(apiURL)
+        fetch(FacilityOwned_URL)
         .then((response) => response.json())
         .then((responseJson) => {
             setfilteredData(responseJson);
@@ -71,8 +76,8 @@ const DeviceScreen = ({navigation}) => {
     const searchFilter = (text) => {
         if (text) {
             const newData = mainData.filter((item) => {
-                const itemData = item.title ?
-                        item.title.toUpperCase()
+                const itemData = item.name ?
+                        item.name.toUpperCase()
                         : ''.toUpperCase();
                 const textData = text.toUpperCase();
                 return itemData.indexOf(textData) > -1;
@@ -87,24 +92,28 @@ const DeviceScreen = ({navigation}) => {
         }
     }
 
-    const ItemView = ({item}) => {
-        return(
-            <TouchableOpacity onPress={() => {
-                alert("ItemID: " + item.id + ", Facility Name: " + item.title)
-            }}> 
-            <Item title={item.title} city={item.id}/>
-            </TouchableOpacity>
-        )
-    }
+    // const ItemView = ({item}) => {
+    //     return(
+    //         <TouchableOpacity onPress={() => {
+    //             alert("ItemID: " + item.id + ", Facility Name: " + item.title)
+    //         }}> 
+    //         <Item title={item.title} city={item.id}/>
+    //         </TouchableOpacity>
+    //     )
+    // }
 
     const renderItem = ({ item }) => (
         <TouchableOpacity onPress={() => {
             navigation.navigate("FacilityIndividual_Page", {
               itemID: item.id, 
-              itemTitle: item.title
+              itemOwnerId: item.ownerId,
+              itemTitle: item.name, 
+              itemCity: item.city,
+              itemLatitude: item.latitude, 
+              itemLongitude: item.longitude
             })
         }}> 
-        <Item title={item.title} city={item.id}/>
+        <Item title={item.name} city={item.city}/>
         </TouchableOpacity>
       );
 
@@ -133,8 +142,8 @@ const DeviceScreen = ({navigation}) => {
       //Check if the data is currently being fetched
       if (isLoading) {
         return (
-          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', marginTop: 200 }}>
-            <ActivityIndicator size="large" color="#5500dc" />
+          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', marginTop: 200, backgroundColor: 'white' }}>
+            <ActivityIndicator size="large" color="#82CB76" />
           </View>
         );
       }
@@ -167,7 +176,7 @@ const DeviceScreen = ({navigation}) => {
 
     return(
         <View style ={styles.container}>
-            <SafeAreaView style={{flexDirection: 'column'}}>
+            <SafeAreaView style={{flexDirection: 'column', backgroundColor: 'white'}}>
                     <View style={{flex: 1, position: 'absolute', backgroundColor: 'white', width: '100%', marginBottom: '75%'}}>
                         <TextInput
                             style={styles.textInputStyle}

@@ -19,6 +19,8 @@ import IconMat from 'react-native-vector-icons/MaterialCommunityIcons';
 import Logo2 from '../../assets/images/Logo2';
 import { AuthContext } from '../../../sharedComponents/Context/Context';
 
+const appUserUrl = 'http://52.229.94.153:8080/appUser';
+
 
 
 
@@ -26,6 +28,10 @@ const ProfileScreen = ({navigation}) => {
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
     const [userRole, setUserRole] = useState("");
+    const [userEmail, setUserEmail] = useState("");
+
+
+
     const [ownerID, setOwnerID] = useState("");
     const [companyID, setCompanyID] = useState("");
     const [numFacilitiesOwned, setNumFacilitiesOwned] = useState("");
@@ -37,12 +43,53 @@ const ProfileScreen = ({navigation}) => {
     const { generalRole } = React.useContext(AuthContext);
     const { signOut } = React.useContext(AuthContext);
 
+    //Fetch user Info from database
+  const getUserInfo = async () => {
+    try{
+
+      fetch(appUserUrl, {
+        method: 'GET', 
+        headers: {
+          'Accept': 'application/json, text/plain, */*, application/x-www-form-urlencoded',  // It can be used to overcome cors errors
+          'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+        },
+        credentials: 'include',
+        json: true,
+      })
+        .then(response => {
+          console.log(response);
+          return response.json();
+        })
+          .then((resData) => {
+            setFirstName(resData.firstName);
+            setLastName(resData.lastName);
+            setUserRole(resData.appUserRole);
+            setUserEmail(resData.email);
+            console.log("User FirstName: " + resData.firstName);
+            console.log("User LastName: " + resData.lastName);
+            console.log("User Role: " + resData.appUserRole);
+            console.log("User Email: " + resData.email);
+
+          })
+            .catch(error => {
+              console.log(error);
+              alert(error);
+            })
+
+    }catch (e) {
+    console.log("Failed to GET user info from database")
+    }
+
+  }
+
 
 
     useEffect(() => {
-        setFirstName("John");
-        setLastName("Doe");
-        setUserRole("Facility Manager");
+
+        getUserInfo();
+        // setFirstName("John");
+        // setLastName("Doe");
+        // setUserRole("Facility Manager");
         setOwnerID("1223bfs");
         setCompanyID("222886g");
         setNumFacilitiesOwned("5");
@@ -156,7 +203,9 @@ const styles = StyleSheet.create ({
         color: '#0B5B13', 
         fontSize: 35, 
         fontWeight: 'bold', 
-        padding: 5
+        paddingBottom: 5, 
+        textAlign: 'center'
+
 
     },
     itemText: {
