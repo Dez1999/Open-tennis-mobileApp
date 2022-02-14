@@ -10,7 +10,8 @@ import {
     ActivityIndicator, 
     TextInput, 
     SafeAreaView, 
-    KeyboardAvoidingView
+    KeyboardAvoidingView, 
+    Alert
 
 } from 'react-native';
 
@@ -18,31 +19,49 @@ import {
 import Icon from 'react-native-vector-icons/FontAwesome';
 import IconMat from 'react-native-vector-icons/MaterialCommunityIcons';
 
-const editFacilityURL = 'https://mywebsite.com/endpoint/';
-const deleteFacilityURL = 'https://mywebsite.com/endpoint/';
+const editFacilityURL = 'http://52.229.94.153:8080/facility/';
+const deleteFacilityURL = 'http://52.229.94.153:8080/facility/';
 
-const FacilityEdit = ({navigation}) => {
+const FacilityEdit = ({navigation, route}) => {
+
+        //Route Params
+    const { itemID, itemTitle, itemOwnerId, itemCity, itemLatitude, itemLongitude } = route.params;
     //Form Variables
     const [facilityName, setFacilityName] = useState("");
+    const [facilityID, setFacilityID] = useState("");
     const [facilityCity, setFacilityCity] = useState("");
     const [facilityLatitude, setFacilityLatitude] = useState("");
     const [facilityLongitude, setFacilityLongitude] = useState("");
 
 
 
+    useEffect(() => {
+        setFacilityName(itemTitle);
+        setFacilityID(itemID);
+        setFacilityCity(itemCity);
+        setFacilityLatitude(itemLatitude);
+        setFacilityLongitude(itemLongitude);
+        
+      }, []);
+
     //Method: Post Facility to the database
     const updateFacility = () => {
-        let successfullPost = false;
-        fetch(editFacilityURL, {
-            method: 'POST',
+
+
+        const updateFacilityData = `${facilityID}?name=${facilityName}`;
+        const putFacilityURL = editFacilityURL + updateFacilityData;
+        console.log("Update Facility URL: " + putFacilityURL);
+
+        fetch(putFacilityURL, {
+            method: 'PUT',
             headers: {
                 'Accept': 'application/json',
                'Content-Type': 'application/json'
             },
-            body: JSON.stringify({
-                facilityName: facilityName, 
-                facilityCity: facilityCity
-            }),
+            // body: JSON.stringify({
+            //     facilityName: facilityName, 
+            //     facilityCity: facilityCity
+            // }),
             credentials: 'include'
         })
         .then(response => {
@@ -54,33 +73,36 @@ const FacilityEdit = ({navigation}) => {
 
         })
         .catch(error => {
-            alert(error);
+            console.log(error);
         })
         .done(() => {
-            if (successfullPost){
-                alert("You have successfully updated the Facility")
-            }
-            else {
-                alert("Error: Facility was not updated. Please try again")
-            }
-
+            alert("You have successfully updated the Facility")
+            navigation.navigate("FacilityScreen_Page");
+        
         });
 
     }
 
     //Method: Delete Facility from database
     const deleteFacility = () => {
-        let successfullPost = false;
-        fetch(deleteFacilityURL, {
+
+        const deleteFacilityParams = `${facilityID}`;
+        const deleteFacilityPath = deleteFacilityURL + deleteFacilityParams;
+        console.log("deleteFacilityParams: " + deleteFacilityParams)
+        console.log("DeleteFacilityPath: " + deleteFacilityURL)
+        console.log("Delete Facility URL: " + deleteFacilityPath);
+        
+
+
+        fetch(deleteFacilityPath, {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
                'Content-Type': 'application/json'
             },
-            body: JSON.stringify({
-                facilityName: facilityName, 
-                facilityCity: facilityCity
-            }),
+            // body: JSON.stringify({
+            //     facilityID: facilityID
+            // }),
             credentials: 'include'
         })
         .then(response => {
@@ -95,27 +117,12 @@ const FacilityEdit = ({navigation}) => {
             alert(error);
         })
         .done(() => {
-            if (successfullPost){
-                alert("You have successfully deleted the Facility")
-            }
-            else {
-                alert("Error: Facility was not deleted. Please try again")
-            }
+            alert("You have successfully deleted the Facility")
+            navigation.navigate("FacilityScreen_Page");
 
         });
 
-    }
-
-    useEffect(() => {
-
-        setFacilityName("Carleton Heights Community Center");
-        setFacilityCity("Ottawa");
-        setFacilityLatitude('45.24721');
-        setFacilityLongitude('-75.695000');
-        
-      }, []);
-
-    
+    }    
 
 
 //alert("Create new facility! Note just call FacilityCraete when ready")
@@ -145,7 +152,7 @@ const FacilityEdit = ({navigation}) => {
                     </Icon.Button>
                 </View>
                 <View style={styles.subHeader}>
-                    <Text style={styles.facilityText}>{facilityName}</Text>
+                    <Text style={styles.facilityText}>{itemTitle}</Text>
                 </View>
                 <View 
                         style={{
@@ -169,7 +176,7 @@ const FacilityEdit = ({navigation}) => {
                         onChangeText={(text) => setFacilityName(text)}
                     
                     ></TextInput>
-                    <Text style ={styles.fieldText}>Facility City:</Text>
+                    {/* <Text style ={styles.fieldText}>Facility City:</Text>
                     <TextInput
                         style={styles.textInputStyle}
                         value ={facilityCity}
@@ -182,7 +189,7 @@ const FacilityEdit = ({navigation}) => {
                     <TextInput
                         style={styles.textInputStyle}
                         value ={facilityLatitude}
-                        placeholder="Facility Latitude Here"
+                        placeholder={facilityLatitude}
                         underlineColorAndoird="transparent"
                         onChangeText={(text) => setFacilityLatitude(text)}
                     
@@ -191,11 +198,11 @@ const FacilityEdit = ({navigation}) => {
                     <TextInput
                         style={styles.textInputStyle}
                         value ={facilityLongitude}
-                        placeholder="Facility Longitude Here"
+                        placeholder={facilityLongitude}
                         underlineColorAndoird="transparent"
                         onChangeText={(text) => setFacilityLongitude(text)}
                     
-                    ></TextInput>
+                    ></TextInput> */}
 
                 </View>
                 
@@ -206,7 +213,30 @@ const FacilityEdit = ({navigation}) => {
                             color='#CD2323'
                             size={60}
                             backgroundColor="white"
-                            onPress={() => alert("Are you sure you want to delete this Facility? This will also delete all of the Facility's devices.")}                            >
+                            onPress={() => 
+                                Alert.alert(
+                                    "Confirm your Deletion", 
+                                    "Are you sure you want to delete this Facility?", 
+                                    [
+                                        {
+                                        //"Yes" Choice
+                                        text: "Yes", 
+                                        onPress:() => {
+                                            deleteFacility();
+                                        }, 
+
+                                        },
+
+                                        //"No" Choice -> Doesn not delete the facility
+                                        {
+                                            text: "No",
+                                        },
+
+
+                                    ]
+                                )
+                            
+                            }>
                             
                                             
                     </IconMat.Button>

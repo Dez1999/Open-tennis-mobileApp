@@ -8,7 +8,8 @@ import {
     TouchableOpacity, 
     FlatList, 
     ActivityIndicator, 
-    TextInput
+    TextInput, 
+    RefreshControl
 
 } from 'react-native';
 
@@ -16,6 +17,8 @@ import {
 //Imports
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import IconMat from 'react-native-vector-icons/MaterialCommunityIcons';
+import Ionicons from 'react-native-vector-icons/Ionicons'
 
 //const AddIcon = <Icon name="rocket" size={30} color="#900" />;
 const windowWidth = Dimensions.get('window').width;
@@ -26,7 +29,7 @@ const FacilityOwned_URL = 'http://52.229.94.153:8080/facility/owned';
 
 //Test APIs
 //const API_URL = `https://raw.githubusercontent.com/adhithiravi/React-Hooks-Examples/master/testAPI.json`;
-//const apiURL = 'https://jsonplaceholder.typicode.com/posts';
+const apiURL = 'https://jsonplaceholder.typicode.com/posts';
 
 
   const Item = ({ title, city }) => (
@@ -47,29 +50,34 @@ const DeviceScreen = ({navigation}) => {
 
     const [error, setError] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
+    const [refreshing, setRefreshing] = useState(true);
+    const [unmounted, setUnounted] = useState(true);
 
 
-    useEffect(() => {
-        setIsLoading(true);
-        fetchPosts();
-        return () => {
-
-        }
-
-      }, []);
+   
 
       const fetchPosts = () => {
+        setIsLoading(true);
+        const FacilityOwned_URL = 'http://52.229.94.153:8080/facility/owned';
         fetch(FacilityOwned_URL)
         .then((response) => response.json())
         .then((responseJson) => {
+            console.log(responseJson);
+            console.log("unmounted:" + unmounted);
             setfilteredData(responseJson);
             setMainData(responseJson);
+            setRefreshing(false);
             setIsLoading(false);
+            setError(false);
         })
         .catch(err => {
             setIsLoading(false);
-            setError(err);
-        })
+            // setError(err);
+        }).done(() => {
+          setUnounted(false);
+          //alert("You have successfully updated the Facility")
+      
+      });
       }
 
 
@@ -159,19 +167,41 @@ const DeviceScreen = ({navigation}) => {
         );
       }
         return (
-            <FlatList   
-              data={filteredData}
-              keyExtractor={(item, index) => index.toString()}
-              ItemSeparatorComponent={ItemSeparatorView}
-              renderItem={renderItem}
 
-            >
-            </FlatList>
+            //  <View>
+            //    {refreshing ? <ActivityIndicator/> : null}
+  
+              <FlatList   
+                data={filteredData}
+                keyExtractor={(item, index) => index.toString()}
+                ItemSeparatorComponent={ItemSeparatorView}
+                renderItem={renderItem}
+                //  refreshControl={
+                //    <RefreshControl refreshing={refreshing} onRefresh={fetchPosts()} />
+                //  }
+
+              >
+              </FlatList>
+  
+            //{/* </View>  */}
 
             );
      };
 
 
+     useEffect(() => {
+
+      // if (unmounted){
+      //   console.log(unmounted);
+        fetchPosts();
+
+      // }
+      
+       return () => {
+
+       }
+
+    }, []);
 
 
     return(
@@ -187,7 +217,7 @@ const DeviceScreen = ({navigation}) => {
                             >
 
                         </TextInput>
-                        <View style={{width: '40%'}}>
+                        <View style={{width: '100%', flexDirection: 'row', justifyContent: 'space-between'}}>
                                 <Icon.Button
                                     name="plus"
                                     color='black'
@@ -198,7 +228,21 @@ const DeviceScreen = ({navigation}) => {
                                     <Text style={{fontSize: 15, color: 'black'}}>Add facility</Text>
                                     
                                 </Icon.Button>
+                                <TouchableOpacity
+                                    onPress={()=> fetchPosts()}
+                                  
+                                 
+                                 >
+                                  <Ionicons
+                                      name="refresh"
+                                      size={37}
+                                      color = "black"
+                                    >
 
+                                  </Ionicons>
+                                </TouchableOpacity>
+                                {/* {renderList()} */}
+                              
                         </View>             
                     </View>
                     <View style={{marginTop: '25%'}}>

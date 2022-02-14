@@ -30,7 +30,7 @@ const data = [
 const FacilityIndividual = ({navigation, route}) => {
 
     //Route Params
-    const { itemId, itemTitle } = route.params;
+    const { itemID, itemTitle, itemOwnerId, itemCity, itemLatitude, itemLongitude } = route.params;
     // itemID: item.id, 
     // itemOwnerId: item.ownerId,
     // itemTitle: item.name, 
@@ -42,15 +42,21 @@ const FacilityIndividual = ({navigation, route}) => {
     const [facilityID, setFacilityID] = useState("");
     const [facilityName, setFacilityName] = useState("");
     const [facilityCity, setFacilityCity] = useState("");
+    const [facilityLatitude, setFacilityLatitude] = useState("");
+    const [facilityLongitude, setFacilityLongitude] = useState("");
+
+
     const [facilityOwner, setFacilityOwner] = useState("");
-    const [ facilityCompany, setFacilityCompany] = useState("");
+    const [facilityCompany, setFacilityCompany] = useState("");
 
 
     useEffect(() => {
 
-        setFacilityName("Carleton Heights Community Center");
+        setFacilityName(itemTitle);
+        setFacilityCity(itemCity);
+        setFacilityLatitude(itemLatitude);
+        setFacilityLongitude(itemLongitude);
         setFacilityOwner("John Manager");
-        setFacilityCity("Ottawa");
         setFacilityCompany("City of Ottawa")
         
       }, []);
@@ -123,7 +129,14 @@ const FacilityIndividual = ({navigation, route}) => {
                         color='black'
                         size={30}
                         backgroundColor="white"
-                        onPress={() => navigation.navigate("FacilityEdit_Page")}
+                        onPress={() => navigation.navigate("FacilityEdit_Page", {
+                            itemID: itemID, 
+                            itemOwnerId: itemOwnerId,
+                            itemTitle: itemTitle, 
+                            itemCity: itemCity,
+                            itemLatitude: itemLatitude, 
+                            itemLongitude: itemLongitude
+                          })}
                         >
                         <Text style={{fontSize: 20, fontWeight: 'bold', color: '#0B5B13'}}>EDIT</Text>
                                     
@@ -133,9 +146,11 @@ const FacilityIndividual = ({navigation, route}) => {
                     <Text style={styles.titleText}>{facilityName}</Text>
 
                     <View>
-                        <Text style={styles.subText}>Owner: {facilityOwner}</Text>
-                        <Text style={styles.subText}>Company: {facilityCompany}</Text>
                         <Text style={styles.subText}>City: {facilityCity}</Text>
+                        <Text style={styles.subText}>Latitude: {facilityLatitude}</Text>
+                        <Text style={styles.subText}>Longitude: {facilityLongitude}</Text>
+                        {/* <Text style={styles.subText}>Owner: {facilityOwner}</Text>
+                        <Text style={styles.subText}>Company: {facilityCompany}</Text> */}
                     </View>
                     <View 
                         style={{

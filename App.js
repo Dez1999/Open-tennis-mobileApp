@@ -162,6 +162,7 @@ const App = () => {
          //if (resData.authentication === true) {
            //User exists
            //"JIDSession=" + response.headers.get('set-cookie')
+           console.log("AppUserRole: " + resData.appUserRole);
            
          if (resData.appUserRole == "MANAGER" || resData.appUserRole == "ADMIN" || resData.appUserRole == "USER") {
              try{

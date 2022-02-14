@@ -16,7 +16,7 @@ import {
 //Imports
 import Icon from 'react-native-vector-icons/FontAwesome';
 
-const postFacilityURL = 'https://mywebsite.com/endpoint/';
+const postFacilityURL = 'http://52.229.94.153:8080/facility';
 
 const FacilityCreate = ({navigation}) => {
     //Form Variables
@@ -29,7 +29,7 @@ const FacilityCreate = ({navigation}) => {
 
     //Method: Post Facility to the database
     const createFacility = () => {
-        let successfullPost = false;
+        let successfullPost = true;
         fetch(postFacilityURL, {
             method: 'POST',
             headers: {
@@ -37,11 +37,10 @@ const FacilityCreate = ({navigation}) => {
                'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                facilityID: facilityID,
-                facilityName: facilityName, 
-                facilityCity: facilityCity, 
-                facilityLatitud: facilityLatitude,
-                facilityLongitude: facilityLongitude,
+                name: facilityName, 
+                city: facilityCity, 
+                latitude: facilityLatitude,
+                longitude: facilityLongitude,
             }),
             credentials: 'include'
         })
@@ -50,19 +49,16 @@ const FacilityCreate = ({navigation}) => {
         })
         .then((resJSON) => {
             //TODO
-            //Figure out if the post was successful or not, then update the successful variable
+            //Currently no response from the backend
 
         })
         .catch(error => {
-            alert(error);
+            console.log(error);
         })
         .done(() => {
-            if (successfullPost){
-                alert("You have successfully created a Facility")
-            }
-            else {
-                alert("Error: facility was not created. Please try again")
-            }
+
+            alert("You have successfully created a new Facility");
+            navigation.goBack();
 
         });
 
