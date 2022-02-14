@@ -115,8 +115,8 @@ const AccountScreen = ({navigation}) => {
 //   useEffect(() => {
 //     readUserName();
 //     readUserToken();
-//     getUserInfo();
-//   }, [getUserInfo])
+ //    getUserInfo();
+ //  }, [getUserInfo])
 
   return (              
             <View style ={styles.container}>

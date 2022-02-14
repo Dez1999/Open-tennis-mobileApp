@@ -130,6 +130,10 @@ const App = () => {
 
      let userToken;
      userToken = null;
+     let userEmail;
+     userEmail = null;
+     let appUserRole;
+     appUserRole = null;
 
      
      let successful = false;
@@ -159,17 +163,29 @@ const App = () => {
            //User exists
            //"JIDSession=" + response.headers.get('set-cookie')
            
-         if (resData.authentication) {
+         if (resData.appUserRole == "MANAGER" || resData.appUserRole == "ADMIN" || resData.appUserRole == "USER") {
              try{
-               console.log("Message: " + resData.message + ', \nAuthentication: ' + resData.authentication);
-               alert("Message: " + resData.message + ', \nAuthentication: ' + resData.authentication); //Testing response from database server
+               console.log("UserName: " + resData.email + ', \n App user Role: ' + resData.appUserRole);
+               alert("UserName: " + resData.email + ', \n App user Role: ' + resData.appUserRole); //Testing response from database server
                //alert('Authentication Successful');
 
+               //Successful Authentication
                successful = true;
                
+               //Set userToken
                userToken = 'fakeToken';
                setUserToken(userToken);
                AsyncStorage.setItem('userToken', userToken);
+
+               //Set UserEmail
+               userEmail = resData.email;
+               setUsername(userEmail);
+               AsyncStorage.setItem('userEmail', userEmail);
+
+               //Set UserRole
+               appUserRole = resData.appUserRole;
+               setUserRole(appUserRole);
+               AsyncStorage.setItem('userRole', appUserRole);
                
                
 
@@ -193,66 +209,12 @@ const App = () => {
          //If user has successfully logged in then set token and relevant information in AsyncStorage
          console.log("Successful variable after Fetch: " + successful);
          if (successful) {
-           try {
-             setTimeout(
-               function() {
-                 fetchUser()
-                   //AsyncStorage.setItem('userToken', userToken);
-                   //dispatch({type: 'LOGIN', id:userName, token: userToken, role: userRole});
-                   console.log("Username: " + loginState.userName + ", LoginState Role: " + loginState.role + ", Decision: " + loginState.managerDecision + ", User Token: " + loginState.userToken);
 
-                   /*
-                 //Store the userToken into AsyncStorage (global variable for whole app)
-                   AsyncStorage.setItem('userToken', userToken); 
-                   //AsyncStorage.setItem('userName', userName);
-                   console.log('user token: ' , userToken);
-
-
-                   
-                   //Fetch user information
-                   console.log('*****BEFORE FETCH USER******');
-                   //const userFectch = await fetchUser();
-                   //fetchUser();
-                   
-                   console.log('*****AFTER FETCH USER******');
-                   dispatch({type: 'LOGIN', id:userName, token: userToken, role: userRole});
-                   console.log("Username: " + loginState.userName + ", LoginState Role: " + loginState.role + ", Decision: " + loginState.managerDecision + ", User Token: " + loginState.userToken);
-                   */
-
-                 }
-               .bind(this),
-               500
-             );
-           //fetchUser();
-           /*
-
-           //Store the userToken into AsyncStorage (global variable for whole app)
-           AsyncStorage.setItem('userToken', userToken); 
-           //AsyncStorage.setItem('userName', userName);
-           console.log('user token: ' , userToken);
-
-
-           
-           //Fetch user information
-           console.log('*****BEFORE FETCH USER******');
-           //const userFectch = await fetchUser();
-           //fetchUser();
-           
-           console.log('*****AFTER FETCH USER******');
-           dispatch({type: 'LOGIN', id:userName, token: userToken, role: userRole});
-           console.log("Username: " + loginState.userName + ", LoginState Role: " + loginState.role + ", Decision: " + loginState.managerDecision + ", User Token: " + loginState.userToken);
-
-           */
-
-           // dispatch({type: 'LOGIN', id:userName, token: userToken, role: userRole});
-           //console.log("Username: " + loginState.userName + ", LoginState Role: " + loginState.role + ", Decision: " + loginState.managerDecision);
-           }catch (err){
-             console.log("Login: " + err)
-           }
+          dispatch({type: 'LOGIN', id:userEmail, token: userToken, role: appUserRole});
+          console.log("Username: " + loginState.userName + ", LoginState Role: " + loginState.role + ", Decision: " + loginState.managerDecision + ", User Token: " + loginState.userToken);
 
          }
          
-
        
         });
 
@@ -290,6 +252,7 @@ const App = () => {
        await AsyncStorage.removeItem('userToken');
        await AsyncStorage.removeItem('managerDecision');
        await AsyncStorage.removeItem('userRole');
+       await AsyncStorage.removeItem('userEmail');
 
       } catch(e){
         console.log(e);
@@ -360,7 +323,7 @@ const App = () => {
       }
       console.log('user token: ' , userToken);
       console.log('User Role: ' + userRoleStored + "  Manager Decision: " + managerOption);
-      dispatch({type: 'RETRIEVE_TOKEN', token: "Hey", managerDecision: managerOption, role: "MANAGER"});
+      dispatch({type: 'RETRIEVE_TOKEN', token: userToken, managerDecision: managerOption, role: userRoleStored});
       
     }, 1000);
   }, []);
@@ -414,38 +377,6 @@ const App = () => {
   );
 };
 
-
-
-
-{(() => {
-  //Check if user is logged in
-  if(loginState.userToken != null) {
-
-     //User is a Manager and needs to make a decision to where they want to go
-     if(loginState.role == 'MANAGER' && (loginState.managerDecision == null)) {
-         return (
-           <View><Text>Manager Decision</Text></View>
-         )
-     }
-     //Manager User decides to go to Manager App
-     else if (loginState.role == "MANAGER" && loginState.managerDecision == "MANAGER"){
-         return (
-           <ManagerApp/>
-         )
-     }
-     //Otherwise bring user to General app
-     else {
-         return (
-           <GeneralUserApp/>
-         )
-     }
-  }
-  //User is not logged in
-  else {
-    <CoreStackScreen/>
-  }
-
-})}
 
 
 

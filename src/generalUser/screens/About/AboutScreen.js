@@ -39,7 +39,7 @@ const AboutScreen = ({navigation}) => {
                             color='black'
                             size={35}
                             backgroundColor="white"
-                            onPress={() => alert("Go back to main Screen")}
+                            onPress={() => navigation.goBack()}
                             >
                                     
                         </Icon.Button>
