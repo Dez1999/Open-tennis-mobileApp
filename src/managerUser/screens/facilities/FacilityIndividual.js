@@ -16,7 +16,12 @@ import {
 //Imports
 import Icon from 'react-native-vector-icons/FontAwesome';
 
+//API URL
 const postFacilityURL = 'https://mywebsite.com/endpoint/';
+const getDevicesURL = 'http://52.229.94.153:8080/device/inFacility/';
+
+
+
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
@@ -26,6 +31,47 @@ const data = [
     {id:'2', title: 'CHEIGHTS - Tennis - 2nd Half', areasMonitored: 2}
   
   ]
+
+
+const dataREAL = [
+    {id: 3, ownerId: 1, facilityId: 2,
+    name: "Device_Far_1",
+    authorizationId: "16906220214084426226",
+    inUse: true,
+    areasMonitored: 0,
+    deviceType: "SwimmingPool",
+    currOccupancy: []
+    },
+    {
+        id: 4,
+        ownerId: 1,
+        facilityId: 2,
+        name: "Device_Far_Right",
+        authorizationId: "4185022021408470626",
+        inUse: true,
+        areasMonitored: 3,
+        deviceType: "SwimmingPool",
+        currOccupancy: [
+            0,
+            0,
+            0
+        ]
+    },
+    {
+        id: 5,
+        ownerId: 1,
+        facilityId: 2,
+        name: "Device_Far_Left",
+        authorizationId: "29442220214091243243",
+        inUse: true,
+        areasMonitored: 1,
+        deviceType: "Tennis",
+        currOccupancy: [
+            0
+        ]
+    }
+  
+]
 
 const FacilityIndividual = ({navigation, route}) => {
 
@@ -48,11 +94,62 @@ const FacilityIndividual = ({navigation, route}) => {
 
     const [facilityOwner, setFacilityOwner] = useState("");
     const [facilityCompany, setFacilityCompany] = useState("");
+    const [error, setError] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
+    const [refreshing, setRefreshing] = useState(true);
+    const [unmounted, setUnounted] = useState(true);
+
+    const [allDevices, setAllDevices] = useState([]);
+
+
+    //Retreive the Devices in the Facility
+    const fetchDevices = () => {
+
+        const selectedFacility = `${itemID}`;
+        const fetchDevicePath = getDevicesURL + selectedFacility;
+        console.log("Fetch all devices in Facility URL: " + fetchDevicePath);
+
+        setIsLoading(true);
+        fetch(fetchDevicePath,{
+            method: 'Get',
+            headers: {
+                'Accept': 'application/json',
+               'Content-Type': 'application/json'
+            },
+            // body: JSON.stringify({
+            //     facilityName: facilityName, 
+            //     facilityCity: facilityCity
+            // }),
+            credentials: 'include'
+        })
+        .then((response) => response.json())
+        .then((responseJson) => {
+            console.log(responseJson);
+            console.log("unmounted:" + unmounted);
+            setAllDevices(responseJson);
+            console.log(responseJson);
+            //setRefreshing(false);
+            setIsLoading(false);
+            setError(false);
+        })
+        .catch(err => {
+            setIsLoading(false);
+            // setError(err);
+        }).done(() => {
+          setUnounted(false);
+          //alert("You have successfully updated the Facility")
+      
+      });
+
+    }
 
 
     useEffect(() => {
 
+        //Fetch Devices in Facility
+        fetchDevices();
 
+        
         setFacilityID(itemID);
         setFacilityName(itemTitle);
         setFacilityCity(itemCity);
@@ -66,12 +163,14 @@ const FacilityIndividual = ({navigation, route}) => {
       const renderItem = ({ item }) => (
         <TouchableOpacity onPress={() => {
             navigation.navigate("DeviceIndividual_Page", {
+                facillity_Id: itemID,
                 itemID: item.id, 
-                itemTitle: item.title,
-                itemAreas: item.areasMonitored
+                itemTitle: item.name,
+                itemAreas: item.areasMonitored,
+                itemType: item.deviceType
               })
         }}> 
-        <Item title={item.title} numAreas={item.areasMonitored}/>
+        <Item title={item.name} numAreas={item.areasMonitored}/>
         </TouchableOpacity>
       );
 
@@ -95,10 +194,10 @@ const FacilityIndividual = ({navigation, route}) => {
     }
 
     //Method: Get Devices from Facility
-    const fetchDevices = () => {
+    const displayDevices = () => {
         return (
             <FlatList   
-              data={data}
+              data={allDevices}
               keyExtractor={(item, index) => index.toString()}
               ItemSeparatorComponent={ItemSeparatorView}
               renderItem={renderItem}
@@ -168,7 +267,7 @@ const FacilityIndividual = ({navigation, route}) => {
                     
                     <Text style={{fontWeight:'bold', color: 'black', fontSize: 17}}>TENNIS</Text>
 
-                    {fetchDevices()}
+                    {displayDevices()}
                     
             
                 </View>

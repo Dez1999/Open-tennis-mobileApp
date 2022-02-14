@@ -20,7 +20,16 @@ const postFacilityURL = 'https://mywebsite.com/endpoint/';
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
-const DeviceIndividual = ({navigation}) => {
+const DeviceIndividual = ({navigation, route}) => {
+    //Route Params
+    const { facility_ID, itemID, itemTitle, itemAreas, itemType,} = route.params;
+    // facillityId: facilityID,
+    //             itemID: item.id, 
+    //             itemTitle: item.name,
+    //             itemAreas: item.areasMonitored,
+    //             itemType: item.deviceType
+
+
     //Form Variables
     const [facilityID, setFacilityID] = useState("");
     const [deviceID, setDeviceID] = useState("");
@@ -35,15 +44,15 @@ const DeviceIndividual = ({navigation}) => {
 
     useEffect(() => {
 
-        setFacilityID("12351513");
-        setDeviceID("235esagd");
+        setFacilityID(facility_ID);
+        setDeviceID(itemID);
 
-        setFacilityName("Carleton Heights Community Center");
+        setFacilityName(facility_ID);
         setFacilityOwner("John Manager");
-        setDeviceName("CHeights_Device_1_Left");
+        setDeviceName(itemTitle);
         setDeviceLatitude("45.424721");
         setDeviceLongitude("-75.695000");
-        setAreasMonitored(2);
+        setAreasMonitored(itemAreas);
         
       }, []);
 
@@ -89,10 +98,10 @@ const DeviceIndividual = ({navigation}) => {
                     <Text style={styles.titleText}>{deviceName}</Text>
 
                     <View>
-                        <Text style={styles.subText}>Facility: {facilityName}</Text>
-                        <Text style={styles.subText}>Manager: {facilityOwner}</Text>
+                        <Text style={styles.subText}>FacilityID: {facility_ID}</Text>
+                        {/* <Text style={styles.subText}>Manager: {facilityOwner}</Text>
                         <Text style={styles.subText}>Latitude: {deviceLatitude}</Text>
-                        <Text style={styles.subText}>Longitude: {deviceLongitude}</Text>
+                        <Text style={styles.subText}>Longitude: {deviceLongitude}</Text> */}
                         <Text style={styles.subText}>Areas Monitored: {areasMonitored}</Text>
                     </View>
                     <View 
