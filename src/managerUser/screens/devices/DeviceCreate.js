@@ -87,34 +87,6 @@ const DeviceCreate = ({navigation, route}) => {
         });
     }
 
-    //Fetch Device Options
-    const getCityOptions = () => {
-        fetch(getCitiesURL, {
-            method: 'Get',
-            headers: {
-                'Accept': 'application/json',
-               'Content-Type': 'application/json'
-            },
-            credentials: 'include'
-        })
-        .then(response => {
-            return response.json();
-        })
-        .then((resJSON) => {
-            //Set City Options
-            setCityOptions(resJSON);
-            console.log(resJSON);
-
-
-        })
-        .catch(error => {
-            console.log(error);
-        })
-        .done(() => {
-
-        });
-    }
-
 
 
     //Method: Register a Device in Facility
@@ -171,7 +143,7 @@ const DeviceCreate = ({navigation, route}) => {
         getDeviceTypes();
 
         //Get request to get types of available cities
-        getCityOptions();
+        //getCityOptions();
 
         //Set variables from Facility Name and ID
         setFacilityName(itemTitle);

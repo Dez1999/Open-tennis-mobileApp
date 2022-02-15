@@ -9,7 +9,8 @@ import {
     FlatList, 
     ActivityIndicator, 
     TextInput, 
-    SafeAreaView
+    SafeAreaView, 
+    SectionList
 
 } from 'react-native';
 
@@ -99,7 +100,7 @@ const FacilityIndividual = ({navigation, route}) => {
     const [refreshing, setRefreshing] = useState(true);
     const [unmounted, setUnounted] = useState(true);
 
-    const [allDevices, setAllDevices] = useState([]);
+    const [allDevicesData, setAllDevices] = useState([]);
 
 
     //Retreive the Devices in the Facility
@@ -157,28 +158,32 @@ const FacilityIndividual = ({navigation, route}) => {
         setFacilityLongitude(itemLongitude);
         setFacilityOwner("John Manager");
         setFacilityCompany("City of Ottawa")
+        console.log("Facility ID: " + itemID);
         
       }, []);
     
       const renderItem = ({ item }) => (
         <TouchableOpacity onPress={() => {
             navigation.navigate("DeviceIndividual_Page", {
-                facillity_Id: itemID,
+                facility_Name: itemTitle,
+                facility_ID: itemID,
                 itemID: item.id, 
                 itemTitle: item.name,
                 itemAreas: item.areasMonitored,
-                itemType: item.deviceType
+                device_Type: item.deviceType,
+                current_Occupancy: item.currOccupancy
               })
         }}> 
-        <Item title={item.name} numAreas={item.areasMonitored}/>
+        <Item title={item.name} numAreas={item.areasMonitored} device_type={item.deviceType}/>
         </TouchableOpacity>
       );
 
-      const Item = ({ title, numAreas }) => (
+      const Item = ({ title, numAreas, device_type }) => (
         <View style={styles.itemStyle}>
             <View>
                 <Text style={styles.listItemTextMain}>{title}</Text>
                 <Text style={styles.listItemTextSub}>Areas Monitored: {numAreas} </Text>
+                <Text style={styles.listItemTextSub}>Device Type: {device_type} </Text>
            </View>
         </View>
       );
@@ -197,7 +202,7 @@ const FacilityIndividual = ({navigation, route}) => {
     const displayDevices = () => {
         return (
             <FlatList   
-              data={allDevices}
+              data={allDevicesData}
               keyExtractor={(item, index) => index.toString()}
               ItemSeparatorComponent={ItemSeparatorView}
               renderItem={renderItem}
@@ -265,7 +270,15 @@ const FacilityIndividual = ({navigation, route}) => {
                 
                 <View style={{marginTop: 10, marginLeft: 5}}>
                     
-                    <Text style={{fontWeight:'bold', color: 'black', fontSize: 17}}>TENNIS</Text>
+                    <Text style={{fontWeight:'bold', color: 'black', fontSize: 17, textAlign: 'center'}}>Devices</Text>
+                    {/* <SectionList
+                        sections={allDevicesData}
+                        keyExtractor={(item, index) => item + index}
+                        renderItem={({ item }) => <Item title={item.name} numAreas={item.areasMonitored} />}
+                        renderSectionHeader={({ section: { deviceType } }) => (
+                            <Text style={styles.header}>{deviceType}</Text>
+                        )}
+                    /> */}
 
                     {displayDevices()}
                     
@@ -336,10 +349,10 @@ const styles = StyleSheet.create ({
         right: 0
     }, 
     listItemTextMain: {
-        fontSize: 15, 
+        fontSize: 20, 
         color: '#000000', 
         fontWeight: 'bold', 
-        paddingTop: 4
+        paddingTop: 2
       }, 
       listItemTextSub: {
           fontSize: 16, 
@@ -351,7 +364,7 @@ const styles = StyleSheet.create ({
         flexDirection: 'column',
         marginTop: 10,
 
-        padding: 15,
+        padding: 12,
         flexDirection: 'row',
         justifyContent : 'flex-start',
         alignItems: 'center',

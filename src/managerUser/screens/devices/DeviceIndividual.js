@@ -22,7 +22,7 @@ const windowHeight = Dimensions.get('window').height;
 
 const DeviceIndividual = ({navigation, route}) => {
     //Route Params
-    const { facility_ID, itemID, itemTitle, itemAreas, itemType,} = route.params;
+    const { facility_Name, facility_ID, itemID, itemTitle, itemAreas, device_Type, current_Occupancy} = route.params;
     // facillityId: facilityID,
     //             itemID: item.id, 
     //             itemTitle: item.name,
@@ -41,13 +41,15 @@ const DeviceIndividual = ({navigation, route}) => {
     const [areasMonitored, setAreasMonitored] = useState("");
     const [deviceType, setDeviceType] = useState("");
 
+    const [currOccupancy, setCurrOccupancy] = useState("");
+
 
     useEffect(() => {
 
         setFacilityID(facility_ID);
         setDeviceID(itemID);
 
-        setFacilityName(facility_ID);
+        setFacilityName(facility_Name);
         setFacilityOwner("John Manager");
         setDeviceName(itemTitle);
         setDeviceLatitude("45.424721");
@@ -98,11 +100,10 @@ const DeviceIndividual = ({navigation, route}) => {
                     <Text style={styles.titleText}>{deviceName}</Text>
 
                     <View>
+                        <Text style={styles.subText}>Facility: {facility_Name}</Text>
                         <Text style={styles.subText}>FacilityID: {facility_ID}</Text>
-                        {/* <Text style={styles.subText}>Manager: {facilityOwner}</Text>
-                        <Text style={styles.subText}>Latitude: {deviceLatitude}</Text>
-                        <Text style={styles.subText}>Longitude: {deviceLongitude}</Text> */}
                         <Text style={styles.subText}>Areas Monitored: {areasMonitored}</Text>
+                        <Text style={styles.subText}>Device Type: {device_Type}</Text>
                     </View>
                     <View 
                         style={{
@@ -124,31 +125,7 @@ const DeviceIndividual = ({navigation, route}) => {
                 </View>
                     <View style= {styles.occupancyData}>
                         <Text style = {{fontWeight: 'bold'}}>
-                            Area 1: 2, Area 2: 3, Time: 19:00 Est, Date: June 3rd, 2022
-                            Area 1: 2, Area 2: 3, Time: 18:50 Est, Date: June 3rd, 2022
-                            Area 1: 2, Area 2: 3, Time: 18:40 Est, Date: June 3rd, 2022
-                            Area 1: 2, Area 2: 3, Time: 18:30 Est, Date: June 3rd, 2022
-                            Area 1: 2, Area 2: 3, Time: 18:20 Est, Date: June 3rd, 2022
-                            Area 1: 2, Area 2: 3, Time: 18:10 Est, Date: June 3rd, 2022
-                            Area 1: 2, Area 2: 3, Time: 18:00 Est, Date: June 3rd, 2022
-                            Area 1: 2, Area 2: 3, Time: 17:50 Est, Date: June 3rd, 2022
-                            Area 1: 2, Area 2: 3, Time: 17:40 Est, Date: June 3rd, 2022
-                            Area 1: 2, Area 2: 3, Time: 17:30 Est, Date: June 3rd, 2022
-                            Area 1: 2, Area 2: 3, Time: 17:20 Est, Date: June 3rd, 2022
-                            Area 1: 2, Area 2: 3, Time: 17:10 Est, Date: June 3rd, 2022
-                            Area 1: 2, Area 2: 3, Time: 17:00 Est, Date: June 3rd, 2022
-                            Area 1: 2, Area 2: 3, Time: 16:50 Est, Date: June 3rd, 2022
-                            Area 1: 2, Area 2: 3, Time: 16:40 Est, Date: June 3rd, 2022
-                            Area 1: 2, Area 2: 3, Time: 16:30 Est, Date: June 3rd, 2022
-                            Area 1: 2, Area 2: 3, Time: 16:20 Est, Date: June 3rd, 2022
-                            Area 1: 2, Area 2: 3, Time: 16:10 Est, Date: June 3rd, 2022
-                            Area 1: 2, Area 2: 3, Time: 16:00 Est, Date: June 3rd, 2022
-                            Area 1: 2, Area 2: 3, Time: 15:50 Est, Date: June 3rd, 2022
-                            Area 1: 2, Area 2: 3, Time: 15:40 Est, Date: June 3rd, 2022
-                            Area 1: 2, Area 2: 3, Time: 15:30 Est, Date: June 3rd, 2022
-                            Area 1: 2, Area 2: 3, Time: 15:20 Est, Date: June 3rd, 2022
-                            Area 1: 2, Area 2: 3, Time: 15:10 Est, Date: June 3rd, 2022
-                            Area 1: 2, Area 2: 3, Time: 15:00 Est, Date: June 3rd, 2022
+
                         </Text>
 
 

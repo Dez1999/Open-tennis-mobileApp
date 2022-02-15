@@ -16,7 +16,10 @@ import {
 //Imports
 import Icon from 'react-native-vector-icons/FontAwesome';
 
+import SelectDropdown from 'react-native-select-dropdown';
+
 const postFacilityURL = 'http://52.229.94.153:8080/facility';
+const getCitiesURL = 'http://52.229.94.153:8080/facility/cities';
 
 const FacilityCreate = ({navigation}) => {
     //Form Variables
@@ -24,6 +27,37 @@ const FacilityCreate = ({navigation}) => {
     const [facilityCity, setFacilityCity] = useState("");
     const [facilityLatitude, setFacilityLatitude] = useState("");
     const [facilityLongitude, setFacilityLongitude] = useState("");
+    const [cityOptions, setCityOptions] = useState([]);
+
+
+
+    //Fetch Device Options
+    const getCityOptions = () => {
+        fetch(getCitiesURL, {
+            method: 'Get',
+            headers: {
+                'Accept': 'application/json',
+               'Content-Type': 'application/json'
+            },
+            credentials: 'include'
+        })
+        .then(response => {
+            return response.json();
+        })
+        .then((resJSON) => {
+            //Set City Options
+            setCityOptions(resJSON);
+            console.log(resJSON);
+
+
+        })
+        .catch(error => {
+            console.log(error);
+        })
+        .done(() => {
+
+        });
+    }
 
 
 
@@ -63,6 +97,13 @@ const FacilityCreate = ({navigation}) => {
         });
 
     }
+
+
+    useEffect(() => {
+        //Get request to get types of available cities
+        getCityOptions();
+        
+      }, []);
 
 
 //alert("Create new facility! Note just call FacilityCraete when ready")
@@ -106,14 +147,17 @@ const FacilityCreate = ({navigation}) => {
                     
                     ></TextInput>
                     <Text style ={styles.fieldText}>Facility City:</Text>
-                    <TextInput
-                        style={styles.textInputStyle}
-                        value ={facilityCity}
-                        placeholder="Facility City Here"
-                        underlineColorAndoird="transparent"
-                        onChangeText={(text) => setFacilityCity(text)}
-                    
-                    ></TextInput>
+                    <SelectDropdown
+                        data={cityOptions}
+                        style={{animated: true, fontSize: 20}} 
+                        buttonStyle={styles.buttonStyle} 
+                        defaultButtonText="Select Facility City"
+                        dropdownStyle={styles.dropdownStyle}
+                        onSelect={(selectedItem, index) => {
+                            setFacilityCity(selectedItem);
+                            console.log(selectedItem, index);
+                        }}
+                    />
                     <Text style ={styles.fieldText}>Latitude:</Text>
                     <TextInput
                         style={styles.textInputStyle}
@@ -181,5 +225,22 @@ const styles = StyleSheet.create ({
     fieldText: {
         fontSize: 17, 
         color: 'black'
-    }
+    }, 
+    buttonStyle: {
+        marginHorizontal: 6,
+        width: '97%',
+        backgroundColor: '#E2F1DB',
+        color: 'black',
+        textAlign: 'center',
+        textAlignVertical: 'center',
+
+      },
+
+      dropdownStyle: {
+        backgroundColor: '#84EA95',
+        width: '98%',
+        borderColor: '#0C4B16',
+        borderWidth: 2,
+        borderRadius: 20,
+      },
 });
