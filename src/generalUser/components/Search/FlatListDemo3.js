@@ -102,18 +102,16 @@ const individualData = [
                   renderItem={({ item }) => (
                     <TouchableOpacity onPress={() => {navigation.navigate('Analytics')}}> 
                       <View style={styles.listItem}>
-                        <TouchableOpacity
-                            onPress={() => handleFavourites()}
-                            >
+
                             <Icon 
                               name="star"  
                               size={27} 
                               color= {favourited ? 'yellow' : 'white'}/>
-                        </TouchableOpacity>
+              
 
                         <View style = {styles.SecondaryContent}>
-                          <Text style={styles.listItemTextMain}>{item.title}</Text>
-                          <Text style={styles.listItemTextSub}>{item.type}   |   Courts: {item.numCourts}   |   {item.distance} km   </Text>
+                          <Text style={styles.listItemTextMain}>{item.name}</Text>
+                          <Text style={styles.listItemTextSub}>{item.city}   |   {item.type}Tennis  |   {item.distance}1 km   </Text>
                         </View>
 
                         <IconMat

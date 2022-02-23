@@ -117,8 +117,6 @@ const App = () => {
      const loginData = `username=${userName}&password=${passWord}`;
      setUsername(userName);
 
-
-
      //formData.delete('username');
      /*
      formData.append('username', userName);
@@ -324,7 +322,7 @@ const App = () => {
       }
       console.log('user token: ' , userToken);
       console.log('User Role: ' + userRoleStored + "  Manager Decision: " + managerOption);
-      dispatch({type: 'RETRIEVE_TOKEN', token: userToken, managerDecision: managerOption, role: userRoleStored});
+      dispatch({type: 'RETRIEVE_TOKEN', token: "Fake", managerDecision: managerOption, role: "MANAGER"});
       
     }, 1000);
   }, []);

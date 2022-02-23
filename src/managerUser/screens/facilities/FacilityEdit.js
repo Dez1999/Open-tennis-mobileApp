@@ -85,7 +85,6 @@ const FacilityEdit = ({navigation, route}) => {
 
     //Method: Delete Facility from database
     const deleteFacility = () => {
-
         const deleteFacilityParams = `${facilityID}`;
         const deleteFacilityPath = deleteFacilityURL + deleteFacilityParams;
         console.log("deleteFacilityParams: " + deleteFacilityParams)
@@ -93,16 +92,12 @@ const FacilityEdit = ({navigation, route}) => {
         console.log("Delete Facility URL: " + deleteFacilityPath);
         
 
-
         fetch(deleteFacilityPath, {
-            method: 'POST',
+            method: 'DELETE',
             headers: {
                 'Accept': 'application/json',
                'Content-Type': 'application/json'
             },
-            // body: JSON.stringify({
-            //     facilityID: facilityID
-            // }),
             credentials: 'include'
         })
         .then(response => {
@@ -114,7 +109,7 @@ const FacilityEdit = ({navigation, route}) => {
 
         })
         .catch(error => {
-            alert(error);
+            console.log(error);
         })
         .done(() => {
             alert("You have successfully deleted the Facility")

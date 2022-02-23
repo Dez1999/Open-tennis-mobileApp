@@ -124,6 +124,9 @@ const SearchStackScreen = ({navigator}) => (
          <SearchStack.Screen name = "Search" component ={SearchScreen} options={{
            headerShown:false, 
           }}/>
+          <FavouriteStack.Screen name = "Analytics" component ={AnalyticsScreen} options={{
+             headerShown:false, 
+            }}/>
   
   </SearchStack.Navigator>
   );

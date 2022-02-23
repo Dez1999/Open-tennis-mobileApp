@@ -21,14 +21,10 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import IconMat from 'react-native-vector-icons/MaterialCommunityIcons';
 
 //DropDown import
-import ModalDropdown from 'react-native-modal-dropdown';
 import SelectDropdown from 'react-native-select-dropdown';
 
 const registerDeviceURL = 'http://52.229.94.153:8080/device/register';
 const getDeviceTypesURL = 'http://52.229.94.153:8080/device/types';
-const getCitiesURL = 'http://52.229.94.153:8080/facility/cities';
-
-const getOptionsURL = ['http://52.229.94.153:8080/device/types','http://52.229.94.153:8080/facility/cities'];
 const areasMonitoredOptions = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
 const DeviceCreate = ({navigation, route}) => {
@@ -46,17 +42,6 @@ const DeviceCreate = ({navigation, route}) => {
     const [areasMonitored, setAreasMonitored] = useState("");
 
     const [deviceTypeOptions, setDeviceTypeOptions] = useState([]);
-    const [cityOptions, setCityOptions] = useState([]);
-
-
-    //Fetch the device type options and the city options from server
-    const getOptions = async () =>{
-        const requests = getOptionsURL.map((url) => fetch(url));
-        const responses = await Promise.all(requests);
-        const promises = responses.map((response) => response.json());
-        console.log(promises);
-        return await Promise.all(promises);
-    }
 
 
     //Fetch Device Options
@@ -75,7 +60,6 @@ const DeviceCreate = ({navigation, route}) => {
         .then((resJSON) => {
             //Set Device Type Options 
             setDeviceTypeOptions(resJSON);
-            setCityOptions(resJSON);
             console.log(resJSON);
 
         })
@@ -141,9 +125,6 @@ const DeviceCreate = ({navigation, route}) => {
     useEffect(() => {
         //Get request to get types of available devices
         getDeviceTypes();
-
-        //Get request to get types of available cities
-        //getCityOptions();
 
         //Set variables from Facility Name and ID
         setFacilityName(itemTitle);

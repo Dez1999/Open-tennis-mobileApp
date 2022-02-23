@@ -18,11 +18,26 @@ import {
 import Icon from 'react-native-vector-icons/FontAwesome';
 import IconMat from 'react-native-vector-icons/MaterialCommunityIcons';
 import ModalDropdown from 'react-native-modal-dropdown';
+import SelectDropdown from 'react-native-select-dropdown';
 
-const editDeviceURL = 'https://mywebsite.com/endpoint/';
+//API URL
+const editDeviceURL = 'http://52.229.94.153:8080/device/';``
 const deleteDeviceURL = 'https://mywebsite.com/endpoint/';
 
-const DeviceEdit = ({navigation}) => {
+const DeviceEdit = ({navigation, route}) => {
+    //Route Params
+    const {facility_Name, device_Name, device_Type, numAreas, facility_Id, device_ID} = route.params;
+
+
+
+    // facility_Name: facilityName, 
+    // device_Name: deviceName, 
+    // device_Type: deviceType, 
+    // numAreas: areasMonitored, 
+    // facility_Id: facilityID, 
+    // device_ID: deviceID
+
+
     //Form Variables
     const [facilityName, setFacilityName] = useState("");
     const [deviceID, setDeviceId] = useState("");
@@ -31,20 +46,21 @@ const DeviceEdit = ({navigation}) => {
 
 
 
-    //Method: Post Facility to the database
+    //Method: Update Device information to the database
     const updateDevice = () => {
-        let successfullPost = false;
-        fetch(editDeviceURL, {
-            method: 'POST',
+
+        const updateDeviceData = `${deviceID}?name=${deviceName}`;
+        console.log("Update device data:" + updateDeviceData);
+        const putDeviceURL = editDeviceURL + updateDeviceData;
+        console.log("Update Device URL: " + putDeviceURL);
+
+        fetch(putDeviceURL, {
+            method: 'PUT',
             headers: {
                 'Accept': 'application/json',
                'Content-Type': 'application/json'
             },
-            body: JSON.stringify({
-                deviceID: deviceID, 
-                deviceName: deviceName,
-                deviceType: deviceType,
-            }),
+
             credentials: 'include'
         })
         .then(response => {
@@ -56,34 +72,31 @@ const DeviceEdit = ({navigation}) => {
 
         })
         .catch(error => {
-            alert(error);
+            console.log(error);
         })
         .done(() => {
-            if (successfullPost){
-                alert("You have successfully updated the Device")
-            }
-            else {
-                alert("Error: Device was not updated. Please try again")
-            }
-
+            alert("You have successfully updated the Device")
+            navigation.navigate("FacilityScreen_Page");
+        
         });
 
     }
 
-    //Method: Delete Device from database
+    //Method: Delete Facility from database
     const deleteFacility = () => {
-        let successfullPost = false;
-        fetch(deleteDeviceURL, {
-            method: 'POST',
+        const deleteDeviceParams = `${deviceID}`;
+        const deleteDevicePath = deleteDeviceURL + deleteDeviceParams;
+        console.log("deletedeviceParams: " + deleteDeviceParams)
+        console.log("DeleteDevicePath: " + deleteDeviceURL)
+        console.log("Delete Device URL: " + deleteDevicePath);
+        
+
+        fetch(deleteDevicePath, {
+            method: 'DELETE',
             headers: {
                 'Accept': 'application/json',
                'Content-Type': 'application/json'
             },
-            body: JSON.stringify({
-                deviceID: deviceID, 
-                deviceName: deviceName,
-                deviceType: deviceType,
-            }),
             credentials: 'include'
         })
         .then(response => {
@@ -95,33 +108,25 @@ const DeviceEdit = ({navigation}) => {
 
         })
         .catch(error => {
-            alert(error);
+            //alert(error);
         })
         .done(() => {
-            if (successfullPost){
-                alert("You have successfully deleted the Device")
-            }
-            else {
-                alert("Error: Device was not deleted. Please try again")
-            }
+            alert("You have successfully deleted the Device")
+            navigation.navigate("FacilityScreen_Page");
 
         });
 
-    }
+    }    
 
     useEffect(() => {
 
-        setFacilityName("Carleton Heights Community Center");
-        setDeviceName("Ottawa");
-        setDeviceId('29oo_12');
-        setDeviceType("Tennis");
+        setFacilityName(facility_Name);
+        setDeviceName(device_Name);
+        setDeviceId(device_ID);
+        setDeviceType(device_Type);
         
       }, []);
 
-    
-
-
-//alert("Create new facility! Note just call FacilityCraete when ready")
 
     return(
         <View style ={styles.container}>
@@ -172,10 +177,6 @@ const DeviceEdit = ({navigation}) => {
                         onChangeText={(text) => setDeviceName(text)}
                     
                     ></TextInput>
-                    <Text style ={styles.fieldText}>Device Type:</Text>
-                    <ModalDropdown options={['Tennis', 'Basketball', 'Hockey']} style={{animated: true, fontSize: 20}} textStyle={styles.dropdown_text} defaultValue = 'Tennis' isFullWidth={true} dropdownStyle={styles.dropdown_2_dropdown}/>
-                    <Text style ={styles.fieldText}>Areas Monitored:</Text>
-                    <ModalDropdown options={['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10']} style={{animated: true}} textStyle={styles.dropdown_text} defaultValue = '1' isFullWidth={true} dropdownStyle={styles.dropdown_2_dropdown}/>
 
                 </View>
                 

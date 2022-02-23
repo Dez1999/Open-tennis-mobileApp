@@ -54,8 +54,6 @@ const DeviceScreen = ({navigation}) => {
     const [unmounted, setUnounted] = useState(true);
 
 
-   
-
       const fetchPosts = () => {
         setIsLoading(true);
         const FacilityOwned_URL = 'http://52.229.94.153:8080/facility/owned';
