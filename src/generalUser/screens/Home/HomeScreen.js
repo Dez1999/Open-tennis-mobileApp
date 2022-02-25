@@ -72,9 +72,8 @@ const styles = StyleSheet.create({
         flex:6, 
         justifyContent: 'center',
         alignItems: 'center',
-        height: Dimensions.get('window').height/2,
+        height: (Dimensions.get('window').height *0.7),
         width: Dimensions.get('window').width,
-        borderRadius: 1000,
     }, 
     aboutButton: {
         width: 100,
@@ -84,8 +83,8 @@ const styles = StyleSheet.create({
     },
 
     aboutButtonText: {
-        fontSize: 16, 
-        fontWeight: 'normal', 
+        fontSize: 20, 
+        fontWeight: 'bold', 
         color: '#1E1862', 
         textAlign:'center', 
         textDecorationLine: 'underline'
