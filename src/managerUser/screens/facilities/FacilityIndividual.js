@@ -292,9 +292,9 @@ const FacilityIndividual = ({navigation, route}) => {
                             color='#2D0C57'
                             size={60}
                             backgroundColor="white"
-                            onPress={() => navigation.navigate("DeviceCreate_Page", {
-                                itemID: facilityID, 
-                                itemTitle: facilityName
+                            onPress={() => navigation.navigate("QRScanner_Page", {
+                                facility_id: facilityID, 
+                                facility_title: facilityName
                               })
                             }
                             >

@@ -32,6 +32,52 @@ const FacilityOwned_URL = 'http://52.229.94.153:8080/facility/owned';
 const apiURL = 'https://jsonplaceholder.typicode.com/posts';
 
 
+
+//Testing Data
+const facilityDataTest = [
+  {
+      "id": 1,
+      "ownerId": 2,
+      "name": "Lyndwood Tennis Club",
+      "city": "MISSISSAUGA",
+      "latitude": 43.57663,
+      "longitude": -79.57103
+  },
+  {
+    "id": 2,
+    "ownerId": 2,
+    "name": "Farm Park",
+    "city": "MISSISSAUGA",
+    "latitude": 43.62663,
+    "longitude": -79.57103
+},
+{
+  "id": 3,
+  "ownerId": 2,
+  "name": "Central Park",
+  "city": "MISSISSAUGA",
+  "latitude": 43.62663,
+  "longitude": -79.57103
+},
+{
+  "id": 4,
+  "ownerId": 2,
+  "name": "State Park",
+  "city": "MISSISSAUGA",
+  "latitude": 43.62663,
+  "longitude": -79.57103
+},
+{
+"id": 5,
+"ownerId": 2,
+"name": "Nature Park",
+"city": "MISSISSAUGA",
+"latitude": 43.62663,
+"longitude": -79.57103
+}
+]
+
+
   const Item = ({ title, city }) => (
     <View style={styles.listItem}>
         <View>
@@ -191,7 +237,7 @@ const DeviceScreen = ({navigation}) => {
 
       // if (unmounted){
       //   console.log(unmounted);
-        fetchPosts();
+      fetchPosts();
 
       // }
       

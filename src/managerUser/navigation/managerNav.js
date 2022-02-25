@@ -24,6 +24,7 @@ import FacilityEdit from '../screens/facilities/FacilityEdit';
 import DeviceCreate from '../screens/devices/DeviceCreate';
 import DeviceIndividual from '../screens/devices/DeviceIndividual';
 import DeviceEdit from '../screens/devices/DeviceEdit';
+import CodeScanner from '../screens/devices/CodeScanner';
 
 //Import Home Screen
 import HomeMan from '../screens/home/HomeScreen';
@@ -133,6 +134,9 @@ const FacilityStackScreen = ({navigator}) => (
              headerShown:false, 
             }}/>
             <FacilityStack.Screen name = "DeviceEdit_Page" component ={DeviceEdit} options={{
+             headerShown:false, 
+            }}/>
+            <FacilityStack.Screen name = "QRScanner_Page" component ={CodeScanner} options={{
              headerShown:false, 
             }}/>
 

@@ -23,13 +23,17 @@ import IconMat from 'react-native-vector-icons/MaterialCommunityIcons';
 //DropDown import
 import SelectDropdown from 'react-native-select-dropdown';
 
+//Import Screen
+import CodeScanner from './CodeScanner';
+import {RNCamera} from 'react-native-camera';
+
 const registerDeviceURL = 'http://52.229.94.153:8080/device/register';
 const getDeviceTypesURL = 'http://52.229.94.153:8080/device/types';
 const areasMonitoredOptions = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
 const DeviceCreate = ({navigation, route}) => {
     //Route Params
-    const { itemID, itemTitle} = route.params;
+    const { itemID, itemTitle, device_authID} = route.params;
 
 
 
@@ -82,6 +86,7 @@ const DeviceCreate = ({navigation, route}) => {
             ", deviceType: " +  deviceType)
 
         let successfullPost = false;
+        let errorMessage = "";
         fetch(registerDeviceURL, {
             method: 'Put',
             headers: {
@@ -103,19 +108,38 @@ const DeviceCreate = ({navigation, route}) => {
         .then((resJSON) => {
             //TODO
             //Figure out if the update POST was successful or not, then update the successful variable
+            console.log(resJSON);
+            if (resJSON.error == "Internal Server Error"){
+                errorMessage = "Error: Device was not create. Please enter the correct Authentication code";
+                successfullPost = false;
+            }
+            else if (resJSON.error == "Bad Request"){
+                errorMessage = "Error: Device was not created. Please make sure all fields are filled.";
+                successfullPost = false;
+            }
+            else {
+                successfullPost = true;
+            }
 
         })
         .catch(error => {
             console.log(error);
+            console.log("Error");
+            successfullPost = false;
+            errorMessage = error;
+            console.log(error.SyntaxError);
+            if (error == "SyntaxError: JSON Parse error: Unexpected end of input") {
+                successfullPost = true;
+                
+            }
         })
         .done(() => {
-            successfullPost = true;
             if (successfullPost){
                 alert("You have successfully added the Device to the Facility");
                 navigation.navigate("FacilityScreen_Page");
             }
             else {
-                alert("Error: Device was not created. Please try again")
+                alert(errorMessage);
             }
 
         });
@@ -129,6 +153,7 @@ const DeviceCreate = ({navigation, route}) => {
         //Set variables from Facility Name and ID
         setFacilityName(itemTitle);
         setFacilityId(itemID);
+        setAuthorizationId(device_authID);
         
       }, []);
 
@@ -219,8 +244,9 @@ const DeviceCreate = ({navigation, route}) => {
                             console.log(selectedItem, index);
                         }}
                     ></SelectDropdown>
-
-                </View>             
+                   
+                </View>    
+                       
             </SafeAreaView>
   
         </View>
