@@ -28,6 +28,7 @@ import IconMat from 'react-native-vector-icons/MaterialCommunityIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import axios from 'axios';
 import _forEach from 'lodash/forEach';
+import { color } from 'react-native-reanimated';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
@@ -213,7 +214,7 @@ const SearchScreen = ({navigation}) => {
   const [mainFacilityData, setMainFacilityData] = useState("");
   const [filteredFacilityData, setFilteredFacilityData] = useState("");
   const [distFilteredData, setDistFilteredData] = useState("");
-  const [favourited, setFavourited] = useState(true);
+  const [favourited, setFavourited] = useState(false);
 
   //Filter List
   const [facilityTypeFilterList, setFacilityTypeFilter] = useState([]);
@@ -221,18 +222,19 @@ const SearchScreen = ({navigation}) => {
   const [distanceFilterList, setDistanceFilter] = useState([]);
   const [cityFilterList, setCityFilter] = useState([]);
 
-  const [facilityTypeFilterChoice, setFacilityTypeFilterChoice] = useState("TENNIS");
+  const [facilityTypeFilterChoice, setFacilityTypeFilterChoice] = useState("");
   const [occupancyStatusFilterChoice, setOccupancyStatusFilterChoice] = useState("FREE");
   const [distanceFilterChoice, setDistanceFilterChoice] = useState("");
   const [distanceFilterUnitChoice, setDistanceFilterUnitChoice] = useState("K");
   const [cityFilterChoice, setCityFilterChoice] = useState("");
+  const [filterCurrentChoice, setFilterCurrentChoice] = useState("");
 
   //User Location
   const [userLatitude, setuserLatitude] = useState("45.3876");
   const [userLongitude, setUserLongitude] = useState("-75.6976");
 
   const setFilterLists = () => {
-    setFacilityTypeFilter(["TENNIS", "BASKETBALL", "SWIMMING"]);
+    setFacilityTypeFilter(["TENNIS", "BASKETBALL", "SWIMMING", "Any Sport"]);
     setOccupancyStatusFilter(["FREE", "MODERATELY BUSY", "BUSY", "All Occupancy"]);
     setDistanceFilter(["1 km", "2 km", "3 km", "5 km", "10 km", "15 km", "20 km", "No Range"]);
     setCityFilter(["OTTAWA", "MISSISSAUGA"]);
@@ -276,7 +278,6 @@ const SearchScreen = ({navigation}) => {
     const getFacilityData_Range = `latitude=${userLatitude}&longitude=${userLongitude}&city=${cityFilterChoice}&range=15&unit=${distanceFilterUnitChoice}`;
     const getFacilityURL = requestFilteredDistanceFacilities + getFacilityData_Range;
     console.log("Get Distance Filtered Facility URL: " + getFacilityURL);
-    //${distanceFilterChoice}
 
 
     const testFetch = `http://52.229.94.153:8080/facility/filters?latitude=${userLatitude}&longitude=${userLongitude}&city=${cityChoice}&range=${range}&unit=K`;
@@ -284,7 +285,7 @@ const SearchScreen = ({navigation}) => {
 
     setIsLoading(true);
 
-    try{
+
       fetch(testFetch, {
         method: 'GET', 
         headers: {
@@ -310,11 +311,14 @@ const SearchScreen = ({navigation}) => {
               setError(true);
               console.log(error);
               alert(error);
-            })
+            }) 
+            .done(() => {
+              console.log("Facility Type Choice: " + facilityTypeFilterChoice);
+              handleTypeUpdate(facilityTypeFilterChoice);
+          });
 
-    }catch (e) {
-    console.log("Failed to GET Facilities from database")
-    }
+
+
   }
 
   useEffect(() => {
@@ -328,10 +332,103 @@ const SearchScreen = ({navigation}) => {
 
   const handleFavourites = () => {
     setFavourited(!favourited);
+    //Call to favourites API to compare
+
   };
 
-  const getOccupancy = (t) => {
-    // console.log(t);
+  //Get Current Occupancy of Facility
+  const getOccupancy = (item) => {
+
+      let Occupancycolor = '#696A6D';
+
+      //Call API for each Facility Devices
+      const deviceFacilityURL = getDeviceInFacility + item.id;
+      //console.log(deviceFacilityURL);
+      let selectedDevicesOccupancyList = [];
+
+      axios.get(deviceFacilityURL).then(res => {
+          var deviceData = res.data;
+
+          //Iterate through the device list and push Facility element to list if it contains the target Occupancy Status       
+          deviceData.forEach(elementDevice => {
+              //console.log("Device Occupancy Target: " + occupancyTarget);
+              let elementType = (elementDevice.deviceType).toUpperCase();
+              //console.log(elementType);
+              console.log("Facility Filter Choice: " + facilityTypeFilterChoice);
+              if (elementType == facilityTypeFilterChoice){
+                  console.log("Element: " + item.name);
+                  selectedDevicesOccupancyList.push(elementDevice.currOccupancy);
+                  //selectedFacilityTypeList.push(element);
+              }
+          }
+          
+          );
+
+      })
+      .then(response => {
+        console.log("Device: " + item.id + " - " +selectedDevicesOccupancyList)
+        Occupancycolor = calculateOccupancy(selectedDevicesOccupancyList, item);
+        console.log(Occupancycolor);
+
+      })
+      .catch(error => console.log(error))
+      .done(() => {
+        //return Occupancycolor;
+    });
+
+    return Occupancycolor;
+
+  }
+
+  const calculateOccupancy = (occupancyList, item) => {
+
+    if (occupancyList.length == 0){
+      return '#696A6D' //Not available
+
+    }
+    else {
+      //1. Find total number of free courts
+      var totalZeros;
+      totalZeros = occupancyList.filter(z => z === 0).length;
+      //console.log("Device : " + item.id + ". Num Empty Areas: " + totalZeros);
+      
+      //2. Calculate length of Array List
+      var numDeviceAreas = occupancyList.length;
+      //console.log("Device : " + item.id + ". Num Device Areas: " + numDeviceAreas);
+
+      //2. Calculate Occupancy Status 
+      var status = totalZeros / numDeviceAreas;
+
+
+      //3. Filter into Occupancy Status Categories
+      var facilityStatus; 
+
+      if (status == 0){
+        //Facility is Free
+        facilityStatus = "FREE";
+        return '#28B625'
+      }
+
+      else if (status > 0 && status < 0.60){
+        //Facility is Moderately Busy
+        facilityStatus = "MODERATELEY BUSY";
+        return '#D32E2E'
+      }
+      else if (status > 0.59 &&  status < 1.1){
+        //Facility is Busy
+        facilityStatus = "BUSY";
+        return '#F9B70F'
+      }
+      else {
+        //Facility status is Not available
+        facilityStatus = "NOT AVAILABLE";
+        return '#696A6D' //Not available
+      }
+   }
+  }
+
+  const getCurrentOccupancy = (t) => {
+     // console.log(t);
     if(t == 'Free'){
       return '#28B625'
     }
@@ -343,6 +440,38 @@ const SearchScreen = ({navigation}) => {
     }
     else {
       return '#696A6D' //Not available
+    }
+
+  }
+
+  const handleFilterUpdate = async (choice, filterType) => {
+    console.log("Choice: " + choice + ", Filter: " + filterType);
+    setFilterCurrentChoice(choice);
+
+    //Handle if deviceType was changed
+    if (filterType == "deviceType"){
+      //Note: This needs to be synchronous
+
+      handleCityUpdate("Nothing");
+      handleRangeUpdate("Nothing");
+      //handleOccupancyUpdate("Nothing");
+      if (cityFilterChoice == "" && distanceFilterChoice == ""){
+        handleTypeUpdate(choice);
+      }
+      console.log("TESTING");
+
+    }
+    //Handle if Occupancy Status was changed
+    else if (filterType == "Occupancy"){
+
+    }
+    //Handle if Range was changed
+    else if (filterType == "Range"){
+
+    }
+    //Handle if City was changed
+    else if (filterType == "City"){
+
     }
 
   }
@@ -363,41 +492,53 @@ const SearchScreen = ({navigation}) => {
     //   and create a new list with the type of facilities and then set it equal to the filteredFacilityData
     //5. Render the data in the Flatlist
 
-    const selectedFacilityTypeList = [];
-    setIsLoading(true);
+    if (deviceTypeTarget == "Any Sport"){
+      setMainFacilityData(filteredFacilityData);
+      setFacilityTypeFilterChoice(deviceTypeTarget);
+    }
+    else if (deviceTypeTarget == ""){
+      //Do Nothing
+      return;
+    }
+    else {
+      const selectedFacilityTypeList = [];
+      setIsLoading(true);
 
-    //Iterate through the Facility Data
-    filteredFacilityData.forEach(element => {
-        //Call API for each Facility Devices
-        const deviceFacilityURL = getDeviceInFacility + element.id;
-        console.log(deviceFacilityURL);
-        axios.get(deviceFacilityURL).then(res => {
-            var deviceData = res.data;
-            var selected = false;
-            console.log("Device Data: " + deviceData);
+      //Iterate through the Facility Data
+      filteredFacilityData.forEach(element => {
+          //Call API for each Facility Devices
+          const deviceFacilityURL = getDeviceInFacility + element.id;
+          //console.log(deviceFacilityURL);
+          axios.get(deviceFacilityURL).then(res => {
+              var deviceData = res.data;
+              var selected = false;
+              //console.log("Device Data: " + deviceData);
 
-            //Iterate through the device list and push Facility element to list if it contains the target device type
-            deviceData.forEach(elementDevice => {
-                console.log("Device Target" + deviceTypeTarget);
-                let elementType = (elementDevice.deviceType).toUpperCase();
-                console.log(elementType);
-                if (elementType == deviceTypeTarget && selected ==false){
-                    console.log("Element: " + element.name);
-                    //Create a new list containing the filtered type Facilities
-                    selectedFacilityTypeList.push(element);
-                    selected = true;
-                }
-            });
-        })
-        .then(response => {
-          setMainFacilityData(selectedFacilityTypeList);
-          setIsLoading(false);
-          console.log(selectedFacilityTypeList);
+              //Iterate through the device list and push Facility element to list if it contains the target device type
+              deviceData.forEach(elementDevice => {
+                  //console.log("Device Target" + deviceTypeTarget);
+                  let elementType = (elementDevice.deviceType).toUpperCase();
+                  //console.log(elementType);
+                  if (elementType == deviceTypeTarget && selected ==false){
+                      //console.log("Element: " + element.name);
+                      //Create a new list containing the filtered type Facilities
+                      selectedFacilityTypeList.push(element);
+                      selected = true;
+                  }
+              });
+          })
+          .then(response => {
+            setMainFacilityData(selectedFacilityTypeList);
+            setFacilityTypeFilterChoice(deviceTypeTarget);
+            setIsLoading(false);
+            //console.log(selectedFacilityTypeList);
 
-        })
-        .catch(error => console.log(error));
-    });
+          })
+          .catch(error => console.log(error));
+      });
 
+    }
+    
   }
 
   const handleRangeUpdate = (range) => {
@@ -405,8 +546,44 @@ const SearchScreen = ({navigation}) => {
     var rangeChoice;
     var cityChoice = cityFilterChoice;
 
+    if (distanceFilterChoice == "" && range == "Nothing"){
+      //Do Nothing
+      console.log("Range: Do Nothing");
+      return;
+    }
+    else if (distanceFilterChoice !="" && range == "Nothing"){
+      //Set to max range for filter
+      if (distanceFilterChoice =="No Range") {
+        if (cityFilterChoice ==""){
+          getFacilities();
+        }
+        else {
+          rangeChoice = 500;
+          setDistanceFilterChoice(500);
+          //Call API to get filtered Facilities
+          getFilteredFacilities_Range(rangeChoice, cityChoice);
+
+        }
+      }
+      else {
+        if (cityFilterChoice == ""){
+          cityChoice = "OTTAWA";
+          setCityFilterChoice(cityChoice);
+        }
+        //Update main Data list with updated filter
+        var numRange = distanceFilterChoice.replace(' km','');
+        console.log("NumRange: " + numRange);   //prints: 123
+        setDistanceFilterChoice(numRange);
+        rangeChoice = numRange;
+
+        //Call API to get filtered Facilities
+        getFilteredFacilities_Range(rangeChoice, cityChoice);
+      }
+
+    } 
+
     //Set to max range for filter
-    if (range =="No Range") {
+    else if (range =="No Range") {
       if (cityFilterChoice ==""){
         getFacilities();
       }
@@ -436,13 +613,29 @@ const SearchScreen = ({navigation}) => {
   }
 
   const handleCityUpdate = (city) => {
-    setCityFilterChoice(city);
-    if (distanceFilterChoice == ""){
+    if (cityFilterChoice == "" && city == "Nothing"){
+      //handle previous state
+      console.log("City: Do Nothing");
+      return;
+    }
+    else if (cityFilterChoice != "" && city == "Nothing"){
+      if (distanceFilterChoice == ""){
+        getFilteredFacilities_Range(500, cityFilterChoice);
+  
+      }
+      else {
+        getFilteredFacilities_Range(distanceFilterChoice, cityFilterChoice);
+  
+      }
+    }
+    else if (distanceFilterChoice == ""){
+      setCityFilterChoice(city);
       setDistanceFilterChoice("500");
       getFilteredFacilities_Range(500, city);
 
     }
     else {
+      setCityFilterChoice(city);
       getFilteredFacilities_Range(distanceFilterChoice, city);
 
     }
@@ -450,33 +643,41 @@ const SearchScreen = ({navigation}) => {
 
   const handleOccupancyUpdate = (occupancyTarget) => {
 
+    if (occupancyTarget == "All Occupancy"){
+      setMainFacilityData(filteredFacilityData);
+      console.log(mainFacilityData);
+
+    }
+
+    else {
       //Iterate through the Facility Data
-    filteredFacilityData.forEach(element => {
-      //Call API for each Facility Devices
-      const deviceFacilityURL = getDeviceInFacility + element.id;
-      console.log(deviceFacilityURL);
-      let selectedFacilityOccupancyList = [];
-      let selectedDevicesOccupancyList = [];
+      filteredFacilityData.forEach(element => {
+        //Call API for each Facility Devices
+        const deviceFacilityURL = getDeviceInFacility + element.id;
+        //console.log(deviceFacilityURL);
+        let selectedFacilityOccupancyList = [];
+        let selectedDevicesOccupancyList = [];
 
-      axios.get(deviceFacilityURL).then(res => {
-          var deviceData = res.data;
-          var selected = false;
-          console.log("Device Data: " + deviceData);
+        axios.get(deviceFacilityURL).then(res => {
+            var deviceData = res.data;
+            var selected = false;
+            //console.log("Device Data: " + deviceData);
 
-          //Iterate through the device list and push Facility element to list if it contains the target Occupancy Status       
-          deviceData.forEach(elementDevice => {
-              console.log("Device Occupancy Target: " + occupancyTarget);
-              let elementType = (elementDevice.deviceType).toUpperCase();
-              console.log(elementType);
-              if (elementType == facilityTypeFilterChoice){
-                  //console.log("Element: " + element.name);
-                  selectedDevicesOccupancyList.push(elementDevice.currOccupancy);
-                  //selectedFacilityTypeList.push(element);
-              }
-          }
-          
-          );
-
+            //Iterate through the device list and push Facility element to list if it contains the target Occupancy Status       
+            deviceData.forEach(elementDevice => {
+                //console.log("Device Occupancy Target: " + occupancyTarget);
+                let elementType = (elementDevice.deviceType).toUpperCase();
+                //console.log(elementType);
+                if (elementType == facilityTypeFilterChoice){
+                    //console.log("Element: " + element.name);
+                    selectedDevicesOccupancyList.push(elementDevice.currOccupancy);
+                    //selectedFacilityTypeList.push(element);
+                }
+            }
+            
+            );
+            
+          //Calculate Facility Occupancy with each Device
           //1. Find total number of free courts
           var totalZeros;
           totalZeros = selectedDevicesOccupancyList.filter(z => z === 0).length;
@@ -515,22 +716,18 @@ const SearchScreen = ({navigation}) => {
           if (facilityStatus == occupancyTarget){
               //Add Facility to Selected List
               selectedFacilityOccupancyList.push(element);
-
-
           }
-          
-         //Calculate Facility Occupancy with each Device
-         console.log("Facility : " +element.id + ". Facility Status = " + facilityStatus + ". Status% = " + status);
-         console.log("Selected Facility Occupancy: " + selectedFacilityOccupancyList)
-      })
-      .then(response => {
-        setMainFacilityData(selectedFacilityOccupancyList);
-        setIsLoading(false);
-        //console.log(selectedFacilityTypeList);
+          //console.log("Facility : " +element.id + ". Facility Status = " + facilityStatus + ". Status% = " + status);
+          //console.log("Selected Facility Occupancy: " + selectedFacilityOccupancyList)
+        })
+        .then(response => {
+          setMainFacilityData(selectedFacilityOccupancyList);
+          setIsLoading(false);
 
-      })
-      .catch(error => console.log(error));
-  });
+        })
+        .catch(error => console.log(error));
+      });
+    }
 
   }
 
@@ -565,25 +762,33 @@ const SearchScreen = ({navigation}) => {
             data={mainFacilityData}
             keyExtractor={item => item.id}
             renderItem={({ item }) => (
-              <TouchableOpacity onPress={() => {navigation.navigate('Analytics')}}> 
+              <TouchableOpacity onPress={() => {navigation.navigate('Analytics', {
+                facilityId: item.id, 
+                title: item.name, 
+                numCourts: item.numCourts, 
+                occupancy: item.occupancy,
+                address: item.address
+              })}}> 
                 <View style={styles.listItem}>
 
                       <Icon 
                         name="star"  
                         size={27} 
                         color= {favourited ? 'yellow' : 'white'}/>
+
         
 
                   <View style = {styles.SecondaryContent}>
                     <Text style={styles.listItemTextMain}>{item.name}</Text>
-                    <Text style={styles.listItemTextSub}>{item.city}   |   {item.type}type:TODO  |   {item.distance}Dist:(todo)1km</Text>
+                    <Text style={styles.listItemTextSub}>{item.city}   |   {item.type}type:TODO  |   {item.distance}Dist:(todo)</Text>
+                    <Text>Occupancy: {getCurrentOccupancy(item)}</Text>
                   </View>
 
                   <IconMat
                       style = {{position: 'absolute', right: 10}}
                       name="circle"
                       size = {45}
-                      color= {getOccupancy(item.occupancy)}
+                      color= {getCurrentOccupancy(item)}
                       ></IconMat>
                 </View>
                </TouchableOpacity>
@@ -622,15 +827,15 @@ const SearchScreen = ({navigation}) => {
                             bounces={false}
                                 >
                                 <SelectDropdown
-                          
                                         data={facilityTypeFilterList}
                                         style={{ animated: true, fontSize: 14}} 
                                         buttonStyle={styles.buttonStyleDropdown} 
-                                        defaultButtonText="Type"
+                                        defaultButtonText="Sport Type"
                                         dropdownStyle={styles.dropdownStyle}
                                         onSelect={(selectedItem, index) => {
                                             setFacilityTypeFilterChoice(selectedItem);
-                                            handleTypeUpdate(selectedItem);
+                                            //handleTypeUpdate(selectedItem);
+                                            handleFilterUpdate(selectedItem, "deviceType");
                                             console.log(selectedItem, index);
                                         }}
                                     />
@@ -638,11 +843,12 @@ const SearchScreen = ({navigation}) => {
                                     data={occupancyStatusFilterList}
                                     style={{animated: true, fontSize: 20}} 
                                     buttonStyle={styles.buttonStyleDropdown} 
-                                    defaultButtonText="Occupancy"
+                                    defaultButtonText="Occupancy Status"
                                     dropdownStyle={styles.dropdownStyle}
                                     onSelect={(selectedItem, index) => {
                                         setOccupancyStatusFilterChoice(selectedItem);
                                         handleOccupancyUpdate(selectedItem);
+                                        handleFilterUpdate(selectedItem, "Occupancy");
                                         console.log(selectedItem, index);
                                     }}
                                 >
@@ -655,6 +861,7 @@ const SearchScreen = ({navigation}) => {
                                     dropdownStyle={styles.dropdownStyle}
                                     onSelect={(selectedItem, index) => {
                                         handleRangeUpdate(selectedItem);
+                                        handleFilterUpdate(selectedItem, "Range");
                                         console.log(selectedItem, index);
                                     }}
                                 />
@@ -667,6 +874,7 @@ const SearchScreen = ({navigation}) => {
                                     dropdownIconPosition={"left"}
                                     onSelect={(selectedItem, index) => {
                                         handleCityUpdate(selectedItem);
+                                        handleFilterUpdate(selectedItem, "City");
                                         console.log(selectedItem, index);
                                     }}
                                 />
@@ -677,25 +885,7 @@ const SearchScreen = ({navigation}) => {
                       </View>
                     
                      {renderFacilities()}
-                    
-                    {/*
-                    <ScrollView styles= {styles.scrollContainer}>
-                      <Text style = {styles.mainText}>{'Search'}</Text>   
-                      <TouchableOpacity>
-                        <Text style = {styles.facilityItem}>Modal for Test Facility</Text>
-                      </TouchableOpacity>
-                      <TouchableOpacity>
-                        <Text style = {styles.facilityItem}>More Results</Text>
-                      </TouchableOpacity>
-                      <TouchableOpacity>
-                        <Text style = {styles.facilityItem}>Map FullScreen</Text>
-                      </TouchableOpacity>
-                      <TouchableOpacity>
-                        <Text style = {styles.facilityItem}>Modal for Test Facility</Text>
-                      </TouchableOpacity>
 
-                      </ScrollView>
-                    */}
                     {/*}
                       <MapView
                           loadingEnabled

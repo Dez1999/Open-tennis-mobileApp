@@ -331,10 +331,12 @@ const styles = StyleSheet.create ({
 
       dropdownStyle: {
         backgroundColor: '#84EA95',
-        width: '98%',
+        width: '90%',
         borderColor: '#0C4B16',
         borderWidth: 2,
         borderRadius: 20,
+
+   
       },
 
 });

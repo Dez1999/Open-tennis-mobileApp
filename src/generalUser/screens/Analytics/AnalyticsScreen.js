@@ -10,6 +10,7 @@ import {
     TouchableOpacity, 
     Linking, 
     Platform, 
+    FlatList
 } from 'react-native';
 import {useState, useEffect} from "react";
 
@@ -29,11 +30,20 @@ const image = require('../../images//ParkImages/PinecrestPark.jpg');
 import OccupancyStatus from '../../components/AnalyticsComponents/occupancyStatus';
 import { BackgroundImage } from 'react-native-elements/dist/config';
 import { ScrollView } from 'react-native-gesture-handler';
+import axios from 'axios';
+import _forEach from 'lodash/forEach';
 
 
 //Indvidual phone heights and widths
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
+
+//API URL
+const addFavouriteURL = "http://52.229.94.153:8080/facility/favourite/add/";
+const removeFavouriteURL = "http://52.229.94.153:8080/facility/favourite/remove/";
+const viewFavouritesURL = "http://52.229.94.153:8080/facility/favourite";
+const getDeviceInFacility = "http://52.229.94.153:8080/device/inFacility/";
+
 
 //Testing Data for Analytics Page
 //Testing data
@@ -50,17 +60,203 @@ const AnalyticsScreen = ({navigation, route}) => {
   //const [data, setData] = useState([]);
   const {facilityId, title, numCourts, occupancy, address} = route.params; //Passes params from previous page
 
-  const [favourited, setFavourited] = useState(true);
+  const [favourited, setFavourited] = useState(false);
+  const [occupancyListData, setOccupancyData] = useState("");
+  const [occupancyStatusReal, setOccupanyStatusReal] = useState("");
+  const [facilityTypeFilterChoice, setFacilityTypeFilterChoice] = useState("TENNIS");
+  let deviceNum = 0;
+
+  //Method: Add Facility to Favourites
+  const addToFavourites = () => {
+    const selectedFacility = `${facilityId}`;
+    const addFacilityFavURL = addFavouriteURL + selectedFacility;
+    console.log("Add facility Device URL: " + addFacilityFavURL);
+    
+    let successfullPost = true;
+    fetch(addFacilityFavURL, {
+        method: 'POST',
+        headers: {
+            'Accept': 'application/json',
+           'Content-Type': 'application/json'
+        },
+        credentials: 'include'
+    })
+    .then(response => {
+        return response.json();
+    })
+    .then((resJSON) => {
+        //TODO
+        //Currently no response from the backend
+
+    })
+    .catch(error => {
+        console.log(error);
+    })
+    .done(() => {
+
+        console.log("You have successfully added a new Facility to favourites");
+
+    });
+
+}
+
+//Method: Post Facility to the database
+const removeFromFavourites = () => {
+  const selectedFacility = `${facilityId}`;
+  const removeFacilityFavURL = removeFavouriteURL + selectedFacility;
+  console.log("Remove facility Device URL: " + removeFacilityFavURL);
+
+  
+  let successfullPost = true;
+  fetch(removeFacilityFavURL, {
+      method: 'DELETE',
+      headers: {
+          'Accept': 'application/json',
+         'Content-Type': 'application/json'
+      },
+      credentials: 'include'
+  })
+  .then(response => {
+      return response.json();
+  })
+  .then((resJSON) => {
+      //TODO
+      //Currently no response from the backend
+
+  })
+  .catch(error => {
+      console.log(error);
+  })
+  .done(() => {
+
+      console.log("You have successfully removed a Facility to Favourites");
+
+  });
+
+}
+
+//Get Current Occupancy of Facility
+const getOccupancy = () => {
+
+  let Occupancycolor = '#696A6D';
+
+  //Call API for each Facility Devices
+  const deviceFacilityURL = getDeviceInFacility + facilityId;
+  //console.log(deviceFacilityURL);
+  let selectedDevicesOccupancyList = [];
+
+  axios.get(deviceFacilityURL).then(res => {
+      var deviceData = res.data;
+
+      //Iterate through the device list and push Facility element to list if it contains the target Occupancy Status       
+      deviceData.forEach(elementDevice => {
+          //console.log("Device Occupancy Target: " + occupancyTarget);
+          let elementType = (elementDevice.deviceType).toUpperCase();
+          //console.log(elementType);
+          console.log("Facility Filter Choice: " + facilityTypeFilterChoice);
+          if (elementType == facilityTypeFilterChoice){
+              selectedDevicesOccupancyList.push(elementDevice.currOccupancy);
+              //selectedFacilityTypeList.push(element);
+          }
+      }
+      
+      );
+
+  })
+  .then(response => {
+    console.log("Device: " +selectedDevicesOccupancyList)
+    calculateOccupancy(selectedDevicesOccupancyList);
+    setOccupancyData(selectedDevicesOccupancyList);
+
+  })
+  .catch(error => console.log(error))
+  .done(() => {
+    //return Occupancycolor;
+});
+
+}
+
+const calculateOccupancy = (occupancyList) => {
+
+if (occupancyList.length == 0){
+  setOccupanyStatusReal("Not Available") //Not available
+
+}
+else {
+  //1. Find total number of free courts
+  var totalZeros;
+  totalZeros = occupancyList.filter(z => z === 0).length;
+  //console.log("Device : " + item.id + ". Num Empty Areas: " + totalZeros);
+  
+  //2. Calculate length of Array List
+  var numDeviceAreas = occupancyList.length;
+  //console.log("Device : " + item.id + ". Num Device Areas: " + numDeviceAreas);
+
+  //2. Calculate Occupancy Status 
+  var status = totalZeros / numDeviceAreas;
+
+
+  //3. Filter into Occupancy Status Categories
+  var facilityStatus; 
+
+  if (status == 0){
+    //Facility is Free
+    facilityStatus = "Free";
+    setOccupanyStatusReal(facilityStatus);
+  }
+
+  else if (status > 0 && status < 0.60){
+    //Facility is Moderately Busy
+    facilityStatus = "Avg";
+    setOccupanyStatusReal(facilityStatus);
+  }
+  else if (status > 0.59 &&  status < 1.1){
+    //Facility is Busy
+    facilityStatus = "Busy";
+    return '#F9B70F'
+  }
+  else {
+    //Facility status is Not available
+    facilityStatus = "NOT AVAILABLE";
+    setOccupanyStatusReal(facilityStatus)
+  }
+}
+}
 
 
   const handleFavourites = () => {
     setFavourited(!favourited);
+    if (!favourited){
+      //Add Facility to Favourite List
+      addToFavourites();
+    }
+    else {
+      removeFromFavourites();
+    }
   };
 
   const url = Platform.select({
     ios: "maps:" + latitude + "," + longitude + "?q=" + latitude + "+" + longitude,
     android: "geo:" + latitude + "," + longitude + "?q=" + address
   });
+
+
+  useEffect(() => {
+    getOccupancy();
+    setFacilityTypeFilterChoice("TENNIS");
+  }, [])
+
+  const item = ({item}) => {
+    deviceNum++;
+    return (
+        <View style={{flexDirection:'row', justifyContent:'center'}}>
+            <View style={styles.dataField}>
+                <Text>Device {deviceNum}</Text>
+                <Text style ={styles.rowText}>Areas: {item}</Text>
+            </View>
+        </View>
+    )
+}
 
   return (
             <View style ={styles.container}>
@@ -124,16 +320,23 @@ const AnalyticsScreen = ({navigation, route}) => {
               </View>
 
 
-              <ScrollView>
+              {/* <ScrollView> */}
                 <View style ={{
                     flexGrow: 1,
 
                   }}
                   >
-                  <OccupancyStatus OccupancyStatus= {occupancy}></OccupancyStatus> 
+                  <OccupancyStatus OccupancyStatus= {occupancyStatusReal}></OccupancyStatus> 
+                  <Text style={{textAlign: 'center', color: 'black', fontSize: 17, fontWeight: 'bold', padding: 10}}>Current Monitored Areas</Text>
+                  <FlatList
+                    data = {occupancyListData}
+                    renderItem={item}
+                    keyExtractor={(item, index) => index.toString()}
+                        >
+                   </FlatList>
                 </View>
 
-              </ScrollView>
+              {/* </ScrollView> */}
 
               
 
@@ -246,7 +449,20 @@ const styles = StyleSheet.create({
       top: windowHeight/25
       
      
-    }
+    }, 
+    rowText: {
+      color: 'black', 
+      fontSize: 18,
+      textAlign: 'center'
+
+  }, 
+   dataField: {
+    width: '75%', 
+    backgroundColor:'white', 
+    bordercolor: 'black', 
+    borderWidth: 2, 
+
+  }
 
    
   });

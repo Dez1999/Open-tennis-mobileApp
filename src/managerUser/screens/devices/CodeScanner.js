@@ -139,7 +139,7 @@ const CodeScanner = ({navigation, route}) => {
                         captureAudio={false}
                         style ={{ 
                             width: '100%',
-                            flex: 1
+                            flex: 1.1
                         }}
                         onBarCodeRead={( barcode ) => {
                             readBarCode(barcode);
@@ -190,10 +190,10 @@ const styles = StyleSheet.create ({
   
       },
       camera: {
-          flex: 14
+          flex: 5,
       },
       bottomHeader: {
-          flex: 0.5, 
+          flex: 0.7, 
           backgroundColor: 'white'
 
 
@@ -217,7 +217,7 @@ const styles = StyleSheet.create ({
       instructionText: {
           textAlign: 'center', 
           fontSize: 25, 
-          color: 'black'
+          color: '#CD3400'
 
       }, 
       resultText: {
@@ -244,10 +244,10 @@ const styles = StyleSheet.create ({
           fontSize: 20, 
           color: 'black', 
           textAlign: 'center', 
-          padding: 30
+          padding: 15
       }, 
       bottomResultArea: {
-          padding: 30, 
+          padding: 15, 
           height: '90%'
 
       }
