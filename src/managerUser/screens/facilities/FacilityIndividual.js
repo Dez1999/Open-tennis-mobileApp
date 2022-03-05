@@ -22,9 +22,14 @@ const postFacilityURL = 'https://mywebsite.com/endpoint/';
 const getDevicesURL = 'http://52.229.94.153:8080/device/inFacility/';
 
 
+const API_KEY = "AIzaSyCu9nK77w0j9LME2vt5HzcshWhWbYEQtGE";
+
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
+
+//Geocoding
+import Geocoder from 'react-native-geocoding';
 
 
 const data = [
@@ -214,6 +219,19 @@ const FacilityIndividual = ({navigation, route}) => {
 
     }
 
+    const getAddress = (Lat, Long) => {
+        Geocoder.init(API_KEY); // use a valid API key
+
+        // Search by geo-location (reverse geo-code)
+        Geocoder.from(Lat, Long)
+        .then(json => {
+                var addressComponent = json.results[0].address_components[0];
+            console.log(addressComponent);
+        })
+        .catch(error => console.warn(error));
+
+    }
+
 
 //alert("Create new facility! Note just call FacilityCraete when ready")
 
@@ -285,9 +303,9 @@ const FacilityIndividual = ({navigation, route}) => {
             
                 </View>
 
-              
+                <View style = {styles.buttonView}>
                     <TouchableOpacity style={styles.addButton}>
-                        <Icon.Button
+                        <Icon
                             name="plus-circle"
                             color='#2D0C57'
                             size={60}
@@ -297,16 +315,10 @@ const FacilityIndividual = ({navigation, route}) => {
                                 facility_title: facilityName
                               })
                             }
-                            >
-                           
-                                        
-                        </Icon.Button>
+                            >                    
+                        </Icon>
                     </TouchableOpacity>
-                    
-             
-                
-                       
-             
+                </View>
                     
 
             </SafeAreaView>
@@ -344,10 +356,15 @@ const styles = StyleSheet.create ({
         color: 'black', 
     }, 
     addButton: {
+
+    }, 
+    buttonView: {
         position: 'absolute', 
         bottom: 0, 
-        right: 0
-    }, 
+        right: 5, 
+        flexDirection: 'column'
+
+    },
     listItemTextMain: {
         fontSize: 20, 
         color: '#000000', 

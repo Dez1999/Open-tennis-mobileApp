@@ -23,6 +23,7 @@ const getDevicesURL = 'http://52.229.94.153:8080/device/inFacility/';
 
 
 
+//Custom Window Sizes
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 

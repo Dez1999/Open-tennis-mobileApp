@@ -64,7 +64,7 @@ const CodeScanner = ({navigation, route}) => {
         if (!isAuthCodeRead) {
             return(
                 <View style ={styles.bottomResultArea}>
-                    <Text style={styles.instructionText}>Please Scan the QR Code for the Device</Text>
+                    <Text style={styles.instructionText}>Please Scan the QR Code of the Device</Text>
                 </View>
             )
         }
@@ -102,58 +102,68 @@ const CodeScanner = ({navigation, route}) => {
         <View style ={styles.container}>
             <SafeAreaView style={{backgroundColor:'white', height: '100%', flexgrow: 1}}>
                 <View style = {styles.topContent}>
-                <View style = {styles.header}>
-                     <Icon.Button
-                        name="arrow-left"
-                        color='black'
-                        size={30}
-                        backgroundColor="white"
-                        onPress={() => navigation.goBack()}
-                        >
-                                    
-                    </Icon.Button>
-                    <Icon.Button
-                        name="sign-in"
-                        color='black'
-                        size={30}
-                        backgroundColor="white"
-                        onPress={() => navigation.navigate("DeviceCreate_Page", {
-                            itemID: facilityID, 
-                            itemTitle: facilityName, 
-                            device_authID: authDeviceCode
-                        })
-                        }
-                        >
-                        <Text style={{fontSize: 20, fontWeight: 'bold', color: '#0B5B13'}}>Add Code 
-                        Manually</Text>
-                                    
-                    </Icon.Button>
+                    <View style = {styles.header}>
+                        <Icon.Button
+                            name="arrow-left"
+                            color='black'
+                            size={30}
+                            backgroundColor="white"
+                            onPress={() => navigation.goBack()}
+                            >
+                                        
+                        </Icon.Button>
+                        <Icon.Button
+                            name="sign-in"
+                            color='black'
+                            size={30}
+                            backgroundColor="white"
+                            onPress={() => navigation.navigate("DeviceCreate_Page", {
+                                itemID: facilityID, 
+                                itemTitle: facilityName, 
+                                device_authID: authDeviceCode
+                            })
+                            }
+                            >
+                            <Text style={{fontSize: 20, fontWeight: 'bold', color: '#0B5B13'}}>Add Code 
+                            Manually</Text>
+                                        
+                        </Icon.Button>
+                    </View>
+                    <View style={{flex:1, marginBottom: 5}}>
+                        <Text style={{textAlign: 'center', fontSize: 25, color: 'black', fontWeight: 'bold'}}>Add Device</Text>
+                    </View>
                 </View>
+                <View style={{flex:0}}>
+                   
                 </View>
-           
-                <View style={styles.camera}>
-                    <RNCamera
-                        ref={ref => {
-                            camera = ref;
-                        }}
-                        captureAudio={false}
-                        style ={{ 
-                            width: '100%',
-                            flex: 1.1
-                        }}
-                        onBarCodeRead={( barcode ) => {
-                            readBarCode(barcode);
-                          }}
-                        >
-                    </RNCamera> 
 
+                <View style={{flex: 12, flexDirection: 'column'}}>
+           
+                    <View style={styles.camera}>
+                        <RNCamera
+                            ref={ref => {
+                                camera = ref;
+                            }}
+                            captureAudio={false}
+                            style ={{ 
+                                width: '100%',
+                                height: 500, 
+                                overflow: 'hidden'
+                            }}
+                            onBarCodeRead={( barcode ) => {
+                                readBarCode(barcode);
+                            }}
+                            >
+                        </RNCamera> 
+
+                    </View> 
                     <View style={styles.bottomHeader}>
 
-                        {renderBottomSection()}
-  
-                    </View>
-
-                </View> 
+                            {renderBottomSection()}
+    
+                   </View>
+                </View>
+                
                        
             </SafeAreaView>
             
@@ -170,7 +180,7 @@ const styles = StyleSheet.create ({
       }, 
       topContent:{
         flexDirection: 'column', 
-        flex: 2.5
+        flex: 2.5, 
       },
       header: {
           flexDirection: 'row', 
@@ -181,21 +191,27 @@ const styles = StyleSheet.create ({
           backgroundColor: 'white',
           justifyContent: 'center',  
           alignItems: 'center', 
-          flex: 2
+          flex: 1
       },
       subHeader: {
           backgroundColor: 'grey',
           justifyContent: 'center', 
-          flex: 1
+          flex: 0
   
       },
       camera: {
-          flex: 5,
+          flex: 1,
+          height: 400
       },
       bottomHeader: {
-          flex: 0.7, 
-          backgroundColor: 'white'
-
+          flex: 0.4, 
+          width: '90%',
+          marginRight: 20, 
+          marginLeft: 20, 
+          backgroundColor: '#CFD9C8', 
+          borderRadius: 10, 
+          borderWidth: 2, 
+          borderColor: 'black'
 
       },
       titleText: {
@@ -244,11 +260,12 @@ const styles = StyleSheet.create ({
           fontSize: 20, 
           color: 'black', 
           textAlign: 'center', 
-          padding: 15
+          paddingBottom: 25
       }, 
       bottomResultArea: {
-          padding: 15, 
-          height: '90%'
+          padding: 10, 
+          height: '90%', 
+          justifyContent: 'center'
 
       }
 });
