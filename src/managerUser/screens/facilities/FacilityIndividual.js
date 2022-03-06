@@ -10,7 +10,8 @@ import {
     ActivityIndicator, 
     TextInput, 
     SafeAreaView, 
-    SectionList
+    SectionList, 
+    Linking
 
 } from 'react-native';
 
@@ -96,6 +97,7 @@ const FacilityIndividual = ({navigation, route}) => {
     const [facilityCity, setFacilityCity] = useState("");
     const [facilityLatitude, setFacilityLatitude] = useState("");
     const [facilityLongitude, setFacilityLongitude] = useState("");
+    const [facilityAddress, setFacilityAddress] = useState("");
 
 
     const [facilityOwner, setFacilityOwner] = useState("");
@@ -106,6 +108,21 @@ const FacilityIndividual = ({navigation, route}) => {
     const [unmounted, setUnounted] = useState(true);
 
     const [allDevicesData, setAllDevices] = useState([]);
+
+
+
+    //Retrieve Location of the Facility
+    const getLocation = () => {
+        Geocoder.init(API_KEY);
+
+        Geocoder.from(itemLatitude, itemLongitude)
+		.then(json => {
+        	var addressComponent = json.results[0].formatted_address;
+			console.log(addressComponent);
+            setFacilityAddress(addressComponent);
+		})
+		.catch(error => console.warn(error));
+    }
 
 
     //Retreive the Devices in the Facility
@@ -154,6 +171,7 @@ const FacilityIndividual = ({navigation, route}) => {
 
         //Fetch Devices in Facility
         fetchDevices();
+        getLocation();
 
         
         setFacilityID(itemID);
@@ -219,18 +237,11 @@ const FacilityIndividual = ({navigation, route}) => {
 
     }
 
-    const getAddress = (Lat, Long) => {
-        Geocoder.init(API_KEY); // use a valid API key
+    const url = Platform.select({
+        ios: "maps:" + itemLatitude + "," + itemLongitude + "?q=" + itemLatitude + "+" + itemLongitude,
+        android: "geo:" + itemLatitude + "," + itemLongitude + "?q=" + facilityAddress
+      });
 
-        // Search by geo-location (reverse geo-code)
-        Geocoder.from(Lat, Long)
-        .then(json => {
-                var addressComponent = json.results[0].address_components[0];
-            console.log(addressComponent);
-        })
-        .catch(error => console.warn(error));
-
-    }
 
 
 //alert("Create new facility! Note just call FacilityCraete when ready")
@@ -268,13 +279,19 @@ const FacilityIndividual = ({navigation, route}) => {
                 </View>
                 <View style={styles.title}>
                     <Text style={styles.titleText}>{facilityName}</Text>
-
-                    <View>
-                        <Text style={styles.subText}>City: {facilityCity}</Text>
-                        <Text style={styles.subText}>Latitude: {facilityLatitude}</Text>
-                        <Text style={styles.subText}>Longitude: {facilityLongitude}</Text>
-                        {/* <Text style={styles.subText}>Owner: {facilityOwner}</Text>
-                        <Text style={styles.subText}>Company: {facilityCompany}</Text> */}
+                    <View style = {{justifyContent: "space-between", flexDirection: 'row'}}> 
+                            <View style = {{flexDirection: 'column', width: '60%'}}>
+                                <Text style={{fontWeight: 'bold', color:'black'}}>Address:</Text>
+                                <Text style={styles.subText}>{facilityAddress}</Text>
+                            </View>
+                            <TouchableOpacity
+                            style={styles.mapsButton}
+                                
+                            onPress={() => Linking.openURL(url)}
+                            >
+                                <Text style = {styles.buttonText}>GO</Text>
+                                    
+                            </TouchableOpacity>
                     </View>
                     <View 
                         style={{
@@ -398,5 +415,20 @@ const styles = StyleSheet.create ({
         shadowRadius: 5,
         elevation: 3,
     }, 
+    buttonText: {
+        color: '#FFFFFF', 
+        fontWeight: 'bold', 
+        fontSize: 21
+  
+      },
+  
+      mapsButton: {
+        alignItems: 'center', 
+        justifyContent: 'center',
+        backgroundColor: '#28B625', 
+        borderRadius: 15, 
+        height: 35,
+        width: 60,       
+      },
 
 });

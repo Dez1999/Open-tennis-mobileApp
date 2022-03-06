@@ -28,10 +28,15 @@ const image = require('../../images//ParkImages/PinecrestPark.jpg');
 
 //Import Analytic Components
 import OccupancyStatus from '../../components/AnalyticsComponents/occupancyStatus';
+import IndividualAreaOccupancy from './IndividualAreaOccupancy';
 import { BackgroundImage } from 'react-native-elements/dist/config';
 import { ScrollView } from 'react-native-gesture-handler';
 import axios from 'axios';
 import _forEach from 'lodash/forEach';
+
+//Geocoding
+import Geocoder from 'react-native-geocoding';
+const API_KEY = "AIzaSyCu9nK77w0j9LME2vt5HzcshWhWbYEQtGE";
 
 
 //Indvidual phone heights and widths
@@ -58,13 +63,13 @@ const latitude = '45.394457';
 const AnalyticsScreen = ({navigation, route}) => {
   //const [posts, setPosts] = useState([]);
   //const [data, setData] = useState([]);
-  const {facilityId, title, numCourts, occupancy, address} = route.params; //Passes params from previous page
+  const {facilityId, title, numCourts, occupancy, address, itemLatitude, itemLongitude, itemIndOccupancyList} = route.params; //Passes params from previous page
 
   const [favourited, setFavourited] = useState(false);
-  const [occupancyListData, setOccupancyData] = useState("");
+  const [occupancyListData, setOccupancyData] = useState([0,0,0]);
   const [occupancyStatusReal, setOccupanyStatusReal] = useState("");
   const [facilityTypeFilterChoice, setFacilityTypeFilterChoice] = useState("TENNIS");
-  let deviceNum = 0;
+  const [facilityAddress, setFacilityAddress] = useState("");
 
   //Method: Add Facility to Favourites
   const addToFavourites = () => {
@@ -134,6 +139,19 @@ const removeFromFavourites = () => {
   });
 
 }
+
+//Retrieve Location of the Facility
+const getLocation = () => {
+      Geocoder.init(API_KEY);
+
+      Geocoder.from(itemLatitude, itemLongitude)
+    .then(json => {
+        var addressComponent = json.results[0].formatted_address;
+    console.log(addressComponent);
+          setFacilityAddress(addressComponent);
+    })
+    .catch(error => console.warn(error));
+    }
 
 //Get Current Occupancy of Facility
 const getOccupancy = () => {
@@ -237,13 +255,15 @@ else {
 
   const url = Platform.select({
     ios: "maps:" + latitude + "," + longitude + "?q=" + latitude + "+" + longitude,
-    android: "geo:" + latitude + "," + longitude + "?q=" + address
+    android: "geo:" + latitude + "," + longitude + "?q=" + facilityAddress
   });
 
 
   useEffect(() => {
     getOccupancy();
+    getLocation();
     setFacilityTypeFilterChoice("TENNIS");
+    setOccupancyData([0,0,0])
   }, [])
 
   const item = ({item}) => {
@@ -307,7 +327,7 @@ else {
                  </BackgroundImage>
                  <View style = {styles.titleContent}>
                     <Text style = {styles.titleText}>{title}</Text>
-                    <Text style = {styles.addressText}>{address}</Text>
+                    <Text style = {styles.addressText}>{facilityAddress}</Text>
                  </View>
 
               <View
@@ -320,28 +340,19 @@ else {
               </View>
 
 
-              {/* <ScrollView> */}
+              <ScrollView>
                 <View style ={{
                     flexGrow: 1,
 
                   }}
                   >
-                  <OccupancyStatus OccupancyStatus= {occupancyStatusReal}></OccupancyStatus> 
-                  <Text style={{textAlign: 'center', color: 'black', fontSize: 17, fontWeight: 'bold', padding: 10}}>Current Monitored Areas</Text>
-                  <FlatList
-                    data = {occupancyListData}
-                    renderItem={item}
-                    keyExtractor={(item, index) => index.toString()}
-                        >
-                   </FlatList>
+                  <OccupancyStatus OccupancyStatus= {occupancyStatusReal} currOccupancyList = {occupancyListData}></OccupancyStatus> 
+                  <Text style={{textAlign: 'left', color: '#0B5B13', fontSize: 17, fontWeight: 'bold', padding: 10}}>REAL-TIME OCCUPANCY</Text>
+                  <IndividualAreaOccupancy currOccupancyList={itemIndOccupancyList}/>
                 </View>
 
-              {/* </ScrollView> */}
+              </ScrollView>
 
-              
-
-              
-             
             </View>
     
   );
@@ -425,9 +436,10 @@ const styles = StyleSheet.create({
     }, 
 
     addressText: {
-      fontSize: 14, 
+      fontSize: 12, 
       color: '#000000', 
       fontWeight: '500', 
+      width: '100%'
     }, 
 
     buttonText: {
@@ -447,7 +459,6 @@ const styles = StyleSheet.create({
       position: 'absolute', 
       right: 6, 
       top: windowHeight/25
-      
      
     }, 
     rowText: {

@@ -58,7 +58,7 @@ const OccupancyStatus =(props) => {
                <Icon 
                     name="circle"
                     size={75} 
-                    color= {getOccupancy('Free')}/>
+                    color= {getOccupancy()}/>
                 <View style= {styles.statusContent}>
                     <Text style={styles.mainText}>OCCUPANCY STATUS: </Text>
                     <Text style={styles.statusText} >{getOccupancyText()}</Text>
