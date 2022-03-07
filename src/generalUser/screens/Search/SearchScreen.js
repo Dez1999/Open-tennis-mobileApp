@@ -29,7 +29,10 @@ import IconMat from 'react-native-vector-icons/MaterialCommunityIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import axios from 'axios';
 import _forEach from 'lodash/forEach';
-import { color } from 'react-native-reanimated';
+import { color, set } from 'react-native-reanimated';
+
+//Import User Location
+import GetLocation  from 'react-native-get-location';
 
 
 
@@ -230,6 +233,7 @@ const SearchScreen = ({navigation}) => {
   //User Location
   const [userLatitude, setuserLatitude] = useState("45.3876");
   const [userLongitude, setUserLongitude] = useState("-75.6976");
+  const [userLocationError, setuserLocationError] = useState(null);
 
   //Modal constants
   // define a state variable to store the modal's visible state
@@ -241,11 +245,52 @@ const SearchScreen = ({navigation}) => {
 
 
   const setFilterLists = () => {
-    setFacilityTypeFilter(["TENNIS", "BASKETBALL", "SWIMMING"]);
+    setFacilityTypeFilter(["TENNIS", "BASKETBALL", "SWIMMING", "ANY"]);
     setOccupancyStatusFilter(["FREE", "MODERATELY BUSY", "BUSY", "All Occupancy"]);
     setDistanceFilter(["1 km", "2 km", "3 km", "5 km", "10 km", "15 km", "20 km", "No Range"]);
     setCityFilter(["OTTAWA", "MISSISSAUGA"]);
   }
+
+  const getUserLocation = () => {
+    GetLocation.getCurrentPosition({
+      enableHighAccuracy: true,
+      timeout: 15000,
+    })
+    .then(location => {
+      console.log(location);
+      setuserLatitude(location.latitude);
+      setUserLongitude(location.longitude);
+    })
+    .catch(error => {
+      const {code, message} = error;
+      console.warn(code, message);
+    })
+  }
+
+  const handleFavourites = () => {
+    setFavourited(!favourited);
+    //Call to favourites API to compare
+
+  };
+
+  const searchFilter = (text) => {
+    if (text) {
+        const newData = mainFacilityData.filter((item) => {
+            const itemData = item.name ?
+                    item.name.toUpperCase()
+                    : ''.toUpperCase();
+            const textData = text.toUpperCase();
+            return itemData.indexOf(textData) > -1;
+        });
+
+        setFilteredFacilityData(newData);
+        setSearch(text);
+
+    } else {
+        setFilteredFacilityData(mainFacilityData);
+        setSearch(text);
+    }
+}
 
   //Fetch All facilities from database
   const getFacilities = async () => {
@@ -280,6 +325,33 @@ const SearchScreen = ({navigation}) => {
     }
   }
 
+
+  useEffect(() => {
+    //getFacilities();
+    setFilterLists();
+
+    getUserLocation();
+
+    //getFacilities();
+    handleFilterSubmit();
+
+  }, [])
+
+
+  //Handle when a use applies the filters to search function
+  handleFilterSubmit = async () => {
+    //Set Loading to True
+    setIsLoading(true);
+
+    //Set Local Variables
+    let selectedRange = distanceFilterChoice;
+    let selectedCity = cityFilterChoice;
+
+    //Filter by Range and City simulateneously
+    const facility_RC = await getFilteredFacilities_Range(selectedRange, selectedCity);
+
+  }
+
   //Fetch filtered facilities from database -> By Distance
   const getFilteredFacilities_Range = async (range, cityChoice) => {
     //Update main Data list with updated filter
@@ -301,7 +373,7 @@ const SearchScreen = ({navigation}) => {
     const getURLFetch = `http://52.229.94.153:8080/facility/filters?latitude=${userLatitude}&longitude=${userLongitude}&city=${cityChoice}&range=${numRange}&unit=K`;
     console.log("Test: " + getURLFetch);
 
-    setIsLoading(true);
+    setError(null);
 
 
       fetch(getURLFetch, {
@@ -336,77 +408,7 @@ const SearchScreen = ({navigation}) => {
               handleTypeUpdate(facilityTypeFilterChoice, tempDataset);
           });
 
-
-
   }
-
-  useEffect(() => {
-    //getFacilities();
-    setFilterLists();
-
-    //getFacilities();
-    handleFilterSubmit();
-
-  }, [])
-
-  const handleFavourites = () => {
-    setFavourited(!favourited);
-    //Call to favourites API to compare
-
-  };
-
-  const searchFilter = (text) => {
-    if (text) {
-        const newData = mainFacilityData.filter((item) => {
-            const itemData = item.name ?
-                    item.name.toUpperCase()
-                    : ''.toUpperCase();
-            const textData = text.toUpperCase();
-            return itemData.indexOf(textData) > -1;
-        });
-
-        setFilteredFacilityData(newData);
-        setSearch(text);
-
-    } else {
-        setFilteredFacilityData(mainFacilityData);
-        setSearch(text);
-    }
-}
-
-
-  //Handle when a use applies the filters to search function
-  handleFilterSubmit = async () => {
-    //Set Local Variables
-    let selectedRange = distanceFilterChoice;
-    let selectedCity = cityFilterChoice;
-    let selectedOccupancy = occupancyStatusFilterChoice;
-    let selectedType = facilityTypeFilterChoice;
-
-
-    //Filter by Range and City simulateneously
-    const facility_RC = await getFilteredFacilities_Range(selectedRange, selectedCity);
-
-  }
-
-  
-  const getCurrentOccupancy = (t) => {
-     // console.log(t);
-    if(t == 'FREE'){
-      return '#28B625'
-    }
-    else if (t == 'BUSY'){
-      return '#D32E2E'
-    }
-    else if (t == 'MODERATELEY BUSY'){
-      return '#F9B70F'
-    }
-    else {
-      return '#696A6D' //Not available
-    }
-
-  }
-
 
   const handleTypeUpdate = (deviceTypeTarget, tempFilteredData) => {
     //Use Filtered Facility Data
@@ -425,8 +427,6 @@ const SearchScreen = ({navigation}) => {
     let selectedFacilityTypeList = [];
     console.log("Temp Filtered Data Length at TypeUpdate: " + tempFilteredData.length);
 
-
-
     //Do Nothing and go to OccupancyStatusFilter
       
     // }
@@ -435,6 +435,13 @@ const SearchScreen = ({navigation}) => {
       handleOccupancyUpdate(occupancyStatusFilterChoice, tempFilteredData);
       console.log("Facility Type Update (Before Filtering): Dataset is Empty");
       //setIsLoading(false);
+    }
+    else if (deviceTypeTarget == "ANY"){
+        //Keep all facilities in filtered dataset and do not filter by device type
+        //Let OccupancyStatusUpdate() handle this
+        handleSpecialOccupancyStatusUpdate(occupancyStatusFilterChoice, tempFilteredData);
+        console.log("HandleTypeUpdate: ANY");
+
     }
     else {
 
@@ -481,6 +488,120 @@ const SearchScreen = ({navigation}) => {
     
   }
 
+  const handleSpecialOccupancyStatusUpdate = (occupancyTarget, tempFilteredData) => {
+    let selectedFacilityOccupancyList = [];
+
+    //Note: tempFilteredData != Empty, Facility Type = Any, Occupancy Status = [Free, Moderately Busy, Busy, All Occupancy]
+
+    //Iterate through the Facility Data
+    tempFilteredData.forEach(element => {
+      //Call API for each Facility Devices
+      const deviceFacilityURL = getDeviceInFacility + element.id;
+
+      //Initialize selected Device List
+      let selectedDevicesOccupancyList = [];
+
+      axios.get(deviceFacilityURL).then(res => {
+        var deviceData = res.data;
+
+        //Check if deviceData is empty
+        if (deviceData.length == 0){
+          //If Devicedata is empty then directly add the facility to the selectedFacilityList
+          console.log("SpecialOccupancy: ARRAY is EMPTY");
+          var facilityStatus; 
+          facilityStatus = "NOT AVAILABLE";
+          var jsonObject = {city: element.city, id: element.id, latitude: element.latitude, longitude: element.longitude, name: element.name, ownerId: element.ownerId, occupancy: facilityStatus, selectedType: facilityTypeFilterChoice}
+          selectedFacilityOccupancyList.push(jsonObject);
+        }
+        else {
+          //Iterate through the device list and push Facility element to list if it contains the target Occupancy Status       
+          deviceData.forEach(elementDevice => {
+            //console.log("Device Occupancy Target: " + occupancyTarget);
+            let elementType = (elementDevice.deviceType).toUpperCase();
+            //console.log(elementType);
+            if (elementType == facilityTypeFilterChoice || facilityTypeFilterChoice == "ANY"){
+                //console.log("Element: " + element.name);
+                selectedDevicesOccupancyList.push(elementDevice.currOccupancy);
+                //selectedFacilityTypeList.push(element);
+            }
+           }
+         );
+          //Calculate Facility Occupancy with each Device in each specific Facility
+          //facilityStatus = getFacilityStatus(selectedDevicesOccupancyList, element);
+
+          //Iterate through selectedDeviceOccupancy List and convert to individual fields
+          const arr = selectedDevicesOccupancyList;
+          console.log(arr);
+
+          // To flat single level array
+          const flatOccupancyList = arr.reduce((acc, val) => {
+            return acc.concat(val)
+          }, []);
+
+          console.log(flatOccupancyList);
+
+          //1. Find total number of free areas
+          var totalZeros;
+          totalZeros = flatOccupancyList.filter(z => z === 0).length;
+          console.log("Facility : " + element.id + ". Num Empty Areas: " + totalZeros);
+          
+          //2. Calculate length of Array List
+          var numDeviceAreas = flatOccupancyList.length;
+          console.log("Facility : " + element.id + ". Num Device Areas: " + numDeviceAreas);
+
+          //2. Calculate Occupancy Status 
+          var status = totalZeros / numDeviceAreas;
+          console.log("Facility Status: " + status);
+
+
+          //3. Filter into Occupancy Status Categories
+          var facilityStatus; 
+
+          if (status > 0.79){
+            //Facility is Free
+            facilityStatus = "FREE";
+          }
+
+          else if (status > 0.4 && status < 0.80){
+            //Facility is Moderately Busy
+            facilityStatus = "MODERATELEY BUSY";
+          }
+          else if (status >= 0 &&  status <= 0.4){
+            //Facility is Busy
+            facilityStatus = "BUSY";
+          }
+          else {
+            //Facility status is Not available
+            facilityStatus = "NOT AVAILABLE";
+          }
+
+          console.log("Facility Status (Words):" + facilityStatus);
+
+          //Check if Facility Meets the requirements
+          if (facilityStatus == occupancyTarget || occupancyTarget == "All Occupancy"){
+              //Add Facility to Selected List
+              //Create element object and add to selectedFacilityOccupancyList
+              console.log("MATCH OCCUPANCY");
+              var jsonObject = {city: element.city, id: element.id, latitude: element.latitude, longitude: element.longitude, name: element.name, ownerId: element.ownerId, occupancy: facilityStatus, selectedType: facilityTypeFilterChoice, indOccupancyList: flatOccupancyList}
+              selectedFacilityOccupancyList.push(jsonObject);
+          }
+
+        }
+
+      })
+      .then(response => {
+        console.log(selectedFacilityOccupancyList);
+        setMainFacilityData(selectedFacilityOccupancyList);
+        setFilteredFacilityData(selectedDevicesOccupancyList);
+        setIsLoading(false);
+
+      })
+      .catch(error => console.log(error));
+    });
+    
+
+
+  }
 
   const handleOccupancyUpdate = (occupancyTarget, tempFilteredData) => {
 
@@ -493,8 +614,6 @@ const SearchScreen = ({navigation}) => {
       setIsLoading(false);
       console.log("OccupancyStatus Filter (Before Filtering) : Dataset is empty");
     }
-
-
     else {
       //Iterate through the Facility Data
       tempFilteredData.forEach(element => {
@@ -519,7 +638,7 @@ const SearchScreen = ({navigation}) => {
                 }
             }
             
-          );
+            );
             
           //Calculate Facility Occupancy with each Device in each specific Facility
 
@@ -595,6 +714,30 @@ const SearchScreen = ({navigation}) => {
 
   }
 
+  
+  const getCurrentOccupancy = (t) => {
+     // console.log(t);
+    if(t == 'FREE'){
+      return '#28B625'
+    }
+    else if (t == 'BUSY'){
+      return '#D32E2E'
+    }
+    else if (t == 'MODERATELEY BUSY'){
+      return '#F9B70F'
+    }
+    else {
+      return '#696A6D' //Not available
+    }
+
+  }
+
+
+ 
+
+
+  
+
   const renderFacilities = () =>{
         
     //Check if the data is currently being fetched
@@ -624,6 +767,8 @@ const SearchScreen = ({navigation}) => {
             style = {styles.flatListStyle}
             data={mainFacilityData}
             keyExtractor={item => item.id}
+            onRefresh= {() => handleFilterSubmit()}
+            refreshing={isLoading}
             renderItem={({ item }) => (
               <TouchableOpacity onPress={() => {navigation.navigate('Analytics', {
                 facilityId: item.id, 
@@ -643,7 +788,7 @@ const SearchScreen = ({navigation}) => {
 
                   <View style = {styles.SecondaryContent}>
                     <Text style={styles.listItemTextMain}>{item.name}</Text>
-                    <Text style={styles.listItemTextSub}>{item.city}   |   {item.selectedType}  </Text>
+                    <Text style={styles.listItemTextSub}>{item.city}   |   Type: {item.selectedType}  </Text>
                   </View>
 
                   <IconMat
