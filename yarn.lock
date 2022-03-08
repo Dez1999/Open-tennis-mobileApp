@@ -1567,6 +1567,11 @@
     "@typescript-eslint/types" "4.33.0"
     eslint-visitor-keys "^2.0.0"
 
+"@vseslav/react-native-horizontal-picker@^0.1.1":
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/@vseslav/react-native-horizontal-picker/-/react-native-horizontal-picker-0.1.1.tgz#748b4cd287988de5e4ff76e2a6454c43e2d37478"
+  integrity sha512-fwnl4NRFxZkTAdLGrxHprsGAun221Q5pMkUyXCPxOBqE1jxDUfCLhhdywT4+KKIOqEx3zfOE1ZZZw45drCcADA==
+
 abab@^2.0.3, abab@^2.0.5:
   version "2.0.5"
   resolved "https://registry.yarnpkg.com/abab/-/abab-2.0.5.tgz#c0b678fb32d60fc1219c784d6a826fe385aeb79a"
@@ -5865,6 +5870,11 @@ react-native-size-matters@^0.3.1:
   version "0.3.1"
   resolved "https://registry.yarnpkg.com/react-native-size-matters/-/react-native-size-matters-0.3.1.tgz#24d0cfc335a2c730f6d58bd7b43ea5a41be4b49f"
   integrity sha512-mKOfBLIBFBcs9br1rlZDvxD5+mAl8Gfr5CounwJtxI6Z82rGrMO+Kgl9EIg3RMVf3G855a85YVqHJL2f5EDRlw==
+
+react-native-smooth-picker@^1.1.5:
+  version "1.1.5"
+  resolved "https://registry.yarnpkg.com/react-native-smooth-picker/-/react-native-smooth-picker-1.1.5.tgz#5e70b2ba5467045e022b77069904482854b8f657"
+  integrity sha512-bjbaydabhmhRBVOIbXclzz26LFgN0vOZwj65KWImg5Jqhqzkty5h9cryPf52uJQ22uPLvkrDtSVsHxgUb5qWcA==
 
 react-native-vector-icons@^9.0.0:
   version "9.0.0"

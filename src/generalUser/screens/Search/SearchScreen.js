@@ -225,7 +225,7 @@ const SearchScreen = ({navigation}) => {
 
   const [facilityTypeFilterChoice, setFacilityTypeFilterChoice] = useState("ANY");
   const [occupancyStatusFilterChoice, setOccupancyStatusFilterChoice] = useState("All Occupancy");
-  const [distanceFilterChoice, setDistanceFilterChoice] = useState("No Range");
+  const [distanceFilterChoice, setDistanceFilterChoice] = useState("3 km");
   const [distanceFilterUnitChoice, setDistanceFilterUnitChoice] = useState("K");
   const [cityFilterChoice, setCityFilterChoice] = useState("OTTAWA");
   const [filterCurrentChoice, setFilterCurrentChoice] = useState("");

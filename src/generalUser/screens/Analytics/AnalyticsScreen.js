@@ -10,7 +10,8 @@ import {
     TouchableOpacity, 
     Linking, 
     Platform, 
-    FlatList
+    FlatList, 
+    Number
 } from 'react-native';
 import {useState, useEffect} from "react";
 
@@ -33,6 +34,9 @@ import { BackgroundImage } from 'react-native-elements/dist/config';
 import { ScrollView } from 'react-native-gesture-handler';
 import axios from 'axios';
 import _forEach from 'lodash/forEach';
+import HorizontalPicker from '@vseslav/react-native-horizontal-picker';
+import SmoothPicker from "react-native-smooth-picker";
+import SelectDropdown from 'react-native-select-dropdown';
 
 //Geocoding
 import Geocoder from 'react-native-geocoding';
@@ -70,6 +74,8 @@ const AnalyticsScreen = ({navigation, route}) => {
   const [occupancyStatusReal, setOccupanyStatusReal] = useState("");
   const [facilityTypeFilterChoice, setFacilityTypeFilterChoice] = useState("");
   const [facilityAddress, setFacilityAddress] = useState("");
+  const [selectedDeviceType, setSelectedDeviceType] = useState(null);
+  const [facilityDeviceTypeList, setFacilityDeviceTypeList] = useState("");
 
   //Method: Add Facility to Favourites
   const addToFavourites = () => {
@@ -140,7 +146,7 @@ const removeFromFavourites = () => {
 
 }
 
-const getDeviceType = async () => {
+const getDeviceType = async (itemInitSelectedType) => {
     if (itemInitSelectedType  == "ANY"){
       //Check Facility Devices to select the correct device type to initiate
       //Get device List
@@ -178,6 +184,7 @@ const getDeviceType = async () => {
                 isTypeChosen = true;
                 selectedDeviceType = elementTypeCap;
                 setFacilityTypeFilterChoice(elementTypeCap);
+                setSelectedDeviceType(elementTypeCap);
                 return;
               }
             
@@ -204,6 +211,7 @@ const getDeviceType = async () => {
     }
     else {
       setFacilityTypeFilterChoice(itemInitSelectedType);
+      setSelectedDeviceType(itemInitSelectedType);
       console.log("DeviceType (Specific): " + itemInitSelectedType);
       getOccupancy(itemInitSelectedType);
 
@@ -331,6 +339,62 @@ const calculateOccupancy = (occupancyList) => {
 }
 
 
+const getFacilityTypeList = async () => {
+
+    //Get device List
+    let facilityDevicesTypeList = [];
+    //Call API for each Facility Devices
+    const deviceFacilityURL = getDeviceInFacility + facilityId;
+
+    axios.get(deviceFacilityURL).then(res => {
+      var deviceData = res.data;
+
+      //Check if DeviceList is Empty
+      if (deviceData.length == 0){
+         //Do Nothing
+         
+      }
+      else {
+        //Iterate to find all types in Facility
+        for (var i = 0; i < allFacilityTypeFilterList.length - 1; i++ ){
+          //Iterate through the device list and select the facility type to use 
+          console.log(i);    
+          console.log(allFacilityTypeFilterList[i]);
+          deviceData.forEach(elementDevice => {
+            //console.log("Device Occupancy Target: " + occupancyTarget);
+            let elementType = elementDevice.deviceType;
+            if(elementType == "SwimmingPool"){
+                  elementType = "SWIMMING";
+            }
+            elementTypeCap = (elementType).toUpperCase();
+            //console.log(elementType);
+            if (elementTypeCap == allFacilityTypeFilterList[i]){
+              facilityDevicesTypeList.push(elementTypeCap);
+              console.log("Facility Types: " + facilityDevicesTypeList);
+            }
+          
+          }
+         );
+        }
+      }
+    })
+    .then(response => {
+      var uniqueArray = facilityDevicesTypeList.filter(function(item, pos, self) {
+        return self.indexOf(item) == pos;
+      })
+      console.log("Facility Types (Remove Duplicates): " + uniqueArray);
+
+      setFacilityDeviceTypeList(uniqueArray);
+  
+    })
+    .catch(error => console.log(error))
+    .done(() => {
+      //return Occupancycolor;
+    });
+
+}
+
+
   const handleFavourites = () => {
     setFavourited(!favourited);
     if (!favourited){
@@ -350,22 +414,45 @@ const calculateOccupancy = (occupancyList) => {
 
   useEffect(() => {
     getLocation();
-    getDeviceType();
+    getDeviceType(itemInitSelectedType);
+    getFacilityTypeList();
     //getOccupancy();
     //setFacilityTypeFilterChoice("TENNIS");
     //setOccupancyData([0,0,0])
   }, [])
 
-  const item = ({item}) => {
-    deviceNum++;
-    return (
-        <View style={{flexDirection:'row', justifyContent:'center'}}>
-            <View style={styles.dataField}>
-                <Text>Device {deviceNum}</Text>
-                <Text style ={styles.rowText}>Areas: {item}</Text>
-            </View>
-        </View>
+
+const checkFacilityType = () =>{
+  if (facilityTypeFilterChoice != "ANY" && facilityTypeFilterChoice != ""){
+    setSelectedDeviceType(facilityTypeFilterChoice);
+  }
+}
+
+
+const handleTypeChange = (selectedType) => {
+  getDeviceType(selectedType);
+}
+
+const facilityTypeSelection = () => {
+  if (facilityTypeFilterChoice != "ANY" && facilityTypeFilterChoice != ""){
+    return(
+      <View style={{justifyContent: 'space-between', flexDirection: 'row', marginBottom: 20, padding: 10}}>
+        <Text style={{fontSize: 18, fontWeight: 'bold', color: '#0B5B13'}}>Available Facility Types: </Text>
+        <SelectDropdown
+            data={facilityDeviceTypeList}
+            style={{animated: true, fontSize: 20}} 
+            buttonStyle={styles.buttonStyle} 
+            defaultButtonText={facilityTypeFilterChoice}
+            dropdownStyle={styles.dropdownStyle}
+                            
+            onSelect={(selectedItem, index) => {
+                handleTypeChange(selectedItem);
+                console.log(selectedItem, index);
+             }}
+          />
+      </View>
     )
+  }
 }
 
   return (
@@ -385,7 +472,7 @@ const calculateOccupancy = (occupancyList) => {
                               </Icon>
                       </TouchableOpacity>
                       <View style = {styles.midTopContent}>
-                          {individualData.map(i => (<Text key="{i}" style = {styles.facilityTypeText}>Facility</Text>))}
+                          {individualData.map(i => (<Text key="{i}" style = {styles.facilityTypeText}>{selectedDeviceType} FACILITY</Text>))}
   
                       </View>
                       
@@ -436,6 +523,7 @@ const calculateOccupancy = (occupancyList) => {
 
                   }}
                   >
+                    {facilityTypeSelection()}
                   <OccupancyStatus OccupancyStatus= {occupancyStatusReal}></OccupancyStatus> 
                   <IndividualAreaOccupancy currOccupancyList={occupancyListData} targetDevice ={facilityTypeFilterChoice}/>
                 </View>
@@ -474,8 +562,8 @@ const styles = StyleSheet.create({
     },
 
     midTopContent: {
-        paddingRight: 72, 
-        paddingLeft: 72, 
+        paddingRight: 30, 
+        paddingLeft: 30, 
         justifyContent: 'center', 
         alignItems: 'center',
         flex: 1
@@ -562,7 +650,23 @@ const styles = StyleSheet.create({
     bordercolor: 'black', 
     borderWidth: 2, 
 
-  }
+  }, 
+  buttonStyle: {
+    width: '45%',
+    backgroundColor: '#6DC1DB',
+    color: 'black',
+    textAlign: 'center',
+    textAlignVertical: 'center',
+    borderRadius: 12
+
+  },
+
+  dropdownStyle: {
+    width: '43%',
+    borderColor: '#0C4B16',
+    borderWidth: 2,
+
+  },
 
    
   });
