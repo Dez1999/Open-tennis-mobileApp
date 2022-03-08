@@ -73,7 +73,7 @@ const ProfileScreen = ({navigation}) => {
           })
             .catch(error => {
               console.log(error);
-              alert(error);
+              alert("Sorry, something went wrong. Unable to retrieve user information.");
             })
 
     }catch (e) {

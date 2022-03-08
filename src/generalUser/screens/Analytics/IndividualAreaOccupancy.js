@@ -23,19 +23,27 @@ const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
 //Import Images
-const image = require('../../images/tennis-court-dimensions.jpg');
+const swimmingType = require('../../images/swimming_area.jpg');
+const tennisType = require('../../images/tennis-court-dimensions.jpg');
+const basketballType = require('../../images/Basketball-court.png');
+ 
+let image = "";
 
 const IndividualAreaOccupancy =(props) => {
   let status = props.OccupancyStatus;
   let occupancyListTest = props.currOccupancyList;
   let occupancyList = [0,4,0,0];
+  let deviceType = props.targetDevice;
   const [occupancyListData, setOccupancyData] = useState([]);
   const [occupancyStatusReal, setOccupancuStatus] = useState("");
+  const [targetDevice, setTargetDevice] = useState("");
 
 
 
   useEffect(() => {
     console.log("Occupancy List: " + occupancyListTest);
+    setTargetDevice(props.targetDevice);
+    console.log("Target Device (Inidvidual):" + props.targetDevice);
     setOccupancyData(props.currOccupancyList);
   }, [])
   
@@ -90,7 +98,43 @@ const IndividualAreaOccupancy =(props) => {
 
   }
 
+  if(props.targetDevice == "ANY"){
+    return (
+        <View style={styles.unavailableContent}>
+          <Text style={styles.unavailableText}>This Facility is unavailable for Occupancy Tracking</Text>
+        </View>
+    )
+  }
+
+  //Convert List into individual data points
+  const arr = occupancyListTest;
+  console.log(arr);
+  // To flat single level array
+  const flatOccupancyList = arr.reduce((acc, val) => {
+    return acc.concat(val)
+  }, []);
+  console.log(flatOccupancyList);
+
+
+  //Change Image Background depending on Device Type
+  if(deviceType == "TENNIS"){
+    image = tennisType;
+  }
+
+  if(deviceType == "BASKETBALL"){
+    image = basketballType;
+  }
+
+  if(deviceType == "SWIMMING"){
+    image = swimmingType;
+  }
+
+
+
+
   return (
+          <View style = {styles.mainContainer}>
+            <Text style={{textAlign: 'left', color: '#0B5B13', fontSize: 17, fontWeight: 'bold', padding: 10}}>REAL-TIME OCCUPANCY</Text>
             <View style ={styles.container}>
                {/* <Icon 
                     name="circle"
@@ -104,12 +148,13 @@ const IndividualAreaOccupancy =(props) => {
                     numColumns={3} 
                     columnWrapperStyle={styles.row}
                     nestedScrollEnabled
-                    data = {occupancyListTest}
+                    data = {flatOccupancyList}
                     renderItem={item}
                     keyExtractor={(item, index) => index.toString()}
                         >
                    </FlatList>
                 
+            </View>
             </View>
     
   );
@@ -122,6 +167,10 @@ const styles = StyleSheet.create({
       justifyContent: 'flex-start', 
 
     },  
+    mainContainer: {
+      marginTop: 20
+
+    },
 
     statusContent: {
         flexDirection: 'row',
@@ -178,6 +227,17 @@ const styles = StyleSheet.create({
     imageContent: {
         height: 200, 
         width: 100, 
+    }, 
+    unavailableContent: {
+      justifyContent: 'center',
+      marginTop: '30%'
+
+    }, 
+    unavailableText: {
+      textAlign: 'center', 
+      fontWeight: 'bold', 
+      fontSize: 20, 
+      color: 'red'
     }
 
   });

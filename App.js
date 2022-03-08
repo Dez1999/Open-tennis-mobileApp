@@ -11,6 +11,7 @@ import {
   Text,
   useColorScheme,
   View,
+  Alert
 } from 'react-native';
 
 //Import Screens
@@ -35,6 +36,7 @@ import { NavigationContainer } from '@react-navigation/native';
 //Login Authentication
 var loginUrl = 'http://52.229.94.153:8080/login';
 var userInfoUrl = 'http://52.229.94.153:8080/appUser';
+var SignUpUrl = 'http://52.229.94.153:8080/registration';
 
 
 const App = () => {
@@ -190,7 +192,7 @@ const App = () => {
 
              } catch(e){
                console.log(e);
-               alert(e + "Catch 1");
+               console.log(e + "Catch 1");
              }
        
             }
@@ -202,7 +204,7 @@ const App = () => {
          }
        })
        .catch(error => {
-           alert(error);
+           alert("User Credentials are Incorrect. Please try again.");
        })
        .done(()=>{
          //If user has successfully logged in then set token and relevant information in AsyncStorage
@@ -243,8 +245,6 @@ const App = () => {
       */
     }, 
     signOut: async() => {
-      //setUserToken(null);
-      //setIsLoading(false);
       console.log("Before Logged out, User Token: " + loginState.userToken + ", User decision: " + loginState.managerDecision);
       try{
        //Remove the userToken from AsyncStorage
@@ -259,9 +259,62 @@ const App = () => {
       dispatch({type: 'LOGOUT'});
       console.log("After Logged out, User Token: " + initialLoginState.userToken + ", User decision: " + initialLoginState.managerDecision);
     },
-    signUp: () => {
-      setUserToken('SDDASG');
-      setIsLoading(false);
+    signUp: async(firstname, lastname, username, password) => {
+
+      fetch(SignUpUrl, {
+        method: 'POST', 
+        headers: {
+          'Accept': 'application/json, text/plain, */*, application/x-www-form-urlencoded', 
+         'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          firstName: firstname, 
+          lastName: lastname, 
+          email: username, 
+          password: password 
+        }),
+        json: true,
+      })
+      
+      .then(response => {
+            console.log(response);
+            return response.json();
+          })
+        .then((resData) => {
+            console.log("Message response: " + resData.message);
+            console.log("Token: " + resData.token);
+
+            let newUserToken = "";
+
+            newUserToken = resData.token;
+
+
+            if (resData.message == "Email Confirmation Sent" && newUserToken !=""){
+              Alert.alert(
+                "Successful Registration",
+                "A confirmation email has been sent to you. Please verify your account and then proceed to sign in. Thank you!",
+                [
+                  { text: "OK", onPress: () => console.log("OK Pressed") }
+                ]
+              );
+            }
+            else if(resData.message == "email already taken"){
+              Alert.alert(
+                "Unsuccessful Registration",
+                "This email is already in use. Please register with a different email account. If this is your account then proceed to sign in page. Thank you!",
+                [
+                  { text: "OK", onPress: () => console.log("OK Pressed") }
+                ]
+              );
+            }
+  
+        })
+        .catch(error => {
+            alert("Sorry Something went wrong. Please try again");
+        })
+        .done(()=>{
+        
+         });
     },
     managerRole: async() => {
      let userDecisionStored;
@@ -322,7 +375,7 @@ const App = () => {
       }
       console.log('user token: ' , userToken);
       console.log('User Role: ' + userRoleStored + "  Manager Decision: " + managerOption);
-      dispatch({type: 'RETRIEVE_TOKEN', token: "Fake", managerDecision: managerOption, role: "MANAGER"});
+      dispatch({type: 'RETRIEVE_TOKEN', token: userToken, managerDecision: managerOption, role: userRoleStored});
       
     }, 1000);
   }, []);

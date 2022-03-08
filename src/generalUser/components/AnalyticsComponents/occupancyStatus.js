@@ -22,13 +22,13 @@ const OccupancyStatus =(props) => {
   let status = props.OccupancyStatus;
 
   const getOccupancy = () => {
-    if(status == 'Free'){
+    if(status == 'FREE'){
       return '#28B625'
     }
-    else if (status == 'Busy'){
+    else if (status == 'BUSY'){
       return '#D32E2E'
     }
-    else if (status == 'Avg'){
+    else if (status == 'MODERATELY BUSY'){
       return '#F9B70F'
     }
     else{
@@ -37,22 +37,6 @@ const OccupancyStatus =(props) => {
 
   }
 
-
-  const getOccupancyText = () => {
-    if(status == 'Free'){
-        return 'FREE'
-      }
-      else if (status == 'Busy'){
-        return 'BUSY'
-      }
-      else if (status == 'Avg'){
-        return 'MODERATELY BUSY'
-      }
-      else{
-        return 'NOT AVAILABLE' // Not occupancy status
-      }
-
-  }
   return (
             <View style ={styles.container}>
                <Icon 
@@ -61,7 +45,7 @@ const OccupancyStatus =(props) => {
                     color= {getOccupancy()}/>
                 <View style= {styles.statusContent}>
                     <Text style={styles.mainText}>OCCUPANCY STATUS: </Text>
-                    <Text style={styles.statusText} >{getOccupancyText()}</Text>
+                    <Text style={styles.statusText} >{status}</Text>
                 </View>
                 
               
@@ -88,7 +72,7 @@ const styles = StyleSheet.create({
         textAlign : 'center', 
         justifyContent : 'center',
         fontSize: 16,
-        fontWeight : '200',
+        fontWeight : '400',
         paddingVertical : 12,
         color: 'black'
     }, 
@@ -97,7 +81,7 @@ const styles = StyleSheet.create({
         textAlignVertical: 'center', 
         textAlign : 'center', 
         justifyContent : 'center',
-        fontSize: 16,
+        fontSize: 18,
         fontWeight : 'bold',
         paddingVertical : 12,
         color: 'black'

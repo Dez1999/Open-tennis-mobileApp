@@ -90,6 +90,55 @@ const SignupDemo = ({navigation}) => {
     }
  }
 
+ const validate = (text) => {
+    console.log(text);
+    let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w\w+)+$/;
+    if (reg.test(text) === false) {
+      console.log("Email is Not Correct");
+      setData({
+        ...data, 
+        username: text, 
+        check_textInputChange: true
+
+    })
+      return false;
+    }
+    else {
+        setData({
+            ...data, 
+            username: text, 
+            check_textInputChange: false
+
+        })
+      console.log("Email is Correct");
+      return true;
+    }
+  }
+
+
+ const handleSignupSubmit = () => {
+     console.log("Firstname: " + data.firstname +  ', LastName: ' +
+     data.lastname + ', Username: ' + 
+     data.username + ', Password: ' +
+     data.password)
+
+     let emailValidated = validate(data.username);
+     console.log("Email Validated: " + emailValidated);
+
+     //Check that All fields are field
+     if (data.firstname == "" || data.lastname == "" || data.username == "" || data.password == ""){
+         alert("Please fill in all Credentials");
+     }
+     else if (!emailValidated){
+         alert("Please use a proper Email.");
+     }
+     else {
+         signUp(data.firstname, data.lastname, data.username, data.password);
+     }
+ }
+
+ const { signUp } = React.useContext(AuthContext);
+
 
   return (
     <View style ={styles.container}>
@@ -116,7 +165,7 @@ const SignupDemo = ({navigation}) => {
                         placeholderTextColor = '#000000'
                         onChangeText={(val) => handlePasswordChange(val)}/>
                     <TouchableOpacity 
-                        //onPress={() => this.onClickListener('sign_in')}
+                        onPress={() => handleSignupSubmit()}
                         style={styles.button}>
                         <Text style={styles.buttonText}>Sign up</Text>
                     </TouchableOpacity>

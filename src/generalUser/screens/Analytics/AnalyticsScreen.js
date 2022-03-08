@@ -63,12 +63,12 @@ const latitude = '45.394457';
 const AnalyticsScreen = ({navigation, route}) => {
   //const [posts, setPosts] = useState([]);
   //const [data, setData] = useState([]);
-  const {facilityId, title, numCourts, occupancy, address, itemLatitude, itemLongitude, itemIndOccupancyList} = route.params; //Passes params from previous page
+  const {facilityId, title, numCourts, occupancy, address, itemLatitude, itemLongitude, itemIndOccupancyList, itemInitSelectedType, allFacilityTypeFilterList} = route.params; //Passes params from previous page
 
   const [favourited, setFavourited] = useState(false);
-  const [occupancyListData, setOccupancyData] = useState([0,0,0]);
+  const [occupancyListData, setOccupancyData] = useState([]);
   const [occupancyStatusReal, setOccupanyStatusReal] = useState("");
-  const [facilityTypeFilterChoice, setFacilityTypeFilterChoice] = useState("TENNIS");
+  const [facilityTypeFilterChoice, setFacilityTypeFilterChoice] = useState("");
   const [facilityAddress, setFacilityAddress] = useState("");
 
   //Method: Add Facility to Favourites
@@ -140,8 +140,78 @@ const removeFromFavourites = () => {
 
 }
 
+const getDeviceType = async () => {
+    if (itemInitSelectedType  == "ANY"){
+      //Check Facility Devices to select the correct device type to initiate
+      //Get device List
+      //Call API for each Facility Devices
+      const deviceFacilityURL = getDeviceInFacility + facilityId;
+      let isTypeChosen = false;
+      let selectedDeviceType = itemInitSelectedType;
+
+      axios.get(deviceFacilityURL).then(res => {
+        var deviceData = res.data;
+
+        //Check if DeviceList is Empty
+        if (deviceData.length == 0){
+           //Do Nothing
+           setFacilityTypeFilterChoice(itemInitSelectedType);
+           console.log("DeviceType (ANY-Empty Device Data): " + itemInitSelectedType);
+        }
+        else {
+          //Iterate to find the next deviceTypeChoice
+          console.log("getDeviceType (Not Empty)");
+          for (var i = 0; i < allFacilityTypeFilterList.length - 1; i++ ){
+            //Iterate through the device list and select the facility type to use 
+            console.log(i);    
+            console.log(allFacilityTypeFilterList[i]);
+            deviceData.forEach(elementDevice => {
+              //console.log("Device Occupancy Target: " + occupancyTarget);
+              let elementType = elementDevice.deviceType;
+              if(elementType == "SwimmingPool"){
+                    elementType = "SWIMMING";
+              }
+              elementTypeCap = (elementType).toUpperCase();
+              //console.log(elementType);
+              if (elementTypeCap == allFacilityTypeFilterList[i] && !isTypeChosen){
+                console.log("Success: Device Type = " + elementTypeCap);
+                isTypeChosen = true;
+                selectedDeviceType = elementTypeCap;
+                setFacilityTypeFilterChoice(elementTypeCap);
+                return;
+              }
+            
+            }
+           );
+
+           if (isTypeChosen){
+             return;
+           }
+
+          }
+        }  
+      })
+      .then(response => {
+        getOccupancy(selectedDeviceType);
+        console.log("DeviceType (ANY): " + facilityTypeFilterChoice);
+    
+      })
+      .catch(error => console.log(error))
+      .done(() => {
+        //return Occupancycolor;
+      });
+
+    }
+    else {
+      setFacilityTypeFilterChoice(itemInitSelectedType);
+      console.log("DeviceType (Specific): " + itemInitSelectedType);
+      getOccupancy(itemInitSelectedType);
+
+    }
+}
+
 //Retrieve Location of the Facility
-const getLocation = () => {
+const getLocation = async () => {
       Geocoder.init(API_KEY);
 
       Geocoder.from(itemLatitude, itemLongitude)
@@ -154,9 +224,7 @@ const getLocation = () => {
     }
 
 //Get Current Occupancy of Facility
-const getOccupancy = () => {
-
-  let Occupancycolor = '#696A6D';
+const getOccupancy = (selectedDeviceType) => {
 
   //Call API for each Facility Devices
   const deviceFacilityURL = getDeviceInFacility + facilityId;
@@ -169,10 +237,14 @@ const getOccupancy = () => {
       //Iterate through the device list and push Facility element to list if it contains the target Occupancy Status       
       deviceData.forEach(elementDevice => {
           //console.log("Device Occupancy Target: " + occupancyTarget);
-          let elementType = (elementDevice.deviceType).toUpperCase();
+          let elementType = elementDevice.deviceType;
+            if(elementType == "SwimmingPool"){
+                  elementType = "SWIMMING";
+            }
+          elementType = (elementType).toUpperCase();
           //console.log(elementType);
-          console.log("Facility Filter Choice: " + facilityTypeFilterChoice);
-          if (elementType == facilityTypeFilterChoice){
+          console.log("Facility Filter Choice: " + selectedDeviceType);
+          if (elementType == selectedDeviceType){
               selectedDevicesOccupancyList.push(elementDevice.currOccupancy);
               //selectedFacilityTypeList.push(element);
           }
@@ -182,7 +254,7 @@ const getOccupancy = () => {
 
   })
   .then(response => {
-    console.log("Device: " +selectedDevicesOccupancyList)
+    console.log("Device: " + selectedDevicesOccupancyList)
     calculateOccupancy(selectedDevicesOccupancyList);
     setOccupancyData(selectedDevicesOccupancyList);
 
@@ -195,50 +267,67 @@ const getOccupancy = () => {
 }
 
 const calculateOccupancy = (occupancyList) => {
+    if (occupancyList.length == 0){
+      setOccupanyStatusReal("NOT AVAILABLE") //Not available
 
-if (occupancyList.length == 0){
-  setOccupanyStatusReal("Not Available") //Not available
+    }
+    else {
+    //Calculate Facility Occupancy with each Device in each specific Facility
 
-}
-else {
-  //1. Find total number of free courts
-  var totalZeros;
-  totalZeros = occupancyList.filter(z => z === 0).length;
-  //console.log("Device : " + item.id + ". Num Empty Areas: " + totalZeros);
-  
-  //2. Calculate length of Array List
-  var numDeviceAreas = occupancyList.length;
-  //console.log("Device : " + item.id + ". Num Device Areas: " + numDeviceAreas);
+          //Iterate through selectedDeviceOccupancy List and convert to individual fields
+          const arr = occupancyList;
+          console.log(arr);
 
-  //2. Calculate Occupancy Status 
-  var status = totalZeros / numDeviceAreas;
+          // To flat single level array
+          const flatOccupancyList = arr.reduce((acc, val) => {
+            return acc.concat(val)
+          }, []);
+
+          console.log(flatOccupancyList);
+
+          //1. Find total number of free areas
+          var totalZeros;
+          totalZeros = flatOccupancyList.filter(z => z === 0).length;
+          console.log("Facility : " + facilityId + ". Num Empty Areas: " + totalZeros);
+          
+          //2. Calculate length of Array List
+          var numDeviceAreas = flatOccupancyList.length;
+          console.log("Facility : " + facilityId + ". Num Device Areas: " + numDeviceAreas);
+
+          //2. Calculate Occupancy Status 
+          var status = totalZeros / numDeviceAreas;
+          console.log("Facility Status: " + status);
 
 
-  //3. Filter into Occupancy Status Categories
-  var facilityStatus; 
+          //3. Filter into Occupancy Status Categories
+          var facilityStatus; 
 
-  if (status == 0){
-    //Facility is Free
-    facilityStatus = "Free";
-    setOccupanyStatusReal(facilityStatus);
-  }
 
-  else if (status > 0 && status < 0.60){
-    //Facility is Moderately Busy
-    facilityStatus = "Avg";
-    setOccupanyStatusReal(facilityStatus);
-  }
-  else if (status > 0.59 &&  status < 1.1){
-    //Facility is Busy
-    facilityStatus = "Busy";
-    return '#F9B70F'
-  }
-  else {
-    //Facility status is Not available
-    facilityStatus = "NOT AVAILABLE";
-    setOccupanyStatusReal(facilityStatus)
-  }
-}
+          if (status > 0.79){
+            //Facility is Free
+            console.log("FREE Facility");
+            facilityStatus = "FREE";
+            setOccupanyStatusReal(facilityStatus);
+            console.log(facilityStatus);
+          }
+
+          else if (status > 0.4 && status < 0.80){
+            //Facility is Moderately Busy
+            facilityStatus = "MODERATELEY BUSY";
+            setOccupanyStatusReal(facilityStatus);
+          }
+          else if (status >= 0 &&  status <= 0.4){
+            //Facility is Busy
+            facilityStatus = "BUSY";
+            setOccupanyStatusReal(facilityStatus);
+          }
+          else {
+            //Facility status is Not available
+            facilityStatus = "NOT AVAILABLE";
+            setOccupanyStatusReal(facilityStatus);
+          }
+          
+    }
 }
 
 
@@ -260,10 +349,11 @@ else {
 
 
   useEffect(() => {
-    getOccupancy();
     getLocation();
-    setFacilityTypeFilterChoice("TENNIS");
-    setOccupancyData([0,0,0])
+    getDeviceType();
+    //getOccupancy();
+    //setFacilityTypeFilterChoice("TENNIS");
+    //setOccupancyData([0,0,0])
   }, [])
 
   const item = ({item}) => {
@@ -295,7 +385,7 @@ else {
                               </Icon>
                       </TouchableOpacity>
                       <View style = {styles.midTopContent}>
-                          {individualData.map(i => (<Text key="{i}" style = {styles.facilityTypeText}>{i.type} Facility</Text>))}
+                          {individualData.map(i => (<Text key="{i}" style = {styles.facilityTypeText}>Facility</Text>))}
   
                       </View>
                       
@@ -346,9 +436,8 @@ else {
 
                   }}
                   >
-                  <OccupancyStatus OccupancyStatus= {occupancyStatusReal} currOccupancyList = {occupancyListData}></OccupancyStatus> 
-                  <Text style={{textAlign: 'left', color: '#0B5B13', fontSize: 17, fontWeight: 'bold', padding: 10}}>REAL-TIME OCCUPANCY</Text>
-                  <IndividualAreaOccupancy currOccupancyList={itemIndOccupancyList}/>
+                  <OccupancyStatus OccupancyStatus= {occupancyStatusReal}></OccupancyStatus> 
+                  <IndividualAreaOccupancy currOccupancyList={occupancyListData} targetDevice ={facilityTypeFilterChoice}/>
                 </View>
 
               </ScrollView>

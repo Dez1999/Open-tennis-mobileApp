@@ -223,11 +223,11 @@ const SearchScreen = ({navigation}) => {
   const [distanceFilterList, setDistanceFilter] = useState([]);
   const [cityFilterList, setCityFilter] = useState([]);
 
-  const [facilityTypeFilterChoice, setFacilityTypeFilterChoice] = useState("TENNIS");
-  const [occupancyStatusFilterChoice, setOccupancyStatusFilterChoice] = useState("FREE");
+  const [facilityTypeFilterChoice, setFacilityTypeFilterChoice] = useState("ANY");
+  const [occupancyStatusFilterChoice, setOccupancyStatusFilterChoice] = useState("All Occupancy");
   const [distanceFilterChoice, setDistanceFilterChoice] = useState("No Range");
   const [distanceFilterUnitChoice, setDistanceFilterUnitChoice] = useState("K");
-  const [cityFilterChoice, setCityFilterChoice] = useState("MISSISSAUGA");
+  const [cityFilterChoice, setCityFilterChoice] = useState("OTTAWA");
   const [filterCurrentChoice, setFilterCurrentChoice] = useState("");
 
   //User Location
@@ -401,7 +401,7 @@ const SearchScreen = ({navigation}) => {
             .catch(error => {
               setError(true);
               console.log(error);
-              alert(error);
+              alert("Sorry something went wrong. Unable to retrieve facilities.");
             }) 
             .done(() => {
               console.log("Facility Type Choice: " + facilityTypeFilterChoice);
@@ -460,8 +460,12 @@ const SearchScreen = ({navigation}) => {
               //Iterate through the device list and push Facility element to list if it contains the target device type
               deviceData.forEach(elementDevice => {
                   //console.log("Device Target" + deviceTypeTarget);
-                  let elementType = (elementDevice.deviceType).toUpperCase();
                   //console.log(elementType);
+                  let elementType = elementDevice.deviceType;
+                  if(elementType == "SwimmingPool"){
+                        elementType = "SWIMMING";
+                  }
+                  elementType = (elementType).toUpperCase();
 
                   //If Device contains deviceTypeTarget and they haven't been selected yet then add to selectedFacilityTypeList
                   if (elementType == deviceTypeTarget && selected ==false){
@@ -517,7 +521,11 @@ const SearchScreen = ({navigation}) => {
           //Iterate through the device list and push Facility element to list if it contains the target Occupancy Status       
           deviceData.forEach(elementDevice => {
             //console.log("Device Occupancy Target: " + occupancyTarget);
-            let elementType = (elementDevice.deviceType).toUpperCase();
+            let elementType = elementDevice.deviceType;
+            if(elementType == "SwimmingPool"){
+                  elementType = "SWIMMING";
+            }
+            elementType = (elementType).toUpperCase();
             //console.log(elementType);
             if (elementType == facilityTypeFilterChoice || facilityTypeFilterChoice == "ANY"){
                 //console.log("Element: " + element.name);
@@ -629,7 +637,11 @@ const SearchScreen = ({navigation}) => {
             //Iterate through the device list and push Facility element to list if it contains the target Occupancy Status       
             deviceData.forEach(elementDevice => {
                 //console.log("Device Occupancy Target: " + occupancyTarget);
-                let elementType = (elementDevice.deviceType).toUpperCase();
+                let elementType = elementDevice.deviceType;
+                if(elementType == "SwimmingPool"){
+                      elementType = "SWIMMING";
+                }
+                elementType = (elementType).toUpperCase();
                 //console.log(elementType);
                 if (elementType == facilityTypeFilterChoice){
                     //console.log("Element: " + element.name);
@@ -694,7 +706,6 @@ const SearchScreen = ({navigation}) => {
           if (facilityStatus == occupancyTarget || occupancyTarget == "All Occupancy"){
               //Add Facility to Selected List
               //Create element object and add to selectedFacilityOccupancyList
-              console.log("MATCH OCCUPANCY");
               var jsonObject = {city: element.city, id: element.id, latitude: element.latitude, longitude: element.longitude, name: element.name, ownerId: element.ownerId, occupancy: facilityStatus, selectedType: facilityTypeFilterChoice, indOccupancyList: flatOccupancyList}
               selectedFacilityOccupancyList.push(jsonObject);
           }
@@ -733,10 +744,7 @@ const SearchScreen = ({navigation}) => {
   }
 
 
- 
 
-
-  
 
   const renderFacilities = () =>{
         
@@ -777,7 +785,7 @@ const SearchScreen = ({navigation}) => {
                 itemLatitude: item.latitude, 
                 itemLongitude: item.longitude, 
                 itemInitSelectedType: item.selectedType, 
-                itemIndOccupancyList: item.indOccupancyList
+                allFacilityTypeFilterList: facilityTypeFilterList
               })}}> 
                 <View style={styles.listItem}>
 

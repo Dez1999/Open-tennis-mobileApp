@@ -51,7 +51,7 @@ const ProfileEdit = ({navigation}) => {
 
         })
         .catch(error => {
-            alert(error);
+            alert("Sorry, something went wrong");
         })
         .done(() => {
             if (successfullPost){
