@@ -307,6 +307,15 @@ const App = () => {
                 ]
               );
             }
+            else if (resData.message.includes('Invalid Addresses')){
+              Alert.alert(
+                "Invalid Email Address",
+                "Please use a valid email address",
+                [
+                  { text: "OK", onPress: () => console.log("OK Pressed") }
+                ]
+              );
+            }
   
         })
         .catch(error => {

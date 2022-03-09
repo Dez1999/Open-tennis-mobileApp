@@ -122,16 +122,22 @@ const SignupDemo = ({navigation}) => {
      data.username + ', Password: ' +
      data.password)
 
-     let emailValidated = validate(data.username);
-     console.log("Email Validated: " + emailValidated);
+     //let emailValidated = validate(data.username);
+     //console.log("Email Validated: " + emailValidated);
 
-     //Check that All fields are field
+     //Check that All fields are filled
      if (data.firstname == "" || data.lastname == "" || data.username == "" || data.password == ""){
-         alert("Please fill in all Credentials");
+        Alert.alert(
+            "All fields need to be filled",
+            "Please fill in all credentials",
+            [
+              { text: "OK", onPress: () => console.log("OK Pressed") }
+            ]
+          );
      }
-     else if (!emailValidated){
-         alert("Please use a proper Email.");
-     }
+    //  else if (!emailValidated){
+    //      alert("Please use a proper Email.");
+    //  }
      else {
          signUp(data.firstname, data.lastname, data.username, data.password);
      }
