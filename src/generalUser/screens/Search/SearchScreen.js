@@ -34,6 +34,9 @@ import { color, set } from 'react-native-reanimated';
 //Import User Location
 import GetLocation  from 'react-native-get-location';
 
+//Import Current Time
+import moment from 'moment';
+
 
 
 const windowWidth = Dimensions.get('window').width;
@@ -231,8 +234,8 @@ const SearchScreen = ({navigation}) => {
   const [filterCurrentChoice, setFilterCurrentChoice] = useState("");
 
   //User Location
-  const [userLatitude, setuserLatitude] = useState("45.3876");
-  const [userLongitude, setUserLongitude] = useState("-75.6976");
+  const [userLatitude, setuserLatitude] = useState("");
+  const [userLongitude, setUserLongitude] = useState("");
   const [userLocationError, setuserLocationError] = useState(null);
 
   //Modal constants
@@ -242,6 +245,14 @@ const SearchScreen = ({navigation}) => {
   // methods that handle a component's visibility state
   const showModal = () => setVisible(true);
   const hideModal = () => setVisible(false);
+
+  //Testing Performance
+  var performanceTime = 0;
+  var startTime = 0;
+  var endTime = 0;
+  var rangeFetchCount = 0;
+  var typeFetchCount = 0;
+  var occupancyFetchCount = 0;
 
 
   const setFilterLists = () => {
@@ -331,7 +342,7 @@ const SearchScreen = ({navigation}) => {
     //getFacilities();
     setFilterLists();
 
-    getUserLocation();
+    //getUserLocation();
 
     //getFacilities();
     handleFilterSubmit();
@@ -341,6 +352,11 @@ const SearchScreen = ({navigation}) => {
 
   //Handle when a use applies the filters to search function
   handleFilterSubmit = async () => {
+    rangeFetchCount = 0;
+    typeFetchCount = 0;
+    occupancyFetchCount = 0;
+    startTime = moment().utcOffset('+05:00').format('HH:mm:ss');
+    console.log("Start Time of FilterSubmit: " + startTime);
     //Set Loading to True
     setIsLoading(true);
 
@@ -355,6 +371,8 @@ const SearchScreen = ({navigation}) => {
 
   //Fetch filtered facilities from database -> By Distance
   const getFilteredFacilities_Range = async (range, cityChoice) => {
+    //Increase Count for Fetch:
+    rangeFetchCount++;
     //Update main Data list with updated filter
     var numRange;
     if (range == "No Range"){
@@ -369,6 +387,21 @@ const SearchScreen = ({navigation}) => {
 
     //Temp Filtered Dataset
     let tempDataset = [];
+
+    //Get User Location
+    GetLocation.getCurrentPosition({
+      enableHighAccuracy: true,
+      timeout: 15000,
+    })
+    .then(location => {
+      console.log(location);
+      setuserLatitude(location.latitude);
+      setUserLongitude(location.longitude);
+    })
+    .catch(error => {
+      const {code, message} = error;
+      console.warn(code, message);
+    })
 
 
     const getURLFetch = `http://52.229.94.153:8080/facility/filters?latitude=${userLatitude}&longitude=${userLongitude}&city=${cityChoice}&range=${numRange}&unit=K`;
@@ -425,8 +458,12 @@ const SearchScreen = ({navigation}) => {
     //   and create a new list with the type of facilities and then set it equal to the filteredFacilityData
     //5. Render the data in the Flatlist
 
+    //Increase coutn for type Fetch
+    typeFetchCount++;
+    occupancyFetchCount = 0;
+
     let selectedFacilityTypeList = [];
-    console.log("Temp Filtered Data Length at TypeUpdate: " + tempFilteredData.length);
+    //console.log("Temp Filtered Data Length at TypeUpdate: " + tempFilteredData.length);
 
     //Do Nothing and go to OccupancyStatusFilter
       
@@ -481,7 +518,7 @@ const SearchScreen = ({navigation}) => {
 
             //Now Request Occupancy Filtered Choice
             handleOccupancyUpdate(occupancyStatusFilterChoice, selectedFacilityTypeList);
-            console.log("Facility Type Update After Type Filtering");
+            //console.log("Facility Type Update After Type Filtering");
             
             //console.log(selectedFacilityTypeList);
 
@@ -494,7 +531,12 @@ const SearchScreen = ({navigation}) => {
   }
 
   const handleSpecialOccupancyStatusUpdate = (occupancyTarget, tempFilteredData) => {
+
+    //Increase count for Special Occupancy Fetch
+    occupancyFetchCount++;
+
     let selectedFacilityOccupancyList = [];
+
 
     //Note: tempFilteredData != Empty, Facility Type = Any, Occupancy Status = [Free, Moderately Busy, Busy, All Occupancy]
 
@@ -603,6 +645,10 @@ const SearchScreen = ({navigation}) => {
         setFilteredFacilityData(selectedFacilityOccupancyList);
         setMainFacilityData(selectedFacilityOccupancyList);
         setIsLoading(false);
+        endTime = moment().utcOffset('+05:00').format('HH:mm:ss');
+        performanceTime = endTime - startTime;
+        console.log("Start Time of FilterSubmit: " + startTime);
+        console.log("End Time of FilterSubmit: " + endTime);
 
       })
       .catch(error => console.log(error));
@@ -614,6 +660,9 @@ const SearchScreen = ({navigation}) => {
 
   const handleOccupancyUpdate = (occupancyTarget, tempFilteredData) => {
 
+    //Increase count for Special Occupancy Fetch
+
+
     let selectedFacilityOccupancyList = [];
 
     //Check if TempFilteredData is empty
@@ -622,10 +671,15 @@ const SearchScreen = ({navigation}) => {
       setFilteredFacilityData(tempFilteredData);
       setMainFacilityData(tempFilteredData);
       setIsLoading(false);
-      console.log("OccupancyStatus Filter (Before Filtering) : Dataset is empty");
+      endTime = moment().utcOffset('+05:00').format('HH:mm:ss');
+      performanceTime = endTime - startTime;
+      console.log("Start Time of FilterSubmit: " + startTime);
+      console.log("End Time of FilterSubmit: " + endTime);
+
     }
     else {
       //Iterate through the Facility Data
+      occupancyFetchCount++;
       tempFilteredData.forEach(element => {
         //Call API for each Facility Devices
         const deviceFacilityURL = getDeviceInFacility + element.id;
@@ -715,14 +769,25 @@ const SearchScreen = ({navigation}) => {
           //console.log("Selected Facility Occupancy: " + selectedFacilityOccupancyList)
         })
         .then(response => {
-          console.log(selectedFacilityOccupancyList);
+          //console.log(selectedFacilityOccupancyList);
           setFilteredFacilityData(selectedFacilityOccupancyList);
           setMainFacilityData(selectedFacilityOccupancyList);
-          
-          setIsLoading(false);
+
+          endTime = moment().utcOffset('+05:00').format('HH:mm:ss');
+          performanceTime = endTime - startTime;
+          console.log("Start Time of FilterSubmit: " + startTime);
+          console.log("End Time of FilterSubmit: " + endTime);
+
+          console.log("-------------------------------------------------\n RangeFetchCount = " + rangeFetchCount + "\n TypeFetchCount = " + 
+                      typeFetchCount + "\noccupancyfetch Count = " + occupancyFetchCount + 
+                      "\n------------------------------------------------");
 
         })
-        .catch(error => console.log(error));
+        .catch(error => console.log(error))
+        .done(() => {
+            setIsLoading(false);
+            //  setTimeout(function() {setIsLoading(false);}, 5000);
+        })
       });
     }
 
@@ -780,6 +845,7 @@ const SearchScreen = ({navigation}) => {
             keyExtractor={item => item.id}
             onRefresh= {() => handleFilterSubmit()}
             refreshing={isLoading}
+            windowSize={3}
             renderItem={({ item }) => (
               <TouchableOpacity onPress={() => {navigation.navigate('Analytics', {
                 facilityId: item.id, 
