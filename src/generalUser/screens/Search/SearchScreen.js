@@ -234,8 +234,8 @@ const SearchScreen = ({navigation}) => {
   const [filterCurrentChoice, setFilterCurrentChoice] = useState("");
 
   //User Location
-  const [userLatitude, setuserLatitude] = useState("");
-  const [userLongitude, setUserLongitude] = useState("");
+  const [userLatitude, setuserLatitude] = useState("34.231899");
+  const [userLongitude, setUserLongitude] = useState("-77.866791");
   const [userLocationError, setuserLocationError] = useState(null);
 
   //Modal constants
@@ -374,6 +374,8 @@ const SearchScreen = ({navigation}) => {
     //Increase Count for Fetch:
     rangeFetchCount++;
     //Update main Data list with updated filter
+    var mainUserLatitude;
+    var mainUserLongitude;
     var numRange;
     if (range == "No Range"){
       numRange = 500;
@@ -389,12 +391,14 @@ const SearchScreen = ({navigation}) => {
     let tempDataset = [];
 
     //Get User Location
-    GetLocation.getCurrentPosition({
+    await GetLocation.getCurrentPosition({
       enableHighAccuracy: true,
       timeout: 15000,
     })
     .then(location => {
       console.log(location);
+      mainUserLatitude = location.latitude;
+      mainUserLongitude = location.longitude;
       setuserLatitude(location.latitude);
       setUserLongitude(location.longitude);
     })
@@ -404,7 +408,7 @@ const SearchScreen = ({navigation}) => {
     })
 
 
-    const getURLFetch = `http://52.229.94.153:8080/facility/filters?latitude=${userLatitude}&longitude=${userLongitude}&city=${cityChoice}&range=${numRange}&unit=K`;
+    const getURLFetch = `http://52.229.94.153:8080/facility/filters?latitude=${mainUserLatitude}&longitude=${mainUserLongitude}&city=${cityChoice}&range=${numRange}&unit=K`;
     console.log("Test: " + getURLFetch);
 
     setError(null);
