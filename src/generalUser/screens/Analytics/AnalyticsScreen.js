@@ -416,17 +416,11 @@ const getFacilityTypeList = async () => {
     getLocation();
     getDeviceType(itemInitSelectedType);
     getFacilityTypeList();
+    
     //getOccupancy();
     //setFacilityTypeFilterChoice("TENNIS");
     //setOccupancyData([0,0,0])
   }, [])
-
-
-const checkFacilityType = () =>{
-  if (facilityTypeFilterChoice != "ANY" && facilityTypeFilterChoice != ""){
-    setSelectedDeviceType(facilityTypeFilterChoice);
-  }
-}
 
 
 const handleTypeChange = (selectedType) => {

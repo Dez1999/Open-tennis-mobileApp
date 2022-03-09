@@ -34,7 +34,7 @@ const ManagerDecision = () => {
                 <TouchableOpacity 
                     onPress={() => {managerRole()}}
                     style={{margin: 20, backgroundColor: "#5D85ED", alignItems: 'center', padding: 10, borderRadius: 50}}>
-                    <Text style={{color: '#000', fontSize: 25, textAlign:'center'}}>Manager Role</Text>
+                    <Text style={{color: '#FFF', fontSize: 25, textAlign:'center'}}>Manager Role</Text>
                 </TouchableOpacity>
                 <TouchableOpacity 
                     onPress={() => {generalRole()}}

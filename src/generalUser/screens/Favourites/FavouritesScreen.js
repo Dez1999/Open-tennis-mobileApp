@@ -48,6 +48,7 @@ const FavouritesScreen =({navigation}) => {
   const [posts, setPosts] = useState([]);
   const [err, setErr] = useState("");
   const [term, setTerm] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const [favourited, setFavourited] = useState(true);
   const [favouritesData, setFavouritesData] = useState([]);
   const [filteredData, setfilteredData] = useState([]);
@@ -57,15 +58,18 @@ const FavouritesScreen =({navigation}) => {
 
   
   const getFacilities = () => {
+    setIsLoading(true);
     axios.get(viewFavouritesURL).then((res) => {
       if (res.data.length > 0) {
         setFavouritesData(res.data);
         setfilteredData(res.data);
+        setIsLoading(false);
         console.log(res.data);
       } else {
         setFavouritesData([]);
         setfilteredData([]);
         setErr("No facilities found");
+        setIsLoading(false);
       }
     });
   };
@@ -132,20 +136,24 @@ const FavouritesScreen =({navigation}) => {
               <TextInput
                 style={styles.textInputStyle}
                 value ={search}
-                placeholder="Search Facilities"
+                placeholder="Search Favourite Facilities..."
                 underlineColorAndoird="transparent"
                 onChangeText={(text) => searchFilter(text)}>
               </TextInput>
               <FlatList
                   data={filteredData}
                   keyExtractor={item => item.id}
+                  onRefresh= {() => getFacilities()}
+                  refreshing={isLoading}
                   renderItem={({ item }) => (
                     <TouchableOpacity onPress={() => {navigation.navigate('Analytics', {
                       facilityId: item.id, 
                       title: item.name, 
-                      numCourts: item.numCourts, 
+                      itemLatitude: item.latitude, 
+                      itemLongitude: item.longitude,
                       occupancy: item.occupancy,
-                      address: item.address
+                      address: item.address, 
+                      itemInitSelectedType: "ANY",
                     })}}> 
                       <View style={styles.listItem}>
                         
@@ -158,7 +166,7 @@ const FavouritesScreen =({navigation}) => {
 
                         <View style = {styles.SecondaryContent}>
                           <Text style={styles.listItemTextMain}>{item.name}</Text>
-                          <Text style={styles.listItemTextSub}>{item.city}   |   Courts: {item.numCourts}   |   {item.distance} km   </Text>
+                          <Text style={styles.listItemTextSub}>{item.city}</Text>
                         </View>
 
                         <IconMat

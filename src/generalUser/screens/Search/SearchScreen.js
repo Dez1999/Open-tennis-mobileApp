@@ -275,7 +275,7 @@ const SearchScreen = ({navigation}) => {
 
   const searchFilter = (text) => {
     if (text) {
-        const newData = mainFacilityData.filter((item) => {
+        const newData = filteredFacilityData.filter((item) => {
             const itemData = item.name ?
                     item.name.toUpperCase()
                     : ''.toUpperCase();
@@ -283,11 +283,11 @@ const SearchScreen = ({navigation}) => {
             return itemData.indexOf(textData) > -1;
         });
 
-        setFilteredFacilityData(newData);
+        setMainFacilityData(newData);
         setSearch(text);
 
     } else {
-        setFilteredFacilityData(mainFacilityData);
+        setMainFacilityData(filteredFacilityData);
         setSearch(text);
     }
 }
@@ -310,8 +310,9 @@ const SearchScreen = ({navigation}) => {
           return response.json();
         })
           .then((resData) => {
-            setMainFacilityData(resData);
             setFilteredFacilityData(resData);
+            setMainFacilityData(resData);
+            
             console.log(resData);
 
           })
@@ -393,7 +394,7 @@ const SearchScreen = ({navigation}) => {
             //setFilteredFacilityData(resData);
             //setMainFacilityData(resData);
             tempDataset = resData;
-            console.log(tempDataset);
+            //console.log(tempDataset);
             //setIsLoading(false);
             setError(false);
 
@@ -482,7 +483,7 @@ const SearchScreen = ({navigation}) => {
             handleOccupancyUpdate(occupancyStatusFilterChoice, selectedFacilityTypeList);
             console.log("Facility Type Update After Type Filtering");
             
-            console.log(selectedFacilityTypeList);
+            //console.log(selectedFacilityTypeList);
 
           })
           .catch(error => console.log(error));
@@ -546,7 +547,7 @@ const SearchScreen = ({navigation}) => {
             return acc.concat(val)
           }, []);
 
-          console.log(flatOccupancyList);
+          //console.log(flatOccupancyList);
 
           //1. Find total number of free areas
           var totalZeros;
@@ -598,9 +599,9 @@ const SearchScreen = ({navigation}) => {
 
       })
       .then(response => {
-        console.log(selectedFacilityOccupancyList);
+        //console.log(selectedFacilityOccupancyList);
+        setFilteredFacilityData(selectedFacilityOccupancyList);
         setMainFacilityData(selectedFacilityOccupancyList);
-        setFilteredFacilityData(selectedDevicesOccupancyList);
         setIsLoading(false);
 
       })
@@ -618,6 +619,7 @@ const SearchScreen = ({navigation}) => {
     //Check if TempFilteredData is empty
     if (tempFilteredData.length == 0){
       //Do Nothing and set mainDataset to tempFilteredData, then set Loading to false
+      setFilteredFacilityData(tempFilteredData);
       setMainFacilityData(tempFilteredData);
       setIsLoading(false);
       console.log("OccupancyStatus Filter (Before Filtering) : Dataset is empty");
@@ -656,27 +658,27 @@ const SearchScreen = ({navigation}) => {
 
           //Iterate through selectedDeviceOccupancy List and convert to individual fields
           const arr = selectedDevicesOccupancyList;
-          console.log(arr);
+          //console.log(arr);
 
           // To flat single level array
           const flatOccupancyList = arr.reduce((acc, val) => {
             return acc.concat(val)
           }, []);
 
-         console.log(flatOccupancyList);
+          //console.log(flatOccupancyList);
 
           //1. Find total number of free areas
           var totalZeros;
           totalZeros = flatOccupancyList.filter(z => z === 0).length;
-          console.log("Facility : " + element.id + ". Num Empty Areas: " + totalZeros);
+          //console.log("Facility : " + element.id + ". Num Empty Areas: " + totalZeros);
           
           //2. Calculate length of Array List
           var numDeviceAreas = flatOccupancyList.length;
-          console.log("Facility : " + element.id + ". Num Device Areas: " + numDeviceAreas);
+          //console.log("Facility : " + element.id + ". Num Device Areas: " + numDeviceAreas);
 
           //2. Calculate Occupancy Status 
           var status = totalZeros / numDeviceAreas;
-          console.log("Facility Status: " + status);
+          //console.log("Facility Status: " + status);
 
 
           //3. Filter into Occupancy Status Categories
@@ -700,7 +702,7 @@ const SearchScreen = ({navigation}) => {
             facilityStatus = "NOT AVAILABLE";
           }
 
-          console.log("Facility Status (Words):" + facilityStatus);
+          //console.log("Facility Status (Words):" + facilityStatus);
 
           //Check if Facility Meets the requirements
           if (facilityStatus == occupancyTarget || occupancyTarget == "All Occupancy"){
@@ -714,8 +716,9 @@ const SearchScreen = ({navigation}) => {
         })
         .then(response => {
           console.log(selectedFacilityOccupancyList);
+          setFilteredFacilityData(selectedFacilityOccupancyList);
           setMainFacilityData(selectedFacilityOccupancyList);
-          setFilteredFacilityData(selectedDevicesOccupancyList);
+          
           setIsLoading(false);
 
         })
@@ -1057,6 +1060,7 @@ const styles = StyleSheet.create({
     }, 
     listItem: {
       marginTop: 10,
+      marginLeft: 5,
       borderRadius: 13,
       padding: 10,
       flexDirection: 'row',
