@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import {
     StyleSheet, 
     Text, 
@@ -38,6 +38,10 @@ import HorizontalPicker from '@vseslav/react-native-horizontal-picker';
 import SmoothPicker from "react-native-smooth-picker";
 import SelectDropdown from 'react-native-select-dropdown';
 
+//Import Favourites function
+import FavouritesScreen from '../Favourites/FavouritesScreen'
+import { FavouritesContext } from '../../../sharedComponents/Context/Context';
+
 //Geocoding
 import Geocoder from 'react-native-geocoding';
 const API_KEY = "AIzaSyCu9nK77w0j9LME2vt5HzcshWhWbYEQtGE";
@@ -54,6 +58,8 @@ const viewFavouritesURL = "http://52.229.94.153:8080/facility/favourite";
 const getDeviceInFacility = "http://52.229.94.153:8080/device/inFacility/";
 
 
+
+
 //Testing Data for Analytics Page
 //Testing data
 const individualData = [
@@ -65,9 +71,10 @@ const latitude = '45.394457';
 
 
 const AnalyticsScreen = ({navigation, route}) => {
+  const {favourites, add, getFavourites, remove} = useContext(FavouritesContext);
   //const [posts, setPosts] = useState([]);
   //const [data, setData] = useState([]);
-  const {facilityId, title, numCourts, occupancy, address, itemLatitude, itemLongitude, itemIndOccupancyList, itemInitSelectedType, allFacilityTypeFilterList} = route.params; //Passes params from previous page
+  const {facilityId, ownerId, facilityCity, title, numCourts, occupancy, address, itemLatitude, itemLongitude, itemIndOccupancyList, itemInitSelectedType, allFacilityTypeFilterList, itemFavourited} = route.params; //Passes params from previous page
 
   const [favourited, setFavourited] = useState(false);
   const [occupancyListData, setOccupancyData] = useState([]);
@@ -105,45 +112,21 @@ const AnalyticsScreen = ({navigation, route}) => {
     })
     .done(() => {
 
-        console.log("You have successfully added a new Facility to favourites");
+      var jsonObject = {city: facilityCity, id: facilityId, latitude: itemLatitude, longitude: itemLongitude, name: title, ownerId: ownerId};
+      add(jsonObject);
+      console.log("You have successfully added a new Facility to favourites");
 
     });
 
 }
 
 //Method: Post Facility to the database
-const removeFromFavourites = () => {
+const removeFromFavourites = async () => {
   const selectedFacility = `${facilityId}`;
-  const removeFacilityFavURL = removeFavouriteURL + selectedFacility;
-  console.log("Remove facility Device URL: " + removeFacilityFavURL);
 
+  await remove(selectedFacility);
+  getFavourites();
   
-  let successfullPost = true;
-  fetch(removeFacilityFavURL, {
-      method: 'DELETE',
-      headers: {
-          'Accept': 'application/json',
-         'Content-Type': 'application/json'
-      },
-      credentials: 'include'
-  })
-  .then(response => {
-      return response.json();
-  })
-  .then((resJSON) => {
-      //TODO
-      //Currently no response from the backend
-
-  })
-  .catch(error => {
-      console.log(error);
-  })
-  .done(() => {
-
-      console.log("You have successfully removed a Facility to Favourites");
-
-  });
-
 }
 
 const getDeviceType = async (itemInitSelectedType) => {
@@ -416,7 +399,8 @@ const getFacilityTypeList = async () => {
     getLocation();
     getDeviceType(itemInitSelectedType);
     getFacilityTypeList();
-    
+    setFavourited(itemFavourited);
+    console.log("Is Facility Favourited: " + favourited);
     //getOccupancy();
     //setFacilityTypeFilterChoice("TENNIS");
     //setOccupancyData([0,0,0])

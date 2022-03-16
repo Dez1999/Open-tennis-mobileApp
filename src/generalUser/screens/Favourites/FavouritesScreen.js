@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {Component, useContext} from 'react';
 import {
     StyleSheet, 
     Text, 
@@ -16,6 +16,7 @@ import axios from 'axios';
 //import {} from 'react-navigation';
 
 import SearchComponent from '../../components/Search/SearchComponent';
+import { FavouritesContext } from '../../../sharedComponents/Context/Context';
 
 //Import Icons
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -27,6 +28,7 @@ const windowHeight = Dimensions.get('window').height;
 
 //API URL
 const viewFavouritesURL = "http://52.229.94.153:8080/facility/favourite";
+const getDeviceInFacility = "http://52.229.94.153:8080/device/inFacility/";
 
 const data = [
   {id:'1', title: 'Windsor Park', type: 'Tennis', distance: '1', numCourts:'4', occupancy: "Free", address: "1B Windsor Ave, Ottawa" },
@@ -44,7 +46,11 @@ const data = [
 ]
 
 
+
+
+
 const FavouritesScreen =({navigation}) => {
+  const {favourites} = useContext(FavouritesContext);
   const [posts, setPosts] = useState([]);
   const [err, setErr] = useState("");
   const [term, setTerm] = useState("");
@@ -52,11 +58,12 @@ const FavouritesScreen =({navigation}) => {
   const [favourited, setFavourited] = useState(true);
   const [favouritesData, setFavouritesData] = useState([]);
   const [filteredData, setfilteredData] = useState([]);
+  const [facilityTypeFilterList, setFacilityTypeFilter] = useState([]);
   const [search, setSearch] = useState('');
 
   let apiUrl = 'https://randomuser.me/api/?seed=${seed}&page=${page}&results=20';
 
-  
+
   const getFacilities = () => {
     setIsLoading(true);
     axios.get(viewFavouritesURL).then((res) => {
@@ -74,17 +81,112 @@ const FavouritesScreen =({navigation}) => {
     });
   };
 
-  const renderPosts = ({item}) => {
-    return (
-      <View>
-        <Text>{item.id}. {item.title}</Text>
-        <Text>{item.username}</Text>
-      </View>
-    )
+  const getFacilityOccupancy = () => {
+
+    let selectedFacilityOccupancyList = [];
+
+    //Check if TempFilteredData is empty
+    if (favourites.length == 0){
+      //Do Nothing, then set Loading to false
+      setFavouritesData(favourites);
+      setfilteredData(favourites);
+      setIsLoading(false);
+
+    }
+    else {
+      //Iterate through the Facility Data
+      favourites.forEach(element => {
+        //Call API for each Facility Devices
+        const deviceFacilityURL = getDeviceInFacility + element.id;
+        //console.log(deviceFacilityURL);
+        let selectedDevicesOccupancyList = [];
+
+        axios.get(deviceFacilityURL).then(res => {
+            var deviceData = res.data;
+
+            //Iterate through the device list and push Facility element to list if it contains the target Occupancy Status       
+            deviceData.forEach(elementDevice => {
+               selectedDevicesOccupancyList.push(elementDevice.currOccupancy);
+
+            }
+            );
+            
+          //Calculate Facility Occupancy with each Device in each specific Facility
+
+          //Iterate through selectedDeviceOccupancy List and convert to individual fields
+          const arr = selectedDevicesOccupancyList;
+          //console.log(arr);
+
+          // To flat single level array
+          const flatOccupancyList = arr.reduce((acc, val) => {
+            return acc.concat(val)
+          }, []);
+
+          //console.log(flatOccupancyList);
+
+          //1. Find total number of free areas
+          var totalZeros;
+          totalZeros = flatOccupancyList.filter(z => z === 0).length;
+          //console.log("Facility : " + element.id + ". Num Empty Areas: " + totalZeros);
+          
+          //2. Calculate length of Array List
+          var numDeviceAreas = flatOccupancyList.length;
+          //console.log("Facility : " + element.id + ". Num Device Areas: " + numDeviceAreas);
+
+          //2. Calculate Occupancy Status 
+          var status = totalZeros / numDeviceAreas;
+          //console.log("Facility Status: " + status);
+
+
+          //3. Filter into Occupancy Status Categories
+          var facilityStatus; 
+
+          if (status > 0.79){
+            //Facility is Free
+            facilityStatus = "FREE";
+          }
+
+          else if (status > 0.4 && status < 0.80){
+            //Facility is Moderately Busy
+            facilityStatus = "MODERATELEY BUSY";
+          }
+          else if (status >= 0 &&  status <= 0.4){
+            //Facility is Busy
+            facilityStatus = "BUSY";
+          }
+          else {
+            //Facility status is Not available
+            facilityStatus = "NOT AVAILABLE";
+          }
+
+          //console.log("Facility Status (Words):" + facilityStatus);
+
+          //Create new jsonObject for the Facility
+          var jsonObject = {city: element.city, ownerId: element.ownerId, id: element.id, latitude: element.latitude, longitude: element.longitude, name: element.name, ownerId: element.ownerId, occupancy: facilityStatus, selectedType: "ANY", indOccupancyList: flatOccupancyList, isfavourited: true}
+          selectedFacilityOccupancyList.push(jsonObject);
+
+        })
+        .then(response => {
+          //console.log(selectedFacilityOccupancyList);
+          setFavouritesData(selectedFacilityOccupancyList);
+          setfilteredData(selectedFacilityOccupancyList);
+        })
+        .catch(error => console.log(error))
+        .done(() => {
+            setIsLoading(false);
+            //  setTimeout(function() {setIsLoading(false);}, 5000);
+        })
+      });
+    }
+
   }
 
   useEffect(() => {
-    getFacilities()
+    //getFacilities()
+    setFacilityTypeFilter(["TENNIS", "BASKETBALL", "SWIMMING", "ANY"]);
+    getFacilityOccupancy();
+
+    console.log(favourites);
 
   }, [])
 
@@ -107,22 +209,16 @@ const FavouritesScreen =({navigation}) => {
     }
 }
 
-  
-
-
-  const handleFavourites = () => {
-    setFavourited(!favourited);
-  };
 
   const getOccupancy = (t) => {
     console.log(t);
-    if(t == 'Free'){
+    if(t == 'FREE'){
       return '#28B625'
     }
-    else if (t == 'Busy'){
+    else if (t == 'BUSY'){
       return '#D32E2E'
     }
-    else if (t == 'Avg'){
+    else if (t == 'MODERATELEY BUSY'){
       return '#F9B70F'
     }
     else {
@@ -133,27 +229,45 @@ const FavouritesScreen =({navigation}) => {
 
   return (
             <View style ={styles.container}>
-              <TextInput
-                style={styles.textInputStyle}
-                value ={search}
-                placeholder="Search Favourite Facilities..."
-                underlineColorAndoird="transparent"
-                onChangeText={(text) => searchFilter(text)}>
-              </TextInput>
+              <View style = {styles.searchContainer}>
+                  <TextInput
+                    style={styles.textInputStyle}
+                    value ={search}
+                    placeholder=" Search Favourite Facilities..."
+                    underlineColorAndoird="transparent"
+                    onChangeText={(text) => searchFilter(text)}>
+                  </TextInput>
+                  <TouchableOpacity
+                      onPress={()=> getFacilityOccupancy()}
+                  >
+                      <Ionicons
+                        name="refresh"
+                        size={37}
+                        color = "black"
+                      >
+
+                      </Ionicons>
+                  </TouchableOpacity>
+              </View>
               <FlatList
                   data={filteredData}
                   keyExtractor={item => item.id}
-                  onRefresh= {() => getFacilities()}
+                  onRefresh= {() => getFacilityOccupancy()}
                   refreshing={isLoading}
                   renderItem={({ item }) => (
                     <TouchableOpacity onPress={() => {navigation.navigate('Analytics', {
                       facilityId: item.id, 
+                      ownerId: item.ownerId,
+                      facilityCity: item.city,
                       title: item.name, 
                       itemLatitude: item.latitude, 
                       itemLongitude: item.longitude,
                       occupancy: item.occupancy,
                       address: item.address, 
                       itemInitSelectedType: "ANY",
+                      itemFavourited: item.isfavourited,
+                      allFacilityTypeFilterList: facilityTypeFilterList
+
                     })}}> 
                       <View style={styles.listItem}>
                         
@@ -162,8 +276,6 @@ const FavouritesScreen =({navigation}) => {
                             size = {27}
                             color= {favourited ? 'yellow' : 'white'}
                             />   
-                        
-
                         <View style = {styles.SecondaryContent}>
                           <Text style={styles.listItemTextMain}>{item.name}</Text>
                           <Text style={styles.listItemTextSub}>{item.city}</Text>
@@ -246,12 +358,18 @@ const styles = StyleSheet.create({
     textInputStyle: {
       height: 40, 
       borderWidth: 1, 
-      paddingLeft: 20, 
+      paddingLeft: 10, 
       width: '90%',
+      marginLeft: 5,
       borderRadius: 15,
       borderColor: 'black', 
       backgroundColor: '#E2F1DB'
   },
+  searchContainer: {
+    flexDirection: 'row',
+    padding: 3,
+    paddingRight: 5
+  }, 
 
 
   });

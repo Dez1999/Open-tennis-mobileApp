@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useContext} from 'react';
 import {
     StyleSheet, 
     Text, 
@@ -36,6 +36,9 @@ import GetLocation  from 'react-native-get-location';
 
 //Import Current Time
 import moment from 'moment';
+
+//Import Favourites Context
+import { FavouritesContext } from '../../../sharedComponents/Context/Context';
 
 
 
@@ -208,6 +211,10 @@ const RealData = [{"city": "OTTAWA", "id": 2, "latitude": 45.39809298, "longitud
 
 
 const SearchScreen = ({navigation}) => {
+  //Favourites Context
+  const {favourites} = useContext(FavouritesContext);
+
+
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [search, setSearch] = useState('');
@@ -278,11 +285,6 @@ const SearchScreen = ({navigation}) => {
     })
   }
 
-  const handleFavourites = () => {
-    setFavourited(!favourited);
-    //Call to favourites API to compare
-
-  };
 
   const searchFilter = (text) => {
     if (text) {
@@ -534,6 +536,8 @@ const SearchScreen = ({navigation}) => {
     
   }
 
+
+  //Filter Device Type is "ANY"
   const handleSpecialOccupancyStatusUpdate = (occupancyTarget, tempFilteredData) => {
 
     //Increase count for Special Occupancy Fetch
@@ -561,7 +565,16 @@ const SearchScreen = ({navigation}) => {
           console.log("SpecialOccupancy: ARRAY is EMPTY");
           var facilityStatus; 
           facilityStatus = "NOT AVAILABLE";
-          var jsonObject = {city: element.city, id: element.id, latitude: element.latitude, longitude: element.longitude, name: element.name, ownerId: element.ownerId, occupancy: facilityStatus, selectedType: facilityTypeFilterChoice}
+
+
+          var facilityStatusColor = getCurrentOccupancy(facilityStatus);
+          var itemFavourited = handleFavourites(element);
+          var favouriteColor = "white";
+          if(itemFavourited){
+            favouriteColor = "yellow";
+
+          }
+          var jsonObject = {city: element.city, id: element.id, latitude: element.latitude, longitude: element.longitude, name: element.name, ownerId: element.ownerId, occupancy: facilityStatus, selectedType: facilityTypeFilterChoice, isfavourited: itemFavourited, favourited : favouriteColor, occupancyColor: facilityStatusColor}
           selectedFacilityOccupancyList.push(jsonObject);
         }
         else {
@@ -636,8 +649,14 @@ const SearchScreen = ({navigation}) => {
           if (facilityStatus == occupancyTarget || occupancyTarget == "All Occupancy"){
               //Add Facility to Selected List
               //Create element object and add to selectedFacilityOccupancyList
-              console.log("MATCH OCCUPANCY");
-              var jsonObject = {city: element.city, id: element.id, latitude: element.latitude, longitude: element.longitude, name: element.name, ownerId: element.ownerId, occupancy: facilityStatus, selectedType: facilityTypeFilterChoice, indOccupancyList: flatOccupancyList}
+              var facilityStatusColor = getCurrentOccupancy(facilityStatus);
+              var itemFavourited = handleFavourites(element);
+              var favouriteColor = "white";
+              if(itemFavourited){
+                favouriteColor = "yellow";
+
+              }
+              var jsonObject = {city: element.city, id: element.id, ownerId: element.ownerId, latitude: element.latitude, longitude: element.longitude, name: element.name, ownerId: element.ownerId, occupancy: facilityStatus, selectedType: facilityTypeFilterChoice, indOccupancyList: flatOccupancyList, isfavourited: itemFavourited, favourited : favouriteColor, occupancyColor: facilityStatusColor}
               selectedFacilityOccupancyList.push(jsonObject);
           }
 
@@ -741,10 +760,11 @@ const SearchScreen = ({navigation}) => {
 
           //3. Filter into Occupancy Status Categories
           var facilityStatus; 
+          var facilityStatusColor;
 
           if (status > 0.79){
             //Facility is Free
-            facilityStatus = "FREE";
+            facilityStatus = "FREE"
           }
 
           else if (status > 0.4 && status < 0.80){
@@ -766,7 +786,15 @@ const SearchScreen = ({navigation}) => {
           if (facilityStatus == occupancyTarget || occupancyTarget == "All Occupancy"){
               //Add Facility to Selected List
               //Create element object and add to selectedFacilityOccupancyList
-              var jsonObject = {city: element.city, id: element.id, latitude: element.latitude, longitude: element.longitude, name: element.name, ownerId: element.ownerId, occupancy: facilityStatus, selectedType: facilityTypeFilterChoice, indOccupancyList: flatOccupancyList}
+              facilityStatusColor = getCurrentOccupancy(facilityStatus);
+              var itemFavourited = handleFavourites(element);
+              var favouriteColor = "white";
+              if(itemFavourited){
+                favouriteColor = "yellow";
+
+              }
+
+              var jsonObject = {city: element.city, id: element.id, ownerId: element.ownerId, latitude: element.latitude, longitude: element.longitude, name: element.name, ownerId: element.ownerId, occupancy: facilityStatus, selectedType: facilityTypeFilterChoice, indOccupancyList: flatOccupancyList, isfavourited: itemFavourited, favourited : favouriteColor, occupancyColor: facilityStatusColor}
               selectedFacilityOccupancyList.push(jsonObject);
           }
           //console.log("Facility : " +element.id + ". Facility Status = " + facilityStatus + ". Status% = " + status);
@@ -815,6 +843,25 @@ const SearchScreen = ({navigation}) => {
 
   }
 
+const handleFavourites = (item) => {
+
+  //Iterate and return whether the facility is favourited or not
+  var isFavourite =false;
+  favourites.forEach(facilityElement => {
+
+    // console.log("Favourite id: " + facilityElement.id + ", item: " + item.id);
+    
+    if (facilityElement.id == item.id){
+
+      isFavourite = true;
+    }
+  }
+  );
+
+  return isFavourite;
+
+}
+
 
 
 
@@ -853,10 +900,13 @@ const SearchScreen = ({navigation}) => {
             renderItem={({ item }) => (
               <TouchableOpacity onPress={() => {navigation.navigate('Analytics', {
                 facilityId: item.id, 
+                ownerId: item.ownerId,
+                facilityCity: item.city,
                 title: item.name, 
                 occupancy: item.occupancy,
                 itemLatitude: item.latitude, 
                 itemLongitude: item.longitude, 
+                itemFavourited: item.isfavourited,
                 itemInitSelectedType: item.selectedType, 
                 allFacilityTypeFilterList: facilityTypeFilterList
               })}}> 
@@ -865,7 +915,7 @@ const SearchScreen = ({navigation}) => {
                       <Icon 
                         name="star"  
                         size={27} 
-                        color= {favourited ? 'yellow' : 'white'}/>        
+                        color= {item.favourited}/>        
 
                   <View style = {styles.SecondaryContent}>
                     <Text style={styles.listItemTextMain}>{item.name}</Text>
@@ -876,7 +926,7 @@ const SearchScreen = ({navigation}) => {
                       style = {{position: 'absolute', right: 10}}
                       name="circle"
                       size = {45}
-                      color= {getCurrentOccupancy(item.occupancy)}
+                      color= {item.occupancyColor}
                       ></IconMat>
                 </View>
                </TouchableOpacity>
