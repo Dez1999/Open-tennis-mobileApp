@@ -33,10 +33,8 @@ import { SafeAreaProvider} from 'react-native-safe-area-context';
 import { NavigationContainer } from '@react-navigation/native';
 
 
-//Login Authentication
-var loginUrl = 'http://52.229.94.153:8080/login';
-var userInfoUrl = 'http://52.229.94.153:8080/appUser';
-var SignUpUrl = 'http://52.229.94.153:8080/registration';
+//Login Authentication APIs
+import { loginUrl,SignUpUrl } from './src/sharedComponents/services/ApiContext';
 
 
 const App = () => {

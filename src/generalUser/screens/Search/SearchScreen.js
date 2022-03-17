@@ -6,7 +6,7 @@ import {
     StatusBar, 
     ImageBackground, 
     Dimensions, 
-    ScrollView,
+    ScrollView, 
     TouchableOpacity, 
     ActivityIndicator, 
     FlatList, 

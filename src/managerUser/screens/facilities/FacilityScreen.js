@@ -25,12 +25,7 @@ const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
 //Main API
-const FacilityOwned_URL = 'http://52.229.94.153:8080/facility/owned';
-
-//Test APIs
-//const API_URL = `https://raw.githubusercontent.com/adhithiravi/React-Hooks-Examples/master/testAPI.json`;
-const apiURL = 'https://jsonplaceholder.typicode.com/posts';
-
+import { FacilityOwned_URL } from '../../../sharedComponents/services/ApiContext';
 
 
 //Testing Data
@@ -102,7 +97,6 @@ const DeviceScreen = ({navigation}) => {
 
       const fetchPosts = () => {
         setIsLoading(true);
-        const FacilityOwned_URL = 'http://52.229.94.153:8080/facility/owned';
         fetch(FacilityOwned_URL)
         .then((response) => response.json())
         .then((responseJson) => {

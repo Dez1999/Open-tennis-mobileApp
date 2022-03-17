@@ -25,6 +25,9 @@ import Ionicons from 'react-native-vector-icons/Ionicons'
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
+//Import API
+import { userInfoUrl } from '../../../sharedComponents/services/ApiContext';
+
 
 
 const AccountScreen = ({navigation}) => {
@@ -37,10 +40,6 @@ const AccountScreen = ({navigation}) => {
   const [userEmail, setUserEmail] = useState("");
 
   const loginData = `username=${userName}&password=Occupancy2022`;
-
-
-  let appUserUrl = "http://52.229.94.153:8080/appUser";
-  let appFacilityUrl = "http://52.229.94.153:8080/facility";
 
   const { signOut } = React.useContext(AuthContext);
 
@@ -74,7 +73,7 @@ const AccountScreen = ({navigation}) => {
   const getUserInfo = async () => {
     try{
 
-      fetch(appUserUrl, {
+      fetch(userInfoUrl, {
         method: 'GET', 
         headers: {
           'Accept': 'application/json, text/plain, */*, application/x-www-form-urlencoded',  // It can be used to overcome cors errors

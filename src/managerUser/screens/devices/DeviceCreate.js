@@ -23,12 +23,10 @@ import IconMat from 'react-native-vector-icons/MaterialCommunityIcons';
 //DropDown import
 import SelectDropdown from 'react-native-select-dropdown';
 
-//Import Screen
-import CodeScanner from './CodeScanner';
-import {RNCamera} from 'react-native-camera';
+//Import APIs
+import { registerDeviceURL, getDeviceTypesURL } from '../../../sharedComponents/services/ApiContext';
 
-const registerDeviceURL = 'http://52.229.94.153:8080/device/register';
-const getDeviceTypesURL = 'http://52.229.94.153:8080/device/types';
+//Set Number of fields as constant
 const areasMonitoredOptions = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
 const DeviceCreate = ({navigation, route}) => {

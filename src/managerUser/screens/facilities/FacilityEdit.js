@@ -19,8 +19,8 @@ import {
 import Icon from 'react-native-vector-icons/FontAwesome';
 import IconMat from 'react-native-vector-icons/MaterialCommunityIcons';
 
-const editFacilityURL = 'http://52.229.94.153:8080/facility/';
-const deleteFacilityURL = 'http://52.229.94.153:8080/facility/';
+//Import APIs
+import { editFacilityURL, deleteFacilityURL } from '../../../sharedComponents/services/ApiContext';
 
 const FacilityEdit = ({navigation, route}) => {
 

@@ -16,12 +16,8 @@ import {
 import {useState, useEffect} from "react";
 
 //Import Icons
-import {faStar, faArrowLeft} from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'; 
-//import '@fortawesome/fontawesome-free/css/all.min.css';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import IconMat from 'react-native-vector-icons/MaterialCommunityIcons';
-import Ionicons from 'react-native-vector-icons/Ionicons'
+
 
 //Import Images
 const image = require('../../images//ParkImages/PinecrestPark.jpg');
@@ -44,7 +40,7 @@ import { FavouritesContext } from '../../../sharedComponents/Context/Context';
 
 //Geocoding
 import Geocoder from 'react-native-geocoding';
-const API_KEY = "AIzaSyCu9nK77w0j9LME2vt5HzcshWhWbYEQtGE";
+import { API_KEY } from '../../../sharedComponents/services/key';
 
 
 //Indvidual phone heights and widths
@@ -52,12 +48,7 @@ const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
 //API URL
-const addFavouriteURL = "http://52.229.94.153:8080/facility/favourite/add/";
-const removeFavouriteURL = "http://52.229.94.153:8080/facility/favourite/remove/";
-const viewFavouritesURL = "http://52.229.94.153:8080/facility/favourite";
-const getDeviceInFacility = "http://52.229.94.153:8080/device/inFacility/";
-
-
+import { getDevicesURL, addFavouriteURL } from '../../../sharedComponents/services/ApiContext';
 
 
 //Testing Data for Analytics Page
@@ -134,7 +125,7 @@ const getDeviceType = async (itemInitSelectedType) => {
       //Check Facility Devices to select the correct device type to initiate
       //Get device List
       //Call API for each Facility Devices
-      const deviceFacilityURL = getDeviceInFacility + facilityId;
+      const deviceFacilityURL = getDevicesURL + facilityId;
       let isTypeChosen = false;
       let selectedDeviceType = itemInitSelectedType;
 
@@ -218,7 +209,7 @@ const getLocation = async () => {
 const getOccupancy = (selectedDeviceType) => {
 
   //Call API for each Facility Devices
-  const deviceFacilityURL = getDeviceInFacility + facilityId;
+  const deviceFacilityURL = getDevicesURL + facilityId;
   //console.log(deviceFacilityURL);
   let selectedDevicesOccupancyList = [];
 
@@ -327,7 +318,7 @@ const getFacilityTypeList = async () => {
     //Get device List
     let facilityDevicesTypeList = [];
     //Call API for each Facility Devices
-    const deviceFacilityURL = getDeviceInFacility + facilityId;
+    const deviceFacilityURL = getDevicesURL + facilityId;
 
     axios.get(deviceFacilityURL).then(res => {
       var deviceData = res.data;

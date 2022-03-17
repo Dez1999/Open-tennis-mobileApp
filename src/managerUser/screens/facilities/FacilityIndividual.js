@@ -18,13 +18,12 @@ import {
 //Imports
 import Icon from 'react-native-vector-icons/FontAwesome';
 
-//API URL
-const postFacilityURL = 'https://mywebsite.com/endpoint/';
-const getDevicesURL = 'http://52.229.94.153:8080/device/inFacility/';
+//Import APIs
+import { postFacilityURL, getDevicesURL } from '../../../sharedComponents/services/ApiContext';
 
 
-const API_KEY = "AIzaSyCu9nK77w0j9LME2vt5HzcshWhWbYEQtGE";
-
+//Import API_KEY 
+import { API_KEY } from '../../../sharedComponents/services/key';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
@@ -84,12 +83,6 @@ const FacilityIndividual = ({navigation, route}) => {
 
     //Route Params
     const { itemID, itemTitle, itemOwnerId, itemCity, itemLatitude, itemLongitude } = route.params;
-    // itemID: item.id, 
-    // itemOwnerId: item.ownerId,
-    // itemTitle: item.name, 
-    // itemCity: item.city,
-    // itemLatitude: item.latitude, 
-    // itemLongitude: item.longitude
 
     //Form Variables
     const [facilityID, setFacilityID] = useState("");

@@ -24,8 +24,8 @@ const postFacilityURL = 'https://mywebsite.com/endpoint/';
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
-//API
-const getDataBetweenDatesURL = "http://52.229.94.153:8080/data/between?";
+//Import API
+import { getDataBetweenDatesURL } from '../../../sharedComponents/services/ApiContext';
 
 const DeviceIndividual = ({navigation, route}) => {
     //Route Params

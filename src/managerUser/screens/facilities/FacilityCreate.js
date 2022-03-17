@@ -18,8 +18,8 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 
 import SelectDropdown from 'react-native-select-dropdown';
 
-const postFacilityURL = 'http://52.229.94.153:8080/facility';
-const getCitiesURL = 'http://52.229.94.153:8080/facility/cities';
+//Import APIs
+import { postFacilityURL, getCitiesURL } from '../../../sharedComponents/services/ApiContext';
 
 const FacilityCreate = ({navigation}) => {
     //Form Variables

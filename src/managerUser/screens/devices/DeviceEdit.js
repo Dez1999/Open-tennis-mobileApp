@@ -21,8 +21,7 @@ import ModalDropdown from 'react-native-modal-dropdown';
 import SelectDropdown from 'react-native-select-dropdown';
 
 //API URL
-const editDeviceURL = 'http://52.229.94.153:8080/device/';``
-const deleteDeviceURL = 'https://mywebsite.com/endpoint/';
+import { editDeviceURL, deleteDeviceURL } from '../../../sharedComponents/services/ApiContext';
 
 const DeviceEdit = ({navigation, route}) => {
     //Route Params
