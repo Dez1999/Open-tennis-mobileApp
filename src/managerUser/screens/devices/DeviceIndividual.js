@@ -20,7 +20,6 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import SelectDropdown from 'react-native-select-dropdown';
 import moment from 'moment';
 
-const postFacilityURL = 'https://mywebsite.com/endpoint/';
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
@@ -211,7 +210,7 @@ const DeviceIndividual = ({navigation, route}) => {
         //Update main Data list with updated filter
         var numRef = reference.replace('Area ','');
         numRef = numRef - 1;
-        console.log("Reference Number: " + numRef);   //prints: 123
+        console.log("Reference Number: " + numRef);  
 
 
         //Set new target reference ID

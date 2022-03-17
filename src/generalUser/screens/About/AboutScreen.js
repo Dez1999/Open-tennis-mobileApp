@@ -13,7 +13,7 @@ import {
     Alert, 
 } from 'react-native';
 //import {} from 'react-navigation';
-import InfoOccupancyStatus from './InfoOccupancyStatus';
+import InfoOccupancyStatus from '../../components/InfoOccupancyStatus';
 
 //Icon imports
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -25,11 +25,6 @@ const windowHeight = Dimensions.get('window').height;
 
 
 const AboutScreen = ({navigation}) => {
-
-//   useEffect(() => {
-//     readUserName();
-//     readUserToken();
-//   }, [readUserName])
 
   return (              
             <View style ={styles.container}>

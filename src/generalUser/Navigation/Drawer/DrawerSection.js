@@ -9,16 +9,11 @@ import Logo from '../../components/Logo';
 
 //Import Icons
 import Icon from 'react-native-vector-icons/FontAwesome';
-import IconMat from 'react-native-vector-icons/MaterialCommunityIcons';
-import Ionicons from 'react-native-vector-icons/Ionicons'
 
 import {
     DrawerContentScrollView,
     DrawerItem, 
 } from '@react-navigation/drawer';
-
-import { AuthContext } from '../../../sharedComponents/Context/Context';
-
 
 
 /*Displays the Items in the Drawer Navigator */

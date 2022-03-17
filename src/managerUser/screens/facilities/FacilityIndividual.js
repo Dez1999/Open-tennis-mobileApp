@@ -132,10 +132,6 @@ const FacilityIndividual = ({navigation, route}) => {
                 'Accept': 'application/json',
                'Content-Type': 'application/json'
             },
-            // body: JSON.stringify({
-            //     facilityName: facilityName, 
-            //     facilityCity: facilityCity
-            // }),
             credentials: 'include'
         })
         .then((response) => response.json())

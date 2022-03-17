@@ -18,7 +18,7 @@ import {
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 //API URL
-import { postFacilityURL, getDevicesURL } from '../../../sharedComponents/services/ApiContext';
+import { getDevicesURL } from '../../../sharedComponents/services/ApiContext';
 
 
 //Custom Window Sizes

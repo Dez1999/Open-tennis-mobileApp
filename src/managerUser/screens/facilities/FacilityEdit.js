@@ -171,33 +171,6 @@ const FacilityEdit = ({navigation, route}) => {
                         onChangeText={(text) => setFacilityName(text)}
                     
                     ></TextInput>
-                    {/* <Text style ={styles.fieldText}>Facility City:</Text>
-                    <TextInput
-                        style={styles.textInputStyle}
-                        value ={facilityCity}
-                        placeholder="Facility City Here"
-                        underlineColorAndoird="transparent"
-                        onChangeText={(text) => setFacilityCity(text)}
-                    
-                    ></TextInput>
-                    <Text style ={styles.fieldText}>Latitude:</Text>
-                    <TextInput
-                        style={styles.textInputStyle}
-                        value ={facilityLatitude}
-                        placeholder={facilityLatitude}
-                        underlineColorAndoird="transparent"
-                        onChangeText={(text) => setFacilityLatitude(text)}
-                    
-                    ></TextInput>
-                    <Text style ={styles.fieldText}>Longitude:</Text>
-                    <TextInput
-                        style={styles.textInputStyle}
-                        value ={facilityLongitude}
-                        placeholder={facilityLongitude}
-                        underlineColorAndoird="transparent"
-                        onChangeText={(text) => setFacilityLongitude(text)}
-                    
-                    ></TextInput> */}
 
                 </View>
                 
@@ -222,7 +195,7 @@ const FacilityEdit = ({navigation, route}) => {
 
                                         },
 
-                                        //"No" Choice -> Doesn not delete the facility
+                                        //"No" Choice -> Does not delete the facility
                                         {
                                             text: "No",
                                         },
@@ -237,11 +210,6 @@ const FacilityEdit = ({navigation, route}) => {
                     </IconMat.Button>
                 </TouchableOpacity>
              
-                
-                       
-             
-                    
-
             </SafeAreaView>
   
         </View>

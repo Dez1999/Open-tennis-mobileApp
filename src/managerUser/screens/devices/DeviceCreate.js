@@ -33,8 +33,6 @@ const DeviceCreate = ({navigation, route}) => {
     //Route Params
     const { itemID, itemTitle, device_authID} = route.params;
 
-
-
     //Form Variables
     const [facilityName, setFacilityName] = useState("");
     const [facilityId, setFacilityId] = useState("");

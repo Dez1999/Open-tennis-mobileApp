@@ -27,16 +27,6 @@ const DeviceEdit = ({navigation, route}) => {
     //Route Params
     const {facility_Name, device_Name, device_Type, numAreas, facility_Id, device_ID} = route.params;
 
-
-
-    // facility_Name: facilityName, 
-    // device_Name: deviceName, 
-    // device_Type: deviceType, 
-    // numAreas: areasMonitored, 
-    // facility_Id: facilityID, 
-    // device_ID: deviceID
-
-
     //Form Variables
     const [facilityName, setFacilityName] = useState("");
     const [deviceID, setDeviceId] = useState("");
@@ -66,7 +56,6 @@ const DeviceEdit = ({navigation, route}) => {
             return response.json();
         })
         .then((resJSON) => {
-            //TODO
             //Figure out if the update POST was successful or not, then update the successful variable
 
         })
@@ -102,8 +91,7 @@ const DeviceEdit = ({navigation, route}) => {
             return response.json();
         })
         .then((resJSON) => {
-            //TODO
-            //Figure out if the update POST was successful or not, then update the successful variable
+            //Figure out if the Device was successful or not, then update the successful variable
 
         })
         .catch(error => {
@@ -118,7 +106,6 @@ const DeviceEdit = ({navigation, route}) => {
     }    
 
     useEffect(() => {
-
         setFacilityName(facility_Name);
         setDeviceName(device_Name);
         setDeviceId(device_ID);
@@ -178,8 +165,6 @@ const DeviceEdit = ({navigation, route}) => {
                     ></TextInput>
 
                 </View>
-                
-
                     <TouchableOpacity style={styles.deleteButton}>
                         <IconMat.Button
                             name="delete"
@@ -190,12 +175,7 @@ const DeviceEdit = ({navigation, route}) => {
                             
                                             
                     </IconMat.Button>
-                </TouchableOpacity>
-             
-                
-                       
-             
-                    
+                </TouchableOpacity>        
 
             </SafeAreaView>
   

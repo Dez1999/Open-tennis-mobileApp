@@ -135,9 +135,6 @@ const SignupDemo = ({navigation}) => {
             ]
           );
      }
-    //  else if (!emailValidated){
-    //      alert("Please use a proper Email.");
-    //  }
      else {
          signUp(data.firstname, data.lastname, data.username, data.password);
      }

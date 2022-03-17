@@ -48,9 +48,6 @@ const CodeScanner = ({navigation, route}) => {
             setAuthDeviceCode(e.data);
             setIsAuthCodeRead(true);
             console.log(e.data);
-
-        
-            //alert("Barcode Found! \nType: " + e.type + "\nData: " + e.data);
         } 
     }
 

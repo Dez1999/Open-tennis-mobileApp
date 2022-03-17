@@ -39,8 +39,6 @@ const AccountScreen = ({navigation}) => {
   const [userDecision, setUserDecision] = useState("");
   const [userEmail, setUserEmail] = useState("");
 
-  const loginData = `username=${userName}&password=Occupancy2022`;
-
   const { signOut } = React.useContext(AuthContext);
 
   const readUserName = async () => {
@@ -93,10 +91,6 @@ const AccountScreen = ({navigation}) => {
               setLastName("Joe");
               setAppUserRole(resData.appUserRole);
               setUserEmail(resData.email);
-              console.log("User FirstName: " + resData.firstName);
-              console.log("User LastName: " + resData.lastName);
-              console.log("User Role: " + resData.appUserRole);
-              console.log("User Email: " + resData.email);
 
             }
             else {
@@ -104,12 +98,13 @@ const AccountScreen = ({navigation}) => {
               setLastName(resData.lastName);
               setAppUserRole(resData.appUserRole);
               setUserEmail(resData.email);
-              console.log("User FirstName: " + resData.firstName);
-              console.log("User LastName: " + resData.lastName);
-              console.log("User Role: " + resData.appUserRole);
-              console.log("User Email: " + resData.email);
+              
 
             }
+            console.log("User FirstName: " + resData.firstName);
+            console.log("User LastName: " + resData.lastName);
+            console.log("User Role: " + resData.appUserRole);
+            console.log("User Email: " + resData.email);
 
           })
             .catch(error => {
@@ -125,8 +120,6 @@ const AccountScreen = ({navigation}) => {
 
   
   useEffect(() => {
-    // readUserName();
-    // readUserToken();
     getUserInfo();
   }, [getUserInfo])
 
@@ -233,9 +226,6 @@ const AccountScreen = ({navigation}) => {
     
   );
  }
-
-
-
 
 
 const styles = StyleSheet.create({

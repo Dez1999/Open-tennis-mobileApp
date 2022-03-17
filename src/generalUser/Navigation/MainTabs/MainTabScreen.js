@@ -101,13 +101,7 @@ const MainTabScreen = () => (
 export default MainTabScreen;
 
 
-
-
-
-//Testing Components
-
-
-
+//Search Stack
 const SearchStackScreen = ({navigator}) => (
   <SearchStack.Navigator screenOptions={{
         headerShown: true,
@@ -131,6 +125,7 @@ const SearchStackScreen = ({navigator}) => (
   </SearchStack.Navigator>
   );
 
+  //Favourites Stack
   const FavoutiteStackScreen = ({navigator}) => (
     <FavouriteStack.Navigator screenOptions={{
           headerShown: true,
@@ -158,7 +153,7 @@ const SearchStackScreen = ({navigator}) => (
  
 
 
-
+//Home Stack
 const HomeStackScreen = ({navigator}) => (
 <HomeStack.Navigator screenOptions={{
       headerShown: true,
@@ -212,43 +207,3 @@ const AccountStackScreen = ({navigator}) => (
 </AccountStack.Navigator>
 );
 
-/*
-
-const FavouriteStackScreen = ({navigator}) => (
-    <FavouriteStack.Navigator screenOptions={{
-          headerShown: true,
-          headerTransparent:true,
-          headerStyle: {
-            backgroundColor: '#3ECD4C',
-          }, 
-          headerTintColor: '#3ECD4C',
-          headerTitleStyle: {
-            fontWeight: 'bold'
-          }
-    }}>
-           <FavouriteStack.Screen name = "Favourite" component ={FavouritesScreen} options={{
-             headerShown:false, 
-            }}/>
-    </FavouriteStack.Navigator>
-    );
-
-
-const AboutStackScreen = ({navigator}) => (
-<AboutStack.Navigator screenOptions={{
-      headerShown: true,
-      headerTransparent:true,
-      headerStyle: {
-        backgroundColor: '#3ECD4C',
-      }, 
-      headerTintColor: '#3ECD4C',
-      headerTitleStyle: {
-        fontWeight: 'bold'
-      }
-}}>
-       <AboutStack.Screen name = "About" component ={AboutScreen} options={{
-         headerShown:false, 
-        }}/>
-</AboutStack.Navigator>
-);
-
-*/
