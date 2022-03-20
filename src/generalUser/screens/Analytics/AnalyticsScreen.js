@@ -11,17 +11,18 @@ import {
     Linking, 
     Platform, 
     FlatList, 
-    Number
+    Number, 
+    LogBox
 } from 'react-native';
 import {useState, useEffect} from "react";
 
 //Import Icons
 import Icon from 'react-native-vector-icons/FontAwesome';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 
 //Import Images
 const image = require('../../images//ParkImages/PinecrestPark.jpg');
-
 
 //Import Analytic Components
 import OccupancyStatus from '../../components/AnalyticsComponents/occupancyStatus';
@@ -30,12 +31,11 @@ import { BackgroundImage } from 'react-native-elements/dist/config';
 import { ScrollView } from 'react-native-gesture-handler';
 import axios from 'axios';
 import _forEach from 'lodash/forEach';
-import HorizontalPicker from '@vseslav/react-native-horizontal-picker';
-import SmoothPicker from "react-native-smooth-picker";
 import SelectDropdown from 'react-native-select-dropdown';
+import convertArrayToFlat from '../../utils/convertArrayToFlat';
+import calculateFacilityStatus from '../../utils/calculateFacilityStatus';
 
 //Import Favourites function
-import FavouritesScreen from '../Favourites/FavouritesScreen'
 import { FavouritesContext } from '../../../sharedComponents/Context/Context';
 
 //Geocoding
@@ -120,7 +120,7 @@ const removeFromFavourites = async () => {
   
 }
 
-const getDeviceType = async (itemInitSelectedType) => {
+const getFacilityStatusUpdate = async (itemInitSelectedType) => {
     if (itemInitSelectedType  == "ANY"){
       //Check Facility Devices to select the correct device type to initiate
       //Get device List
@@ -255,59 +255,14 @@ const calculateOccupancy = (occupancyList) => {
     }
     else {
     //Calculate Facility Occupancy with each Device in each specific Facility
-
-          //Iterate through selectedDeviceOccupancy List and convert to individual fields
-          const arr = occupancyList;
-          console.log(arr);
-
           // To flat single level array
-          const flatOccupancyList = arr.reduce((acc, val) => {
-            return acc.concat(val)
-          }, []);
+          const flatOccupancyList = convertArrayToFlat(occupancyList);
 
-          console.log(flatOccupancyList);
+          //Calculate Facility Occupancy with each Device in each specific Facility
+          var facilityStatus = calculateFacilityStatus(flatOccupancyList);
 
-          //1. Find total number of free areas
-          var totalZeros;
-          totalZeros = flatOccupancyList.filter(z => z === 0).length;
-          console.log("Facility : " + facilityId + ". Num Empty Areas: " + totalZeros);
-          
-          //2. Calculate length of Array List
-          var numDeviceAreas = flatOccupancyList.length;
-          console.log("Facility : " + facilityId + ". Num Device Areas: " + numDeviceAreas);
+          setOccupanyStatusReal(facilityStatus);
 
-          //2. Calculate Occupancy Status 
-          var status = totalZeros / numDeviceAreas;
-          console.log("Facility Status: " + status);
-
-
-          //3. Filter into Occupancy Status Categories
-          var facilityStatus; 
-
-
-          if (status > 0.79){
-            //Facility is Free
-            console.log("FREE Facility");
-            facilityStatus = "FREE";
-            setOccupanyStatusReal(facilityStatus);
-            console.log(facilityStatus);
-          }
-
-          else if (status > 0.4 && status < 0.80){
-            //Facility is Moderately Busy
-            facilityStatus = "MODERATELEY BUSY";
-            setOccupanyStatusReal(facilityStatus);
-          }
-          else if (status >= 0 &&  status <= 0.4){
-            //Facility is Busy
-            facilityStatus = "BUSY";
-            setOccupanyStatusReal(facilityStatus);
-          }
-          else {
-            //Facility status is Not available
-            facilityStatus = "NOT AVAILABLE";
-            setOccupanyStatusReal(facilityStatus);
-          }
           
     }
 }
@@ -388,18 +343,38 @@ const getFacilityTypeList = async () => {
 
   useEffect(() => {
     getLocation();
-    getDeviceType(itemInitSelectedType);
+    getFacilityStatusUpdate(itemInitSelectedType);
     getFacilityTypeList();
     setFavourited(itemFavourited);
     console.log("Is Facility Favourited: " + favourited);
-    //getOccupancy();
-    //setFacilityTypeFilterChoice("TENNIS");
-    //setOccupancyData([0,0,0])
   }, [])
 
 
+
+
 const handleTypeChange = (selectedType) => {
-  getDeviceType(selectedType);
+  getFacilityStatusUpdate(selectedType);
+}
+
+const handleFacilityRefresh = () => {
+  if (facilityTypeFilterChoice != "ANY" && facilityTypeFilterChoice != ""){
+    return(
+      <View style = {styles.refreshContent}>
+          <TouchableOpacity
+              onPress={()=> getFacilityStatusUpdate(selectedDeviceType)}
+          >
+            <Ionicons
+              name="refresh"
+              size={37}
+              color = "black"
+            >
+
+            </Ionicons>
+          </TouchableOpacity>
+      </View>
+    )
+  }
+
 }
 
 const facilityTypeSelection = () => {
@@ -469,12 +444,18 @@ const facilityTypeSelection = () => {
                   </View>
 
                   
-                  
+                
                  </BackgroundImage>
                  <View style = {styles.titleContent}>
-                    <Text style = {styles.titleText}>{title}</Text>
-                    <Text style = {styles.addressText}>{facilityAddress}</Text>
+                   <View>
+                     <Text style = {styles.titleText}>{title}</Text>
+                     <Text style = {styles.addressText}>{facilityAddress}</Text>
+                   </View>
+                    
+                    {handleFacilityRefresh()}
+                    
                  </View>
+                 
 
               <View
                   style={{
@@ -493,6 +474,7 @@ const facilityTypeSelection = () => {
                   }}
                   >
                     {facilityTypeSelection()}
+                  
                   <OccupancyStatus OccupancyStatus= {occupancyStatusReal}></OccupancyStatus> 
                   <IndividualAreaOccupancy currOccupancyList={occupancyListData} targetDevice ={facilityTypeFilterChoice}/>
                 </View>
@@ -539,9 +521,11 @@ const styles = StyleSheet.create({
     },
 
     titleContent: {
-      width: windowWidth/1.22, 
+      width: windowWidth, 
       marginLeft: 5, 
-      marginRight: 20, 
+      marginRight: 10, 
+      flexDirection: 'row',
+      justifyContent: 'space-between'
 
     },
 
@@ -607,6 +591,10 @@ const styles = StyleSheet.create({
       top: windowHeight/25
      
     }, 
+    refreshContent: {
+      justifyContent: 'center', 
+
+    },
     rowText: {
       color: 'black', 
       fontSize: 18,

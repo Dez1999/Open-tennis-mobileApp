@@ -13,15 +13,13 @@ import {
     Modal, 
     TextInput
 } from 'react-native';
-//import {} from 'react-navigation';
 
 //import MapView from "react-native-maps";
 //import Marker from "react-native-maps";
-import SearchComponent from '../../components/Search/SearchComponent';
-import FlatListDemo3 from '../../components/Search/FlatListDemo3';
-import Filterbar from '../../components/Search/filterBar';
 import SelectDropdown from 'react-native-select-dropdown';
-
+import getFacilityOccupancyColor from '../../utils/getFacilityOccupancyColor';
+import convertArrayToFlat from '../../utils/convertArrayToFlat';
+import calculateFacilityStatus from '../../utils/calculateFacilityStatus';
 
 //Import Icons
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -29,7 +27,6 @@ import IconMat from 'react-native-vector-icons/MaterialCommunityIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import axios from 'axios';
 import _forEach from 'lodash/forEach';
-import { color, set } from 'react-native-reanimated';
 
 //Import User Location
 import GetLocation  from 'react-native-get-location';
@@ -40,174 +37,12 @@ import moment from 'moment';
 //Import Favourites Context
 import { FavouritesContext } from '../../../sharedComponents/Context/Context';
 
-
-
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
-//import Modal
-// import {Modal, Portal, Provider, Button, Menu, Divider} from 'react-native-paper';
-
 
 //APIs 
-const allFacilitiesURL = "http://52.229.94.153:8080/facility";
-const getFilteredFacilitiesDistance = "http://52.229.94.153:8080/facility/filters?latitude=45.3876&longitude=-75.6976&city=OTTAWA&range=3&unit=K";
-const requestFilteredDistanceFacilities = "http://52.229.94.153:8080/facility/filters?";
-const getDeviceInFacility = "http://52.229.94.153:8080/device/inFacility/";
-
-//Testing data for FlatList
-const dataFacilities = [
-  {id:'1', title: 'Windsor Park', type: 'Tennis', distance: '1', numCourts:'4', occupancy: "Free"},
-  {id:'2', title: 'Carleton Heights Park', type: 'Tennis', distance: '2', numCourts:'4', occupancy: "Busy"},
-  {id:'3', title: 'Steve Maclean Park', type: 'Tennis', distance: '3', numCourts:'4', occupancy: "Busy"},
-  {id:'4', title: 'TangleWood Park', type: 'Tennis', distance: '4', numCourts:'4', occupancy: "Avg"},
-  {id:'5', title: 'Arnott Park', type: 'Tennis', distance: '5', numCourts:'4', occupancy: "Free"},
-  {id:'6', title: 'Mooneys Bay Park', type: 'Tennis', distance: '6', numCourts:'4', occupancy: "Busy"}, 
-  {id:'7', title: 'Pineglen Park', type: 'Tennis', distance: '7', numCourts:'4', occupancy: "Free"},
-  {id:'8', title: 'Celebration Park', type: 'Tennis', distance: '5', numCourts:'4', occupancy: "Busy"},
-  {id:'9', title: 'Lexington Park', type: 'Tennis', distance: '7', numCourts:'4', occupancy: "NA"},
-  {id:'10', title: 'Kaladar Park', type: 'Tennis', distance: '8', numCourts:'4', occupancy: "Free"},
-  {id:'11', title: 'Owl Park', type: 'Tennis', distance: '4.3', numCourts:'4', occupancy: "Free"},
-
-];
-
-const deviceDataTest = [
-  {
-      "id": 1,
-      "ownerId": 2,
-      "facilityId": 1,
-      "name": "Sample Data Cam",
-      "authorizationId": "1OCC9876543210",
-      "inUse": true,
-      "areasMonitored": 3,
-      "deviceType": "Tennis",
-      "currOccupancy": [
-          0,
-          0,
-          0
-      ]
-  },
-  {
-      "id": 2,
-      "ownerId": 2,
-      "facilityId": 1,
-      "name": "Test Upload Cam",
-      "authorizationId": "2OCC9876543210",
-      "inUse": true,
-      "areasMonitored": 1,
-      "deviceType": "Tennis",
-      "currOccupancy": [
-          0
-      ]
-  }
-]
-
-const deviceDataTest_Farm = [
-  {
-      "id": 3,
-      "ownerId": 2,
-      "facilityId": 2,
-      "name": "Sample Data Cam",
-      "authorizationId": "1OCC9876543210",
-      "inUse": true,
-      "areasMonitored": 3,
-      "deviceType": "Tennis",
-      "currOccupancy": [
-          0,
-          0,
-          0
-      ]
-  },
-  {
-      "id": 4,
-      "ownerId": 2,
-      "facilityId": 2,
-      "name": "Test Upload Cam",
-      "authorizationId": "2OCC9876543210",
-      "inUse": true,
-      "areasMonitored": 1,
-      "deviceType": "Tennis",
-      "currOccupancy": [
-          0
-      ]
-  }
-]
-
-const deviceDataTest_Central = [
-  {
-      "id": 3,
-      "ownerId": 2,
-      "facilityId": 3,
-      "name": "Sample Data Cam",
-      "authorizationId": "1OCC9876543210",
-      "inUse": true,
-      "areasMonitored": 3,
-      "deviceType": "Basketball",
-      "currOccupancy": [
-          0,
-          0,
-          0
-      ]
-  },
-  {
-      "id": 4,
-      "ownerId": 2,
-      "facilityId": 2,
-      "name": "Test Upload Cam",
-      "authorizationId": "2OCC9876543210",
-      "inUse": true,
-      "areasMonitored": 1,
-      "deviceType": "Basketball",
-      "currOccupancy": [
-          0
-      ]
-  }
-]
-
-const facilityDataTest = [
-  {
-      "id": 1,
-      "ownerId": 2,
-      "name": "Lyndwood Tennis Club",
-      "city": "MISSISSAUGA",
-      "latitude": 43.57663,
-      "longitude": -79.57103
-  },
-  {
-    "id": 2,
-    "ownerId": 2,
-    "name": "Farm Park",
-    "city": "MISSISSAUGA",
-    "latitude": 43.62663,
-    "longitude": -79.57103
-},
-{
-  "id": 3,
-  "ownerId": 2,
-  "name": "Central Park",
-  "city": "MISSISSAUGA",
-  "latitude": 43.62663,
-  "longitude": -79.57103
-},
-{
-  "id": 4,
-  "ownerId": 2,
-  "name": "State Park",
-  "city": "MISSISSAUGA",
-  "latitude": 43.62663,
-  "longitude": -79.57103
-},
-{
-"id": 5,
-"ownerId": 2,
-"name": "Nature Park",
-"city": "MISSISSAUGA",
-"latitude": 43.62663,
-"longitude": -79.57103
-}
-]
-
-const RealData = [{"city": "OTTAWA", "id": 2, "latitude": 45.39809298, "longitude": -75.7187955, "name": "Fairmont Park", "ownerId": 1}, {"city": "OTTAWA", "id": 14, "latitude": 45.36995756, "longitude": -75.71272797, "name": "Lexington Park", "ownerId": 1}, {"city": "OTTAWA", "id": 16, "latitude": 45.36636475, "longitude": -75.6903175, "name": "Mooney's Bay Park", "ownerId": 1}, {"city": "OTTAWA", "id": 17, "latitude": 45.40732253, "longitude": -75.67255487, "name": "Brantwood Park", "ownerId": 1}, {"city": "OTTAWA", "id": 25, "latitude": 45.39413572, "longitude": -75.6756819, "name": "Windsor Park Ottawa", "ownerId": 1}, {"city": "OTTAWA", "id": 38, "latitude": 45.37240286, "longitude": -75.67258409, "name": "Kaladar Park", "ownerId": 1}, {"city": "OTTAWA", "id": 59, "latitude": 45.40598845, "longitude": -75.69657087, "name": "Chamberlain Park", "ownerId": 1}]
+import {getDevicesURL as getDeviceInFacility} from '../../../sharedComponents/services/ApiContext';
 
 
 const SearchScreen = ({navigation}) => {
@@ -223,8 +58,6 @@ const SearchScreen = ({navigation}) => {
 
   const [mainFacilityData, setMainFacilityData] = useState("");
   const [filteredFacilityData, setFilteredFacilityData] = useState("");
-  const [distFilteredData, setDistFilteredData] = useState("");
-  const [favourited, setFavourited] = useState(false);
   
 
   //Filter List
@@ -269,22 +102,6 @@ const SearchScreen = ({navigation}) => {
     setCityFilter(["OTTAWA", "MISSISSAUGA"]);
   }
 
-  const getUserLocation = () => {
-    GetLocation.getCurrentPosition({
-      enableHighAccuracy: true,
-      timeout: 15000,
-    })
-    .then(location => {
-      console.log(location);
-      setuserLatitude(location.latitude);
-      setUserLongitude(location.longitude);
-    })
-    .catch(error => {
-      const {code, message} = error;
-      console.warn(code, message);
-    })
-  }
-
 
   const searchFilter = (text) => {
     if (text) {
@@ -305,48 +122,8 @@ const SearchScreen = ({navigation}) => {
     }
 }
 
-  //Fetch All facilities from database
-  const getFacilities = async () => {
-    try{
-
-      fetch(allFacilitiesURL, {
-        method: 'GET', 
-        headers: {
-          'Accept': 'application/json, text/plain, */*, application/x-www-form-urlencoded',  // It can be used to overcome cors errors
-          'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-        },
-        credentials: 'include',
-        json: true,
-      })
-        .then(response => {
-          console.log(response);
-          return response.json();
-        })
-          .then((resData) => {
-            setFilteredFacilityData(resData);
-            setMainFacilityData(resData);
-            
-            console.log(resData);
-
-          })
-            .catch(error => {
-              console.log(error);
-              alert(error);
-            })
-
-    }catch (e) {
-    console.log("Failed to GET Facilities from database")
-    }
-  }
-
-
   useEffect(() => {
-    //getFacilities();
     setFilterLists();
-
-    //getUserLocation();
-
-    //getFacilities();
     handleFilterSubmit();
 
   }, [])
@@ -451,8 +228,6 @@ const SearchScreen = ({navigation}) => {
   }
 
   const handleTypeUpdate = (deviceTypeTarget, tempFilteredData) => {
-    //Use Filtered Facility Data
-    //Set Target Device Type
 
     //Iterate through each Facility and call their devices to see what
     // type of devices are available for the Facility
@@ -489,6 +264,7 @@ const SearchScreen = ({navigation}) => {
     }
     else {
 
+      console.log("FILTERED DATA BELOW:")
       console.log(tempFilteredData);
 
       //Iterate through the Filtered Facility Data
@@ -522,11 +298,12 @@ const SearchScreen = ({navigation}) => {
           })
           .then(response => {
 
-            //Now Request Occupancy Filtered Choice
-            handleOccupancyUpdate(occupancyStatusFilterChoice, selectedFacilityTypeList);
-            //console.log("Facility Type Update After Type Filtering");
-            
-            //console.log(selectedFacilityTypeList);
+            //Go to next Facility
+        
+                //Now Request Occupancy Filtered Choice
+                handleOccupancyUpdate(occupancyStatusFilterChoice, selectedFacilityTypeList);
+                //console.log("Count: " + count + ", TempFilteredData Length: " + tempFilteredData.length);
+                //console.log("Facility Type Update After Type Filtering");
 
           })
           .catch(error => console.log(error));
@@ -567,7 +344,7 @@ const SearchScreen = ({navigation}) => {
           facilityStatus = "NOT AVAILABLE";
 
 
-          var facilityStatusColor = getCurrentOccupancy(facilityStatus);
+          var facilityStatusColor = getFacilityOccupancyColor(facilityStatus);
           var itemFavourited = handleFavourites(element);
           var favouriteColor = "white";
           if(itemFavourited){
@@ -595,61 +372,18 @@ const SearchScreen = ({navigation}) => {
            }
          );
           //Calculate Facility Occupancy with each Device in each specific Facility
-          //facilityStatus = getFacilityStatus(selectedDevicesOccupancyList, element);
-
-          //Iterate through selectedDeviceOccupancy List and convert to individual fields
-          const arr = selectedDevicesOccupancyList;
-          console.log(arr);
-
-          // To flat single level array
-          const flatOccupancyList = arr.reduce((acc, val) => {
-            return acc.concat(val)
-          }, []);
-
-          //console.log(flatOccupancyList);
-
-          //1. Find total number of free areas
-          var totalZeros;
-          totalZeros = flatOccupancyList.filter(z => z === 0).length;
-          console.log("Facility : " + element.id + ". Num Empty Areas: " + totalZeros);
           
-          //2. Calculate length of Array List
-          var numDeviceAreas = flatOccupancyList.length;
-          console.log("Facility : " + element.id + ". Num Device Areas: " + numDeviceAreas);
+          // To flat single level array
+          const flatOccupancyList = convertArrayToFlat(selectedDevicesOccupancyList);
 
-          //2. Calculate Occupancy Status 
-          var status = totalZeros / numDeviceAreas;
-          console.log("Facility Status: " + status);
-
-
-          //3. Filter into Occupancy Status Categories
-          var facilityStatus; 
-
-          if (status > 0.79){
-            //Facility is Free
-            facilityStatus = "FREE";
-          }
-
-          else if (status > 0.4 && status < 0.80){
-            //Facility is Moderately Busy
-            facilityStatus = "MODERATELEY BUSY";
-          }
-          else if (status >= 0 &&  status <= 0.4){
-            //Facility is Busy
-            facilityStatus = "BUSY";
-          }
-          else {
-            //Facility status is Not available
-            facilityStatus = "NOT AVAILABLE";
-          }
-
-          console.log("Facility Status (Words):" + facilityStatus);
+          //Calculate Facility Occupancy with each Device in each specific Facility
+          var facilityStatus = calculateFacilityStatus(flatOccupancyList);
 
           //Check if Facility Meets the requirements
           if (facilityStatus == occupancyTarget || occupancyTarget == "All Occupancy"){
               //Add Facility to Selected List
               //Create element object and add to selectedFacilityOccupancyList
-              var facilityStatusColor = getCurrentOccupancy(facilityStatus);
+              var facilityStatusColor = getFacilityOccupancyColor(facilityStatus);
               var itemFavourited = handleFavourites(element);
               var favouriteColor = "white";
               if(itemFavourited){
@@ -733,60 +467,18 @@ const SearchScreen = ({navigation}) => {
             
           //Calculate Facility Occupancy with each Device in each specific Facility
 
-          //Iterate through selectedDeviceOccupancy List and convert to individual fields
-          const arr = selectedDevicesOccupancyList;
-          //console.log(arr);
-
           // To flat single level array
-          const flatOccupancyList = arr.reduce((acc, val) => {
-            return acc.concat(val)
-          }, []);
+          const flatOccupancyList = convertArrayToFlat(selectedDevicesOccupancyList);
 
-          //console.log(flatOccupancyList);
-
-          //1. Find total number of free areas
-          var totalZeros;
-          totalZeros = flatOccupancyList.filter(z => z === 0).length;
-          //console.log("Facility : " + element.id + ". Num Empty Areas: " + totalZeros);
+          //Calculate Facility Occupancy with each Device in each specific Facility
+          var facilityStatus = calculateFacilityStatus(flatOccupancyList);
           
-          //2. Calculate length of Array List
-          var numDeviceAreas = flatOccupancyList.length;
-          //console.log("Facility : " + element.id + ". Num Device Areas: " + numDeviceAreas);
-
-          //2. Calculate Occupancy Status 
-          var status = totalZeros / numDeviceAreas;
-          //console.log("Facility Status: " + status);
-
-
-          //3. Filter into Occupancy Status Categories
-          var facilityStatus; 
-          var facilityStatusColor;
-
-          if (status > 0.79){
-            //Facility is Free
-            facilityStatus = "FREE"
-          }
-
-          else if (status > 0.4 && status < 0.80){
-            //Facility is Moderately Busy
-            facilityStatus = "MODERATELEY BUSY";
-          }
-          else if (status >= 0 &&  status <= 0.4){
-            //Facility is Busy
-            facilityStatus = "BUSY";
-          }
-          else {
-            //Facility status is Not available
-            facilityStatus = "NOT AVAILABLE";
-          }
-
-          //console.log("Facility Status (Words):" + facilityStatus);
 
           //Check if Facility Meets the requirements
           if (facilityStatus == occupancyTarget || occupancyTarget == "All Occupancy"){
               //Add Facility to Selected List
               //Create element object and add to selectedFacilityOccupancyList
-              facilityStatusColor = getCurrentOccupancy(facilityStatus);
+              facilityStatusColor = getFacilityOccupancyColor(facilityStatus);
               var itemFavourited = handleFavourites(element);
               var favouriteColor = "white";
               if(itemFavourited){
@@ -825,25 +517,7 @@ const SearchScreen = ({navigation}) => {
 
   }
 
-  
-  const getCurrentOccupancy = (t) => {
-     // console.log(t);
-    if(t == 'FREE'){
-      return '#28B625'
-    }
-    else if (t == 'BUSY'){
-      return '#D32E2E'
-    }
-    else if (t == 'MODERATELEY BUSY'){
-      return '#F9B70F'
-    }
-    else {
-      return '#696A6D' //Not available
-    }
-
-  }
-
-const handleFavourites = (item) => {
+ const handleFavourites = (item) => {
 
   //Iterate and return whether the facility is favourited or not
   var isFavourite =false;
@@ -861,8 +535,6 @@ const handleFavourites = (item) => {
   return isFavourite;
 
 }
-
-
 
 
   const renderFacilities = () =>{
@@ -942,11 +614,6 @@ const handleFavourites = (item) => {
           
             <View style ={styles.container}>
                     <View style = {styles.searchContainer}>
-                        {/* <SearchComponent
-                           marginLeft={10} 
-                           marginRight={10} 
-                           flex={3}
-                        />  */}
                         <View style={{
                             flex: 2,
                             backgroundColor: "#E2F1DB", 
@@ -1082,25 +749,7 @@ const handleFavourites = (item) => {
                       </Modal>
                     
                      {renderFacilities()}
-
-
-                    {/*}
-                      <MapView
-                          loadingEnabled
-                          style={styles.map}
-                          initialRegion={{
-                          latitude: 45.421532,
-                          longitude: -75.697189,
-                          latitudeDelta: 0.0722,
-                          longitudeDelta: 0.0421,
-                          }}
-                          
-                      >
-                      </MapView>
-                        */}
-
-                   
-                    
+    
             </View>
     
   );
@@ -1277,8 +926,7 @@ const styles = StyleSheet.create({
       color: "black"
   }
 
-    
-
+  
    
   });
 

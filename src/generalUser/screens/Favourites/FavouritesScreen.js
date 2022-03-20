@@ -23,7 +23,7 @@ import calculateFacilityStatus from '../../utils/calculateFacilityStatus';
 
 //Import Icons
 import IconMat from 'react-native-vector-icons/MaterialCommunityIcons';
-import Ionicons from 'react-native-vector-icons/Ionicons'
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
