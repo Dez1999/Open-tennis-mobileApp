@@ -67,14 +67,12 @@ const ProfileEdit = ({navigation}) => {
 
 
     useEffect(() => {
-        setFirstName("John");
-        setLastName("Doe")
+        setFirstName("");
+        setLastName("")
 
 
     }, []);
 
-
-//alert("Create new facility! Note just call FacilityCraete when ready")
 
     return(
         <View style ={styles.container}>

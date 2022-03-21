@@ -6,20 +6,17 @@ import {
     StatusBar, 
     Dimensions, 
     TouchableOpacity, 
-    FlatList, 
-    ActivityIndicator, 
-    TextInput, 
     SafeAreaView
 
 } from 'react-native';
 
 //Imports
-import Icon from 'react-native-vector-icons/FontAwesome';
 import IconMat from 'react-native-vector-icons/MaterialCommunityIcons';
 import Logo2 from '../../assets/images/Logo2';
 import { AuthContext } from '../../../sharedComponents/Context/Context';
 
-const appUserUrl = 'http://52.229.94.153:8080/appUser';
+//Import APIs
+import {userInfoUrl, FacilityOwned_URL } from '../../../sharedComponents/services/ApiContext';
 
 
 
@@ -29,11 +26,6 @@ const ProfileScreen = ({navigation}) => {
     const [lastName, setLastName] = useState("");
     const [userRole, setUserRole] = useState("");
     const [userEmail, setUserEmail] = useState("");
-
-
-
-    const [ownerID, setOwnerID] = useState("");
-    const [companyID, setCompanyID] = useState("");
     const [numFacilitiesOwned, setNumFacilitiesOwned] = useState("");
     const [numDeviceOwned, setNumDevicesOwned] = useState("");
 
@@ -43,11 +35,30 @@ const ProfileScreen = ({navigation}) => {
     const { generalRole } = React.useContext(AuthContext);
     const { signOut } = React.useContext(AuthContext);
 
-    //Fetch user Info from database
-  const getUserInfo = async () => {
-    try{
+    //Method: Calculate number of facilities owned
+    const calculateAllFacilities = () => {
+      fetch(FacilityOwned_URL)
+      .then((response) => response.json())
+      .then((responseJson) => {
+          console.log(responseJson);
+          let facilities = responseJson;
+          var count = Object.keys(facilities).length
+          setNumFacilitiesOwned(count)
 
-      fetch(appUserUrl, {
+      })
+      .catch(err => {
+          console.log(err)
+      }).done(() => {
+    
+    });
+    }
+
+
+    //Fetch user Info from database
+    const getUserInfo = async () => {
+      try{
+
+      fetch(userInfoUrl, {
         method: 'GET', 
         headers: {
           'Accept': 'application/json, text/plain, */*, application/x-www-form-urlencoded',  // It can be used to overcome cors errors
@@ -87,13 +98,8 @@ const ProfileScreen = ({navigation}) => {
     useEffect(() => {
 
         getUserInfo();
-        // setFirstName("John");
-        // setLastName("Doe");
-        // setUserRole("Facility Manager");
-        setOwnerID("1223bfs");
-        setCompanyID("222886g");
-        setNumFacilitiesOwned("5");
         setNumDevicesOwned("10");
+        calculateAllFacilities();
 
     }, []);
 
@@ -121,21 +127,14 @@ const ProfileScreen = ({navigation}) => {
                             <Text style = {styles.itemTextSub}>{userRole}</Text>
                     </View>
                     <View style = {styles.itemContent}>
-                            <Text style = {styles.itemText}>OwnerID: </Text>
-                            <Text style = {styles.itemTextSub}>{ownerID}</Text>
-                    </View>
-                    <View style = {styles.itemContent}>
-                            <Text style = {styles.itemText}>CompanyID: </Text>
-                            <Text style = {styles.itemTextSub}>{companyID}</Text>
+                            <Text style = {styles.itemText}>Email: </Text>
+                            <Text style = {styles.itemTextSub}>{userEmail}</Text>
                     </View>
                     <View style = {styles.itemContent}>
                             <Text style = {styles.itemText}>Number of Facilities Owned: </Text>
                             <Text style = {styles.itemTextSub}>{numFacilitiesOwned}</Text>
                     </View>
-                    <View style = {styles.itemContent}>
-                            <Text style = {styles.itemText}>Number of Devices: </Text>
-                            <Text style = {styles.itemTextSub}>{numDeviceOwned}</Text>
-                    </View>
+
                 </View>
 
                 <View style = {styles.bottomContent}>
@@ -161,9 +160,6 @@ const ProfileScreen = ({navigation}) => {
                     </IconMat.Button>
                 </View>
                    
-
-                    
-
             </SafeAreaView>
   
         </View>
@@ -186,9 +182,10 @@ const styles = StyleSheet.create ({
 
     },
     profileInfo:{
+        paddingTop: 60,
         alignContent: 'center',
         justifyContent: 'space-between', 
-        padding: 10
+        padding: 1
 
     },
 
@@ -212,7 +209,7 @@ const styles = StyleSheet.create ({
         color: 'black',
         fontWeight: 'bold',
         fontSize: 23,
-        paddingLeft: 13, 
+        paddingLeft: 5, 
         paddingBottom: 5
     }, 
     itemTextSub: {

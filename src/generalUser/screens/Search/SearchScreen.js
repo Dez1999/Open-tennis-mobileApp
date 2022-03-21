@@ -678,7 +678,7 @@ const SearchScreen = ({navigation}) => {
                               </View>
                               <View style = {styles.itemModal}>
 
-                                <Text style = {styles.filterText}>Occupanct Status:</Text>
+                                <Text style = {styles.filterText}>Occupancy Status:</Text>
                                         
                                 <SelectDropdown
                                         data={occupancyStatusFilterList}
