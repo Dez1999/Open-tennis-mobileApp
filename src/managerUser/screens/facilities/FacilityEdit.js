@@ -44,7 +44,7 @@ const FacilityEdit = ({navigation, route}) => {
         
       }, []);
 
-    //Method: Post Facility to the database
+    //Method: Update the current facility details in the database
     const updateFacility = () => {
 
 
@@ -58,10 +58,7 @@ const FacilityEdit = ({navigation, route}) => {
                 'Accept': 'application/json',
                'Content-Type': 'application/json'
             },
-            // body: JSON.stringify({
-            //     facilityName: facilityName, 
-            //     facilityCity: facilityCity
-            // }),
+
             credentials: 'include'
         })
         .then(response => {
@@ -118,9 +115,6 @@ const FacilityEdit = ({navigation, route}) => {
         });
 
     }    
-
-
-//alert("Create new facility! Note just call FacilityCraete when ready")
 
     return(
         <View style ={styles.container}>

@@ -42,6 +42,7 @@ const CodeScanner = ({navigation, route}) => {
         
       }, []);
 
+    //Method: Reads the Bar Code in the camera view
     readBarCode = (e) => {
         if (!isBarCodeRead) {
             setisBarCodeRead(true);
@@ -51,12 +52,14 @@ const CodeScanner = ({navigation, route}) => {
         } 
     }
 
+    //Method: Resets the Bar code scanner
     ReScanBarCode = () => {
         setIsAuthCodeRead(false);
         setAuthDeviceCode("");
         setisBarCodeRead(false);
     }
 
+    //Method: Renders the bottom section of the screen based on current state
     renderBottomSection = () => {
         if (!isAuthCodeRead) {
             return(

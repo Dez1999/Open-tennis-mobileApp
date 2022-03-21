@@ -51,6 +51,7 @@ const App = () => {
     managerDecision: null,
   }
 
+  //Method: App State Machine for all states 
   const loginReducer = (prevState, action) => {
     switch(action.type) {
       case 'RETRIEVE_TOKEN': //User has just opened up the app
@@ -381,6 +382,7 @@ const App = () => {
   }, []);
 
 
+  //State: Loading state for application
   if (loginState.isLoading) {
     return(
       <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
@@ -389,10 +391,6 @@ const App = () => {
 
     );
   }
-
- 
-
-
 
 
   return (
@@ -429,15 +427,5 @@ const App = () => {
   );
 };
 
-
-
-
-const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 5,
-    paddingHorizontal: 5,
-  },
-
-});
 
 export default App;

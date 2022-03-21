@@ -1,3 +1,4 @@
+//Method: Calculates the Occupancy of the Facility
 function calculateFacilityStatus(flatOccupancyList){
 
     //1. Find total number of free areas

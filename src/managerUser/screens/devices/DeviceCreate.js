@@ -26,7 +26,7 @@ import SelectDropdown from 'react-native-select-dropdown';
 //Import APIs
 import { registerDeviceURL, getDeviceTypesURL } from '../../../sharedComponents/services/ApiContext';
 
-//Set Number of fields as constant
+//Method: Set Number of fields as constant
 const areasMonitoredOptions = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
 const DeviceCreate = ({navigation, route}) => {
@@ -44,7 +44,7 @@ const DeviceCreate = ({navigation, route}) => {
     const [deviceTypeOptions, setDeviceTypeOptions] = useState([]);
 
 
-    //Fetch Device Options
+    //Method: Fetch Device Options
     const getDeviceTypes = () => {
         fetch(getDeviceTypesURL, {
             method: 'Get',
@@ -153,10 +153,6 @@ const DeviceCreate = ({navigation, route}) => {
         
       }, []);
 
-    
-
-
-//alert("Create new facility! Note just call FacilityCraete when ready")
 
     return(
         <View style ={styles.container}>

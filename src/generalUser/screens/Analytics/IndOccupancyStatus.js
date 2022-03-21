@@ -16,9 +16,8 @@ import {useState, useEffect} from "react";
 import Icon from 'react-native-vector-icons/FontAwesome';
 import getOccupancyColorInd from '../../utils/getOccupancyColorInd';
 
-const windowWidth = Dimensions.get('window').width;
-const windowHeight = Dimensions.get('window').height;
 
+//Method: Returns the Occupancy Status as a color Circle
 const IndOccupancyStatus =(props) => {
   let status = props.OccupancyStatus;
 

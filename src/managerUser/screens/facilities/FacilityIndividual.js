@@ -17,6 +17,7 @@ import {
 
 //Imports
 import Icon from 'react-native-vector-icons/FontAwesome';
+import { RealData } from '../../../generalUser/screens/Search/testDataSearch';
 
 //Import APIs
 import { postFacilityURL, getDevicesURL } from '../../../sharedComponents/services/ApiContext';
@@ -28,56 +29,9 @@ import { API_KEY } from '../../../sharedComponents/services/key';
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
-//Geocoding
+//Import Geocoding
 import Geocoder from 'react-native-geocoding';
 
-
-const data = [
-    {id:'1', title: 'CHEIGHTS -Tennis - 1st Half', areasMonitored: 2},
-    {id:'2', title: 'CHEIGHTS - Tennis - 2nd Half', areasMonitored: 2}
-  
-  ]
-
-
-const dataREAL = [
-    {id: 3, ownerId: 1, facilityId: 2,
-    name: "Device_Far_1",
-    authorizationId: "16906220214084426226",
-    inUse: true,
-    areasMonitored: 0,
-    deviceType: "SwimmingPool",
-    currOccupancy: []
-    },
-    {
-        id: 4,
-        ownerId: 1,
-        facilityId: 2,
-        name: "Device_Far_Right",
-        authorizationId: "4185022021408470626",
-        inUse: true,
-        areasMonitored: 3,
-        deviceType: "SwimmingPool",
-        currOccupancy: [
-            0,
-            0,
-            0
-        ]
-    },
-    {
-        id: 5,
-        ownerId: 1,
-        facilityId: 2,
-        name: "Device_Far_Left",
-        authorizationId: "29442220214091243243",
-        inUse: true,
-        areasMonitored: 1,
-        deviceType: "Tennis",
-        currOccupancy: [
-            0
-        ]
-    }
-  
-]
 
 const FacilityIndividual = ({navigation, route}) => {
 

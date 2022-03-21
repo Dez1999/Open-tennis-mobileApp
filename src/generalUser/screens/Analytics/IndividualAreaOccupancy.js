@@ -45,6 +45,7 @@ const IndividualAreaOccupancy =(props) => {
   }, [])
   
 
+  //Method: Renders each area in the Facility
   const item = ({item}) => {
     return (
         <View style={{flexDirection:'column', justifyContent:'center', padding: 5, backgroundColor: '#E2F1DB'}}>
@@ -87,6 +88,7 @@ const IndividualAreaOccupancy =(props) => {
   //Get correct Image for deviceType
   image = getImageTypeFacility(deviceType);
 
+  //Method: Renders the header components of the Flatlist Items
   const HeaderComponents = () => {
     return(
       <View>

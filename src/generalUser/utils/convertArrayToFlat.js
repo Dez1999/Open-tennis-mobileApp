@@ -1,3 +1,4 @@
+//Method: Helper function to return a flat array
 function convertArrayToFlat(array) {
 
     const flatOccupancyList = array.reduce((acc, val) => {

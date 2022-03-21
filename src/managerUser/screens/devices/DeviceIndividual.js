@@ -79,6 +79,7 @@ const DeviceIndividual = ({navigation, route}) => {
     }, []);
 
 
+    //Method: Handles the number of reference areas in each Device
     const handleNumberRefAreas = () => {
         let areasRefList = [];
 
@@ -92,6 +93,7 @@ const DeviceIndividual = ({navigation, route}) => {
     }
 
 
+    //Method: Retrieves the historical data of occupancy data from the database for a specific area and device
     const getAreaData = (numRef) => {
 
         //Set current date and time (including the starting date)
@@ -157,7 +159,7 @@ const DeviceIndividual = ({navigation, route}) => {
         )
     }
 
-    //Method: Get Devices from Facility
+    //Method: Renders the Occupancy data based on the current state
     const displayOccupancyData = () => {
         //Check if the data is currently being fetched
         if (isDataEmpty) {
@@ -205,6 +207,7 @@ const DeviceIndividual = ({navigation, route}) => {
 
 
 
+    //Method: Handles the selected area change from the user
     const handleAreaChange=(reference) => {
         //Extract Reference number
         //Update main Data list with updated filter

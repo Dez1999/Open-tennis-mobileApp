@@ -90,6 +90,7 @@ const SignupDemo = ({navigation}) => {
     }
  }
 
+ //Method: Method used to validate whether the entered email is in the correct format
  const validate = (text) => {
     console.log(text);
     let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w\w+)+$/;
@@ -116,6 +117,7 @@ const SignupDemo = ({navigation}) => {
   }
 
 
+ //Method: Handles the user's registration information on Submit
  const handleSignupSubmit = () => {
      console.log("Firstname: " + data.firstname +  ', LastName: ' +
      data.lastname + ', Username: ' + 
@@ -140,6 +142,7 @@ const SignupDemo = ({navigation}) => {
      }
  }
 
+ //Method: AuthContext method that is called from main app to sign the user up
  const { signUp } = React.useContext(AuthContext);
 
 

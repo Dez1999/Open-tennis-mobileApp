@@ -18,7 +18,7 @@ export const FacilityOwned_URL = 'http://52.229.94.153:8080/facility/owned';
 export const addFavouriteURL = "http://52.229.94.153:8080/facility/favourite/add/";
 export const removeFavouriteURL = "http://52.229.94.153:8080/facility/favourite/remove/";
 export const viewFavouritesURL = "http://52.229.94.153:8080/facility/favourite";
-
+export const filterFacilityURL = "http://52.229.94.153:8080/facility/filters?";
 
 //Device APIs
 export const getDevicesURL = 'http://52.229.94.153:8080/device/inFacility/';

@@ -11,11 +11,11 @@ const SigninDemo = ({navigation}) => {
     const [password, setPassword] = useState("");
 
 
+     //Method: AuthContext method that is called from main app to sign the user into the app
     const { signIn } = React.useContext(AuthContext);
 
 
-
-    //Handles the user's username and password to sign into the app
+    //Method: Handles the user's username and password to sign into the app
     const loginHandle = () => {
         //signIn(username,  password);
         console.log("---------------Log in Attempt --------------- \n"); 

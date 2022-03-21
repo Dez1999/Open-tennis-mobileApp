@@ -64,7 +64,8 @@ const FavouritesScreen =({navigation}) => {
     });
   };
 
-  const getFacilityOccupancy = () => {
+  //Method: Retrieves individual users favourite facilities
+  const getFavoritedFacilities = () => {
 
     let selectedFacilityOccupancyList = [];
 
@@ -124,10 +125,11 @@ const FavouritesScreen =({navigation}) => {
 
   useEffect(() => {
     setFacilityTypeFilter(["TENNIS", "BASKETBALL", "SWIMMING", "ANY"]);
-    getFacilityOccupancy();
+    getFavoritedFacilities();
 
   }, [])
 
+  //Method: Filters out current list of facilities based on text value in search bar
   const searchFilter = (text) => {
     if (text) {
         const newData = favouritesData.filter((item) => {
@@ -158,7 +160,7 @@ const FavouritesScreen =({navigation}) => {
                     onChangeText={(text) => searchFilter(text)}>
                   </TextInput>
                   <TouchableOpacity
-                      onPress={()=> getFacilityOccupancy()}
+                      onPress={()=> getFavoritedFacilities()}
                   >
                       <Ionicons
                         name="refresh"
@@ -172,7 +174,7 @@ const FavouritesScreen =({navigation}) => {
               <FlatList
                   data={filteredData}
                   keyExtractor={item => item.id}
-                  onRefresh= {() => getFacilityOccupancy()}
+                  onRefresh= {() => getFavoritedFacilities()}
                   refreshing={isLoading}
                   renderItem={({ item }) => (
                     <TouchableOpacity onPress={() => {navigation.navigate('Analytics', {

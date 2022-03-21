@@ -2,8 +2,8 @@ import React from 'react';
 
 //Navigation Imports
 import { createStackNavigator } from '@react-navigation/stack';
-import SigninDemo from '../../generalUser/screens/Login/SigninDemo';
-import SignupDemo from '../../generalUser/screens/Registration/SignupDemo';
+import SigninDemo from '../../generalUser/screens/Login/SigninScreen';
+import SignupDemo from '../../generalUser/screens/Registration/SignupScreen';
 
 //Stacks
 const CoreStack = createStackNavigator();

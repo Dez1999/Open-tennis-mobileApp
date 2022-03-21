@@ -350,7 +350,7 @@ const getFacilityTypeList = async () => {
 
 
 
-//Method: Handles the chnage of selected device type in the Facility
+//Method: Handles the change of selected device type in the Facility
 const handleTypeChange = (selectedType) => {
   getFacilityStatusUpdate(selectedType);
 }

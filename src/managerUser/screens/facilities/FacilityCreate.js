@@ -31,7 +31,7 @@ const FacilityCreate = ({navigation}) => {
 
 
 
-    //Fetch Device Options
+    //Method: Fetch List of available City Options
     const getCityOptions = () => {
         fetch(getCitiesURL, {
             method: 'Get',
@@ -61,7 +61,7 @@ const FacilityCreate = ({navigation}) => {
 
 
 
-    //Method: Post Facility to the database
+    //Method: Creates a facility and posts it to the database
     const createFacility = () => {
         let successfullPost = true;
         fetch(postFacilityURL, {
@@ -105,8 +105,6 @@ const FacilityCreate = ({navigation}) => {
         
       }, []);
 
-
-//alert("Create new facility! Note just call FacilityCraete when ready")
 
     return(
         <View style ={styles.container}>

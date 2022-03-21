@@ -22,7 +22,6 @@ const FacilityPhotos =(props) => {
   let status = props.OccupancyStatus;
 
 
-
   useEffect = (() => {
       //Todo
 

@@ -44,7 +44,6 @@ const AboutScreen = ({navigation}) => {
 
                     </View>
                     
-
                     <View style = {styles.containerTitle}>
                       <Text style={styles.titleText}>Occupancy Status Info</Text>
                     </View>

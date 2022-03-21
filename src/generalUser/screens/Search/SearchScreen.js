@@ -42,7 +42,7 @@ const windowHeight = Dimensions.get('window').height;
 
 
 //APIs 
-import {getDevicesURL as getDeviceInFacility} from '../../../sharedComponents/services/ApiContext';
+import {getDevicesURL as getDeviceInFacility, filterFacilityURL} from '../../../sharedComponents/services/ApiContext';
 
 
 const SearchScreen = ({navigation}) => {
@@ -103,6 +103,7 @@ const SearchScreen = ({navigation}) => {
   }
 
 
+  //Method: Filters out current list of facilities based on text value in search bar
   const searchFilter = (text) => {
     if (text) {
         const newData = filteredFacilityData.filter((item) => {
@@ -129,7 +130,7 @@ const SearchScreen = ({navigation}) => {
   }, [])
 
 
-  //Handle when a use applies the filters to search function
+  //Method: Handle when a use applies the filters to search function
   handleFilterSubmit = async () => {
     rangeFetchCount = 0;
     typeFetchCount = 0;
@@ -148,7 +149,7 @@ const SearchScreen = ({navigation}) => {
 
   }
 
-  //Fetch filtered facilities from database -> By Distance
+  //Method: Fetch filtered facilities from Server using Distance and City
   const getFilteredFacilities_Range = async (range, cityChoice) => {
     //Increase Count for Fetch:
     rangeFetchCount++;
@@ -187,7 +188,7 @@ const SearchScreen = ({navigation}) => {
     })
 
 
-    const getURLFetch = `http://52.229.94.153:8080/facility/filters?latitude=${mainUserLatitude}&longitude=${mainUserLongitude}&city=${cityChoice}&range=${numRange}&unit=K`;
+    const getURLFetch = filterFacilityURL + `latitude=${mainUserLatitude}&longitude=${mainUserLongitude}&city=${cityChoice}&range=${numRange}&unit=K`;
     console.log("Test: " + getURLFetch);
 
     setError(null);
@@ -227,6 +228,7 @@ const SearchScreen = ({navigation}) => {
 
   }
 
+  //Method: Handles the Type of device filter
   const handleTypeUpdate = async (deviceTypeTarget, tempFilteredData) => {
 
     //Iterate through each Facility and call their devices to see what
@@ -265,11 +267,6 @@ const SearchScreen = ({navigation}) => {
     }
     //Handle Filtered List for all other scenarios
     else {
-
-      //console.log("FILTERED DATA BELOW:")
-      //console.log(tempFilteredData);
-
-
       //Iterate through the Filtered Facility Data
       tempFilteredData.forEach(element => {
           //Call API for each Facility Devices
@@ -283,7 +280,6 @@ const SearchScreen = ({navigation}) => {
               //Iterate through the device list and push Facility element to list if it contains the target device type
               deviceData.forEach(elementDevice => {
                   //console.log("Device Target" + deviceTypeTarget);
-                  //console.log(elementType);
                   let elementType = elementDevice.deviceType;
                   if(elementType == "SwimmingPool"){
                         elementType = "SWIMMING";
@@ -314,7 +310,7 @@ const SearchScreen = ({navigation}) => {
   }
 
 
-  //Filter Device Type is "ANY"
+  //Method: Handles the Occupancy Status Special Scenario when the Filter Device Type is "ANY"
   const handleSpecialOccupancyStatusUpdate = (occupancyTarget, tempFilteredData) => {
 
     //Increase count for Special Occupancy Fetch
@@ -343,8 +339,10 @@ const SearchScreen = ({navigation}) => {
           var facilityStatus; 
           facilityStatus = "NOT AVAILABLE";
 
-
+          //Get Facility Occupancy Status Color
           var facilityStatusColor = getFacilityOccupancyColor(facilityStatus);
+
+          //Check if Facility is favourited
           var itemFavourited = handleFavourites(element);
           var favouriteColor = "white";
           if(itemFavourited){
@@ -415,10 +413,8 @@ const SearchScreen = ({navigation}) => {
 
   }
 
+  //Method: Handles the Occupancy Status for each Facility after filtering
   const handleOccupancyUpdate = (occupancyTarget, tempFilteredData) => {
-
-    //Increase count for Special Occupancy Fetch
-
 
     let selectedFacilityOccupancyList = [];
 
@@ -516,6 +512,8 @@ const SearchScreen = ({navigation}) => {
 
   }
 
+
+  //Method: Returns boolean value whether facility is favourited or not
  const handleFavourites = (item) => {
 
   //Iterate and return whether the facility is favourited or not
@@ -536,6 +534,7 @@ const SearchScreen = ({navigation}) => {
 }
 
 
+  //Method: Renders the list of facilities based of of state conditions
   const renderFacilities = () =>{
         
     //Check if the data is currently being fetched

@@ -1,3 +1,4 @@
+//Method: Helper function to return the color of an Occupancy Status for each individual area
 function getOccupancyColorInd(status) {
     if(status == 'FREE'){
         return '#28B625'

@@ -27,61 +27,8 @@ const windowHeight = Dimensions.get('window').height;
 //Main API
 import { FacilityOwned_URL } from '../../../sharedComponents/services/ApiContext';
 
-
-//Testing Data
-const facilityDataTest = [
-  {
-      "id": 1,
-      "ownerId": 2,
-      "name": "Lyndwood Tennis Club",
-      "city": "MISSISSAUGA",
-      "latitude": 43.57663,
-      "longitude": -79.57103
-  },
-  {
-    "id": 2,
-    "ownerId": 2,
-    "name": "Farm Park",
-    "city": "MISSISSAUGA",
-    "latitude": 43.62663,
-    "longitude": -79.57103
-},
-{
-  "id": 3,
-  "ownerId": 2,
-  "name": "Central Park",
-  "city": "MISSISSAUGA",
-  "latitude": 43.62663,
-  "longitude": -79.57103
-},
-{
-  "id": 4,
-  "ownerId": 2,
-  "name": "State Park",
-  "city": "MISSISSAUGA",
-  "latitude": 43.62663,
-  "longitude": -79.57103
-},
-{
-"id": 5,
-"ownerId": 2,
-"name": "Nature Park",
-"city": "MISSISSAUGA",
-"latitude": 43.62663,
-"longitude": -79.57103
-}
-]
-
-
-  const Item = ({ title, city }) => (
-    <View style={styles.listItem}>
-        <View>
-            <Text style={styles.listItemTextMain}>{title}</Text>
-            <Text style={styles.listItemTextSub}>{city} </Text>
-       </View>
-    </View>
-  );
-
+//Import test data
+import { facilityDataTest } from '../../../generalUser/screens/Search/testDataSearch';
 
 
 const DeviceScreen = ({navigation}) => {
@@ -95,7 +42,8 @@ const DeviceScreen = ({navigation}) => {
     const [unmounted, setUnounted] = useState(true);
 
 
-      const fetchPosts = () => {
+    //Method: Retrieves all owned facilities by Manager
+    const fetchAllFacilities = () => {
         setIsLoading(true);
         fetch(FacilityOwned_URL)
         .then((response) => response.json())
@@ -119,6 +67,7 @@ const DeviceScreen = ({navigation}) => {
       }
 
 
+    //Method: Filters out current list of facilities based on text value in search bar
     const searchFilter = (text) => {
         if (text) {
             const newData = mainData.filter((item) => {
@@ -138,16 +87,7 @@ const DeviceScreen = ({navigation}) => {
         }
     }
 
-    // const ItemView = ({item}) => {
-    //     return(
-    //         <TouchableOpacity onPress={() => {
-    //             alert("ItemID: " + item.id + ", Facility Name: " + item.title)
-    //         }}> 
-    //         <Item title={item.title} city={item.id}/>
-    //         </TouchableOpacity>
-    //     )
-    // }
-
+    //Method: Returns a touchable button for each item
     const renderItem = ({ item }) => (
         <TouchableOpacity onPress={() => {
             navigation.navigate("FacilityIndividual_Page", {
@@ -163,6 +103,7 @@ const DeviceScreen = ({navigation}) => {
         </TouchableOpacity>
       );
 
+      //Method: returns the individual item for each facility
       const Item = ({ title, city }) => (
         <View style={styles.itemStyle}>
             <View>
@@ -173,6 +114,7 @@ const DeviceScreen = ({navigation}) => {
       );
    
     
+    //Method: Returns item view separator
     const ItemSeparatorView = () => {
         return (
             <View
@@ -183,6 +125,7 @@ const DeviceScreen = ({navigation}) => {
         )
     }
 
+    //Method: Renders list of facilities based on the current state
     const renderList = () =>{
         
       //Check if the data is currently being fetched
@@ -205,23 +148,14 @@ const DeviceScreen = ({navigation}) => {
         );
       }
         return (
-
-            //  <View>
-            //    {refreshing ? <ActivityIndicator/> : null}
-  
               <FlatList   
                 data={filteredData}
                 keyExtractor={(item, index) => index.toString()}
                 ItemSeparatorComponent={ItemSeparatorView}
                 renderItem={renderItem}
-                //  refreshControl={
-                //    <RefreshControl refreshing={refreshing} onRefresh={fetchPosts()} />
-                //  }
 
               >
               </FlatList>
-  
-            //{/* </View>  */}
 
             );
      };
@@ -229,17 +163,12 @@ const DeviceScreen = ({navigation}) => {
 
      useEffect(() => {
 
-      // if (unmounted){
-      //   console.log(unmounted);
-      fetchPosts();
-
-      // }
-      
+      fetchAllFacilities();      
        return () => {
 
        }
 
-    }, []);
+      }, []);
 
 
     return(
@@ -267,7 +196,7 @@ const DeviceScreen = ({navigation}) => {
                                     
                                 </Icon.Button>
                                 <TouchableOpacity
-                                    onPress={()=> fetchPosts()}
+                                    onPress={()=> fetchAllFacilities()}
                                   
                                  
                                  >
@@ -279,7 +208,6 @@ const DeviceScreen = ({navigation}) => {
 
                                   </Ionicons>
                                 </TouchableOpacity>
-                                {/* {renderList()} */}
                               
                         </View>             
                     </View>
