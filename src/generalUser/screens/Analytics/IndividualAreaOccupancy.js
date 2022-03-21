@@ -6,7 +6,8 @@ import {
     StatusBar, 
     ImageBackground, 
     Dimensions, 
-    FlatList, 
+    FlatList,
+    SafeAreaView, 
 } from 'react-native';
 import {useState, useEffect} from "react";
 
@@ -16,6 +17,8 @@ import IndOccupancyStatus from './IndOccupancyStatus';
 import calculateOccupancyInd from '../../utils/calculateOccupancyInd'; //Used to calculate if Area is Free or Busy
 import convertArrayToFlat from '../../utils/convertArrayToFlat';
 import getImageTypeFacility from '../../utils/getImageTypeFacility';
+import OccupancyStatus from '../../components/AnalyticsComponents/occupancyStatus';
+import getFacilityOccupancyColor from '../../utils/getFacilityOccupancyColor';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
@@ -28,6 +31,7 @@ const IndividualAreaOccupancy =(props) => {
   let occupancyListMain = props.currOccupancyList;
   let occupancyList = [0,4,0,0];
   let deviceType = props.targetDevice;
+  let OccupancyStatus = props.OccupancyStatus;
   const [occupancyListData, setOccupancyData] = useState([]);
   const [targetDevice, setTargetDevice] = useState("");
 
@@ -59,6 +63,17 @@ const IndividualAreaOccupancy =(props) => {
   if(props.targetDevice == "ANY"){
     return (
         <View style={styles.unavailableContent}>
+          <View style ={styles.headercontainer}>
+              <Icon 
+                  name="circle"
+                  size={75} 
+                  color= {getFacilityOccupancyColor(status)}/>
+              <View style= {styles.statusContent}>
+                  <Text style={styles.mainText}>OCCUPANCY STATUS: </Text>
+                  <Text style={styles.statusText} >{status}</Text>
+              </View>
+            
+           </View>
           <Text style={styles.unavailableText}>This Facility is unavailable for Occupancy Tracking</Text>
         </View>
     )
@@ -72,26 +87,45 @@ const IndividualAreaOccupancy =(props) => {
   //Get correct Image for deviceType
   image = getImageTypeFacility(deviceType);
 
+  const HeaderComponents = () => {
+    return(
+      <View>
+            <View style ={styles.headercontainer}>
+              <Icon 
+                  name="circle"
+                  size={75} 
+                  color= {getFacilityOccupancyColor(status)}/>
+              <View style= {styles.statusContent}>
+                  <Text style={styles.mainText}>OCCUPANCY STATUS: </Text>
+                  <Text style={styles.statusText} >{status}</Text>
+              </View>
+            
+           </View>
+           <View style={styles.headerTextContainer}>
+             <Text style={{textAlign: 'left', color: '#0B5B13', fontSize: 17, fontWeight: 'bold', padding: 10}}>REAL-TIME OCCUPANCY</Text>
+          </View>
+     </View>
+        
 
+    )
+  }
 
 
 
   return (
-          <View style = {styles.mainContainer}>
-            <Text style={{textAlign: 'left', color: '#0B5B13', fontSize: 17, fontWeight: 'bold', padding: 10}}>REAL-TIME OCCUPANCY</Text>
-            <View style ={styles.container}>
                   <FlatList
                     numColumns={3} 
                     columnWrapperStyle={styles.row}
                     nestedScrollEnabled
                     data = {flatOccupancyList}
+                    ListHeaderComponent={
+                      HeaderComponents
+                    }
+
                     renderItem={item}
                     keyExtractor={(item, index) => index.toString()}
                         >
                    </FlatList>
-                
-            </View>
-            </View>
     
   );
 
@@ -103,8 +137,16 @@ const styles = StyleSheet.create({
       justifyContent: 'flex-start', 
 
     },  
+    headercontainer: {
+      alignItems: 'center', 
+      justifyContent: 'flex-start', 
+      paddingTop: 20,
+      paddingBottom:20
+
+    },
     mainContainer: {
-      marginTop: 20
+      marginTop: 20,
+      paddingBottom: 10
 
     },
 
@@ -117,7 +159,7 @@ const styles = StyleSheet.create({
         textAlign : 'center', 
         justifyContent : 'center',
         fontSize: 16,
-        fontWeight : '200',
+        fontWeight : '400',
         paddingVertical : 12,
         color: 'black'
     }, 
@@ -166,14 +208,15 @@ const styles = StyleSheet.create({
     }, 
     unavailableContent: {
       justifyContent: 'center',
-      marginTop: '30%'
-
     }, 
     unavailableText: {
       textAlign: 'center', 
       fontWeight: 'bold', 
       fontSize: 20, 
-      color: 'red'
+      color: 'red', 
+    }, 
+    headerTextContainer:{
+      justifyContent: 'flex-start'
     }
 
   });

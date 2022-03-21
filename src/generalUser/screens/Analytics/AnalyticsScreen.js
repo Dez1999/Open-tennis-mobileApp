@@ -63,8 +63,6 @@ const latitude = '45.394457';
 
 const AnalyticsScreen = ({navigation, route}) => {
   const {favourites, add, getFavourites, remove} = useContext(FavouritesContext);
-  //const [posts, setPosts] = useState([]);
-  //const [data, setData] = useState([]);
   const {facilityId, ownerId, facilityCity, title, numCourts, occupancy, address, itemLatitude, itemLongitude, itemIndOccupancyList, itemInitSelectedType, allFacilityTypeFilterList, itemFavourited} = route.params; //Passes params from previous page
 
   const [favourited, setFavourited] = useState(false);
@@ -111,7 +109,7 @@ const AnalyticsScreen = ({navigation, route}) => {
 
 }
 
-//Method: Post Facility to the database
+//Method: Remove Facility from Favourites List
 const removeFromFavourites = async () => {
   const selectedFacility = `${facilityId}`;
 
@@ -120,6 +118,7 @@ const removeFromFavourites = async () => {
   
 }
 
+//Method: Get the updated Facility Status
 const getFacilityStatusUpdate = async (itemInitSelectedType) => {
     if (itemInitSelectedType  == "ANY"){
       //Check Facility Devices to select the correct device type to initiate
@@ -248,6 +247,7 @@ const getOccupancy = (selectedDeviceType) => {
 
 }
 
+//Method: Helper method to calculate current occupancy
 const calculateOccupancy = (occupancyList) => {
     if (occupancyList.length == 0){
       setOccupanyStatusReal("NOT AVAILABLE") //Not available
@@ -267,7 +267,7 @@ const calculateOccupancy = (occupancyList) => {
     }
 }
 
-
+//Method: Retrieve a list of Facility Types
 const getFacilityTypeList = async () => {
 
     //Get device List
@@ -324,6 +324,7 @@ const getFacilityTypeList = async () => {
 }
 
 
+  //Method: Handle the Favourites feature when user adds or removes facility from favourites list
   const handleFavourites = () => {
     setFavourited(!favourited);
     if (!favourited){
@@ -351,11 +352,12 @@ const getFacilityTypeList = async () => {
 
 
 
-
+//Method: Handles the chnage of selected device type in the Facility
 const handleTypeChange = (selectedType) => {
   getFacilityStatusUpdate(selectedType);
 }
 
+//Method: Handles the refresh event 
 const handleFacilityRefresh = () => {
   if (facilityTypeFilterChoice != "ANY" && facilityTypeFilterChoice != ""){
     return(
@@ -377,11 +379,12 @@ const handleFacilityRefresh = () => {
 
 }
 
+//Method: Dyanmically handles the types of devices in a facility and returns the output
 const facilityTypeSelection = () => {
   if (facilityTypeFilterChoice != "ANY" && facilityTypeFilterChoice != ""){
     return(
-      <View style={{justifyContent: 'space-between', flexDirection: 'row', marginBottom: 20, padding: 10}}>
-        <Text style={{fontSize: 18, fontWeight: 'bold', color: '#0B5B13'}}>Available Facility Types: </Text>
+      <View style={{justifyContent: 'space-between', flexDirection: 'row', marginBottom: 2, padding: 2}}>
+        <Text style={{fontSize: 18, fontWeight: 'bold', color: '#0B5B13', paddingLeft: 5}}>Available Facility Types: </Text>
         <SelectDropdown
             data={facilityDeviceTypeList}
             style={{animated: true, fontSize: 20}} 
@@ -466,20 +469,8 @@ const facilityTypeSelection = () => {
                 />
               </View>
 
-
-              <ScrollView>
-                <View style ={{
-                    flexGrow: 1,
-
-                  }}
-                  >
-                    {facilityTypeSelection()}
-                  
-                  <OccupancyStatus OccupancyStatus= {occupancyStatusReal}></OccupancyStatus> 
-                  <IndividualAreaOccupancy currOccupancyList={occupancyListData} targetDevice ={facilityTypeFilterChoice}/>
-                </View>
-
-              </ScrollView>
+                {facilityTypeSelection()}
+                <IndividualAreaOccupancy OccupancyStatus= {occupancyStatusReal} currOccupancyList={occupancyListData} targetDevice ={facilityTypeFilterChoice}/>
 
             </View>
     
