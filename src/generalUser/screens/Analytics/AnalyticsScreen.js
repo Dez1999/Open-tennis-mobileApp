@@ -262,8 +262,6 @@ const calculateOccupancy = (occupancyList) => {
           var facilityStatus = calculateFacilityStatus(flatOccupancyList);
 
           setOccupanyStatusReal(facilityStatus);
-
-          
     }
 }
 

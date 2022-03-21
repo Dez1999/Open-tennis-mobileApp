@@ -117,13 +117,6 @@ const App = () => {
      const loginData = `username=${userName}&password=${passWord}`;
      setUsername(userName);
 
-     //formData.delete('username');
-     /*
-     formData.append('username', userName);
-     formData.append('password', passWord);
-     console.log(formData.toString());
-     */
-
      console.log(loginData);
 
      let userToken;
@@ -165,7 +158,7 @@ const App = () => {
          if (resData.appUserRole == "MANAGER" || resData.appUserRole == "ADMIN" || resData.appUserRole == "USER") {
              try{
                console.log("UserName: " + resData.email + ', \n App user Role: ' + resData.appUserRole);
-               alert("UserName: " + resData.email + ', \n App user Role: ' + resData.appUserRole); //Testing response from database server
+               //alert("UserName: " + resData.email + ', \n App user Role: ' + resData.appUserRole); //Testing response from database server
                //alert('Authentication Successful');
 
                //Successful Authentication

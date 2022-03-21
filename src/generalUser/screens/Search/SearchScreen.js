@@ -227,7 +227,7 @@ const SearchScreen = ({navigation}) => {
 
   }
 
-  const handleTypeUpdate = (deviceTypeTarget, tempFilteredData) => {
+  const handleTypeUpdate = async (deviceTypeTarget, tempFilteredData) => {
 
     //Iterate through each Facility and call their devices to see what
     // type of devices are available for the Facility
@@ -248,13 +248,14 @@ const SearchScreen = ({navigation}) => {
 
     //Do Nothing and go to OccupancyStatusFilter
       
-    // }
+    // Handle Filtered list if it is empty
     if (tempFilteredData && tempFilteredData.length == 0){
       //Filtered dataset is empty thus directly pass it to Occupancy Status Filter to handle it
       handleOccupancyUpdate(occupancyStatusFilterChoice, tempFilteredData);
       console.log("Facility Type Update (Before Filtering): Dataset is Empty");
       //setIsLoading(false);
     }
+    //Handle Filtered List if Device type Targte is equal to "ANY"
     else if (deviceTypeTarget == "ANY"){
         //Keep all facilities in filtered dataset and do not filter by device type
         //Let OccupancyStatusUpdate() handle this
@@ -262,10 +263,12 @@ const SearchScreen = ({navigation}) => {
         console.log("HandleTypeUpdate: ANY");
 
     }
+    //Handle Filtered List for all other scenarios
     else {
 
-      console.log("FILTERED DATA BELOW:")
-      console.log(tempFilteredData);
+      //console.log("FILTERED DATA BELOW:")
+      //console.log(tempFilteredData);
+
 
       //Iterate through the Filtered Facility Data
       tempFilteredData.forEach(element => {
@@ -296,18 +299,15 @@ const SearchScreen = ({navigation}) => {
                   }
               });
           })
-          .then(response => {
-
-            //Go to next Facility
-        
-                //Now Request Occupancy Filtered Choice
-                handleOccupancyUpdate(occupancyStatusFilterChoice, selectedFacilityTypeList);
-                //console.log("Count: " + count + ", TempFilteredData Length: " + tempFilteredData.length);
-                //console.log("Facility Type Update After Type Filtering");
-
-          })
           .catch(error => console.log(error));
       });
+
+
+      //Handle Occupancy Status Update
+      setTimeout(function () {
+            handleOccupancyUpdate(occupancyStatusFilterChoice, selectedFacilityTypeList);
+        
+     }, 2000);
 
     }
     
@@ -510,7 +510,6 @@ const SearchScreen = ({navigation}) => {
         .catch(error => console.log(error))
         .done(() => {
             setIsLoading(false);
-            //  setTimeout(function() {setIsLoading(false);}, 5000);
         })
       });
     }
@@ -926,8 +925,6 @@ const styles = StyleSheet.create({
       color: "black"
   }
 
-  
-   
   });
 
 
