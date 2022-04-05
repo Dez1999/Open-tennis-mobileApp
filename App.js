@@ -122,6 +122,7 @@ const App = () => {
 
      let userToken;
      userToken = null;
+     let uniqueToken = '';
      let userEmail;
      userEmail = null;
      let appUserRole;
@@ -166,7 +167,7 @@ const App = () => {
                successful = true;
                
                //Set userToken
-               userToken = 'fakeToken';
+               userToken = uniqueToken;
                setUserToken(userToken);
                AsyncStorage.setItem('userToken', userToken);
 

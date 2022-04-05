@@ -24,7 +24,7 @@ const HomeScreen =({navigation}) => {
                 <SafeAreaView style={{ flex: 1, justifyContent: 'space-between', alignItems: 'center' }}>
                     
                     <Logo title='Open Tennis' marginTop={20} imageHeight={110} imageWidth={100}/> 
-                    <Text style = {styles.mainText}>{'Privacy Preserving Public Tennis Court \n Occupancy Tracking System for the \n City of Ottawa'}</Text>
+                    <Text style = {styles.mainText}>{'Privacy Preserving Occupancy\n Tracking System \n for Public Facilities'}</Text>
                     <TouchableOpacity style={styles.aboutButton}
                     onPress={() => navigation.navigate('About')}
                     >
