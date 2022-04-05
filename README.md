@@ -48,6 +48,6 @@ The mobile application allows managers to create new facilities, and add new dev
 5. Run `yarn run android`
 
 ## Contact
-Desmond Blake
-desmond.db99@gmail.com
-https://www.linkedin.com/in/desmond-blake-99900
+- Desmond Blake
+- desmond.db99@gmail.com
+- https://www.linkedin.com/in/desmond-blake-99900
