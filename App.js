@@ -122,7 +122,7 @@ const App = () => {
 
      let userToken;
      userToken = null;
-     let uniqueToken = '';
+     let uniqueToken = 'token';
      let userEmail;
      userEmail = null;
      let appUserRole;
