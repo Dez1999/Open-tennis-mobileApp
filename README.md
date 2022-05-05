@@ -6,7 +6,7 @@ The openTennis React Native mobile application follows a role-based access contr
 
 The mobile application allows managers to create new facilities, and add new devices in order to monitor areas. General users are able to search for specific facilities and they have the ability to filter by city, range, occupancy status and type of facility (Tennis, Basketball, Swimming). 
 
-##Video Demo of Project
+## Video Demo of Project
 https://1drv.ms/v/s!AtPvIuOtzZzcuHf6j2AptXhYVJTR?e=MOoH7g
 
 ## Tech stack / framework used
